@@ -67,6 +67,7 @@ const AdminHome = () => {
         <p className="text-gray-800 font-medium">Doctors List</p>
       </div>
     </div>
+  
     <AdminAppointments/>
    
 </div>
