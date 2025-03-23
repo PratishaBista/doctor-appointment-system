@@ -2,7 +2,7 @@ import React from 'react';
 
 const AdminAppointments = () => {
   return (
-    <div className="p-4 w-[90vw]">
+    <div className="p-4 w-[80vw]">
       <h1 className="text-2xl font-semibold mb-4">All Appointments</h1>
       
       {/* Table Header */}
