@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import AddDoctor from './admin-pages/AddDoctor';
 import AdminAppointments from './admin-pages/AdminAppointments';
@@ -6,30 +6,36 @@ import AdminDashboard from './admin-pages/AdminDashboard';
 import AdminDoctorsList from './admin-pages/AdminDoctorsList';
 
 const AdminHome = () => {
-  const [activeIndex, setActiveIndex] = useState(null);
   const navigate = useNavigate();
-
-  const handleItemClick = (index) => {
-    if (index === 0) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  useEffect(() => {
+    if (location.pathname === "/admin") {
       navigate("/admin/dashboard");
     }
-    if (index === 1) {
-      navigate("/admin/appointment");
-    }
-    if (index === 2) {
-      navigate("/admin/addDoctor");
-    }
-    if (index === 3) {
-      navigate("/admin/doctorList");
-    }
+  }, [location.pathname, navigate]);
+
+
+ const handleItemClick = (index) => {
+    const routes = [
+      "/admin/dashboard",
+      "/admin/appointment",
+      "/admin/addDoctor",
+      "/admin/doctorList",
+    ];
+    navigate(routes[index]);
     setActiveIndex(index);
   };
+  useEffect(() => {
+    navigate("/admin/dashboard");
+  }, []);
 
   return (
     <>
       <div className="flex h-[90px] items-center justify-between px-6 border-gray-300 border-2 ">
         <div className="flex items-center space-x-3">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU" alt="Logo" className="h-12" />
+          <img
+          onClick={()=>navigate('/admin/dashboard')}
+          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU" alt="Logo" className="h-12" />
           <p className="text-xl font-bold text-gray-800">Green City Hospital</p>
         </div>
 

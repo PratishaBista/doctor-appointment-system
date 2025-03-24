@@ -1,13 +1,14 @@
 import React from 'react'
-import UserAbout from './UserPages/UserAbout'
-import UserContact from './UserPages/UserContact'
+import Header from './UserComponents/Header'
+import Navbar from './UserComponents/Navbar'
 
 
 
 const UserHome = () => {
   return (
     <div>
-      <UserContact/>
+      <Header/>
+      <Navbar/>
         <br/>
        
     </div>
