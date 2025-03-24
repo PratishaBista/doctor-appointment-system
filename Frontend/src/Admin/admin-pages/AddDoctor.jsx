@@ -55,7 +55,7 @@ const AddDoctor = () => {
         </div>
       </div>
 
-      {/* Degree and Address */}
+      {/* Degree and Address (in same row) */}
       <div className="flex space-x-4 mb-4">
         <div className="flex flex-col w-1/2">
           <label htmlFor="degree" className="font-medium text-gray-700">Degree</label>
@@ -77,46 +77,50 @@ const AddDoctor = () => {
         </div>
       </div>
 
-      {/* Experience */}
-      <div className="flex flex-col mb-4">
-        <label htmlFor="experience" className="font-medium text-gray-700">Experience</label>
-        <select
-          id="experience"
-          className="border-2 border-[#146A5D] p-2 rounded-lg mt-1 focus:outline-none focus:border-[#0F5247]"
-        >
-          {[...Array(10).keys()].map(i => (
-            <option key={i} value={i + 1}>{i + 1} Year{(i + 1) > 1 ? 's' : ''}</option>
-          ))}
-        </select>
+      {/* Experience and Fees (in same row) */}
+      <div className="flex space-x-4 mb-4">
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="experience" className="font-medium text-gray-700">Experience</label>
+          <select
+            id="experience"
+            className="border-2 border-[#146A5D] p-2 rounded-lg mt-1 focus:outline-none focus:border-[#0F5247]"
+          >
+            {[...Array(10).keys()].map(i => (
+              <option key={i} value={i + 1}>{i + 1} Year{(i + 1) > 1 ? 's' : ''}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="fees" className="font-medium text-gray-700">Fees</label>
+          <input
+            id="fees"
+            placeholder="Enter Doctor's Fees"
+            type="number"
+            className="border-2 border-[#146A5D] p-2 rounded-lg mt-1 focus:outline-none focus:border-[#0F5247]"
+          />
+        </div>
       </div>
 
-      {/* Address 1 & 2 */}
-      <div className="flex flex-col mb-4">
-        <label htmlFor="address1" className="font-medium text-gray-700">Address 1</label>
-        <input
-          id="address1"
-          placeholder="Enter Address Line 1"
-          type="text"
-          className="border-2 border-[#146A5D] p-2 rounded-lg mt-1 focus:outline-none focus:border-[#0F5247]"
-        />
-        <label htmlFor="address2" className="font-medium text-gray-700 mt-2">Address 2</label>
-        <input
-          id="address2"
-          placeholder="Enter Address Line 2"
-          type="text"
-          className="border-2 border-[#146A5D] p-2 rounded-lg mt-1 focus:outline-none focus:border-[#0F5247]"
-        />
-      </div>
-
-      {/* Fees */}
-      <div className="flex flex-col mb-4">
-        <label htmlFor="fees" className="font-medium text-gray-700">Fees</label>
-        <input
-          id="fees"
-          placeholder="Enter Doctor's Fees"
-          type="number"
-          className="border-2 border-[#146A5D] p-2 rounded-lg mt-1 focus:outline-none focus:border-[#0F5247]"
-        />
+      {/* Address 1 & 2 (in same row) */}
+      <div className="flex space-x-4 mb-4">
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="address1" className="font-medium text-gray-700">Address 1</label>
+          <input
+            id="address1"
+            placeholder="Enter Address Line 1"
+            type="text"
+            className="border-2 border-[#146A5D] p-2 rounded-lg mt-1 focus:outline-none focus:border-[#0F5247]"
+          />
+        </div>
+        <div className="flex flex-col w-1/2">
+          <label htmlFor="address2" className="font-medium text-gray-700">Address 2</label>
+          <input
+            id="address2"
+            placeholder="Enter Address Line 2"
+            type="text"
+            className="border-2 border-[#146A5D] p-2 rounded-lg mt-1 focus:outline-none focus:border-[#0F5247]"
+          />
+        </div>
       </div>
 
       {/* About Doctor */}
