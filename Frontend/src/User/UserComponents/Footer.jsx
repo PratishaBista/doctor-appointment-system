@@ -2,10 +2,10 @@ import React from 'react'
 
 
 const Footer = () => {
-  return (<>
+  return (<div className=''>
   
-    <div className=" text-black p-8 mt-10 border-t-4">
-      <div className="flex flex-col md:flex-row justify-between gap-8">
+    <div className=" text-black p-8 mt-10  ">
+      <div className="flex flex-col md:flex-row justify-between gap-8 mb-8">
 
         {/* Left Section */}
         <div className="flex flex-col md:w-1/4 gap-4 ">
@@ -30,24 +30,24 @@ const Footer = () => {
 
         {/* Right Section */}
         <div className="flex flex-col md:w-1/4 gap-2">
-          <h1 className="text-lg font-semibold">GEY IN TOUCH  </h1>
+          <h1 className="text-lg font-semibold">GET IN TOUCH  </h1>
           <ul className="list-none space-y-2">
             <li className="hover:text-gray-200">+1-222-333-000</li>
             <li className="hover:text-gray-200">SiddhantShrestha54@gmail.com</li>
           </ul>
           <div className="flex items-center">
-        <h1 className='text-2xl font-bold text-red-600'>Emergency Number: 09090000</h1>
+        <h1 className='text-xl font-bold text-red-600'>Emergency Number: +09090000</h1>
       </div>
         </div>
 
       </div>
 
       {/* Footer Text */}
-      <div className="mt-8 text-center text-sm">
-        <p>&copy; {new Date().getFullYear()}@greencity- All Rights Reserved</p>
+      <div className="flex justify-center text-center border-t-4 text-xl">
+        <p className='mt-4'>&copy; {new Date().getFullYear()}@greencity- All Rights Reserved</p>
       </div>
     </div>
-    </>
+    </div>
   )
 }
 

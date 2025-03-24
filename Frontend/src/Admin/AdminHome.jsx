@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
+import UserAbout from '../User/UserPages/UserAbout';
 import AddDoctor from './admin-pages/AddDoctor';
 import AdminAppointments from './admin-pages/AdminAppointments';
 import AdminDashboard from './admin-pages/AdminDashboard';
@@ -157,6 +158,7 @@ const AdminHome = () => {
         {/* Main Content Area */}
         <div className="w-full p-6">
           <Routes>
+            <Route path="/user/userAbout" element={<UserAbout/>}/>
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/appointment" element={<AdminAppointments />} />
             <Route path="/addDoctor" element={<AddDoctor />} />
