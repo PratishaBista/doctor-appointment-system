@@ -27,30 +27,42 @@ const AdminDashboard = () => {
         className="grid grid-cols-3 gap-6"
       >
         {/* Doctors Card */}
-        <motion.div whileHover={{ scale: 1.05 }} className="flex items-center bg-white shadow-lg rounded-lg p-4 transition">
+        <motion.div 
+          whileHover={{ scale: 1.05 }} 
+          className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center items-center md:flex-row"
+        >
           <img className="w-16 h-16" src="https://cdn-icons-png.flaticon.com/512/9193/9193824.png" alt="Doctors" />
-          <div className="ml-3">
+          <div className="ml-3 hidden md:block">
             <h1 className="text-2xl font-bold text-[#146A5D]">20</h1>
             <p className="text-gray-500">Doctors</p>
           </div>
+          <h1 className="text-2xl font-bold text-[#146A5D] mt-4 md:hidden">20</h1>
         </motion.div>
 
         {/* Appointments Card */}
-        <motion.div whileHover={{ scale: 1.05 }} className="flex items-center bg-white shadow-lg rounded-lg p-4 transition">
+        <motion.div 
+          whileHover={{ scale: 1.05 }} 
+          className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center items-center md:flex-row"
+        >
           <img className="w-16 h-16" src="https://static.vecteezy.com/system/resources/thumbnails/024/150/216/small_2x/calendar-icon-vector.jpg" alt="Appointments" />
-          <div className="ml-3">
+          <div className="ml-3 hidden md:block">
             <h1 className="text-2xl font-bold text-[#146A5D]">8</h1>
             <p className="text-gray-500">Appointments</p>
           </div>
+          <h1 className="text-2xl font-bold text-[#146A5D] mt-4 md:hidden">8</h1>
         </motion.div>
 
         {/* Patients Card */}
-        <motion.div whileHover={{ scale: 1.05 }} className="flex items-center bg-white shadow-lg rounded-lg p-4 transition">
+        <motion.div 
+          whileHover={{ scale: 1.05 }} 
+          className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center items-center md:flex-row"
+        >
           <img className="w-16 h-16" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQx4WPMRwUZHH4CIYhmmhdmOPjBP03sSfRshQ&s" alt="Patients" />
-          <div className="ml-3">
+          <div className="ml-3 hidden md:block">
             <h1 className="text-2xl font-bold text-[#146A5D]">5</h1>
             <p className="text-gray-500">Patients</p>
           </div>
+          <h1 className="text-2xl font-bold text-[#146A5D] mt-4 md:hidden">5</h1>
         </motion.div>
       </motion.div>
 

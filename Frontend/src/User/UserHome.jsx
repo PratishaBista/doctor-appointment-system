@@ -1,16 +1,18 @@
 import React from 'react'
-import Header from './UserComponents/Header'
+import Footer from './UserComponents/Footer'
 import Navbar from './UserComponents/Navbar'
+import UserBody from './UserComponents/UserBody'
 
 
 
 const UserHome = () => {
   return (
     <div>
-      <Header/>
+      
       <Navbar/>
-        <br/>
-       
+      <UserBody/>
+      
+      <Footer/>
     </div>
   )
 }
