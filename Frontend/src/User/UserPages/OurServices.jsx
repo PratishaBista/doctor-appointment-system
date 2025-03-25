@@ -1,7 +1,7 @@
 import React from 'react';
 
-const OurServices = () => {
-  const doctorSpecialties = [
+  const OurServices = () => {
+   const doctorSpecialties = [
     {
       name: "Cardiology",
       description: "Specializes in the diagnosis and treatment of heart conditions, including heart attacks, arrhythmias, and other cardiovascular diseases.",

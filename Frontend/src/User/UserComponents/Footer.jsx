@@ -4,17 +4,21 @@ import React from 'react'
 const Footer = () => {
   return (<div className=''>
   
-    <div className=" text-black p-8 mt-10  ">
-      <div className="flex flex-col md:flex-row justify-between gap-8 mb-8">
+    <div className=" text-black p-8  ">
+      <div className="flex flex-col md:flex-row justify-between gap-8 mb-8 items-end">
 
         {/* Left Section */}
-        <div className="flex flex-col md:w-1/4 gap-4 ">
-          <img  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU" alt="Logo" className="w-20 mb-4" />
-          <p className="text-sm md:text-base">
+        <div className="flex  md:w-1/4 gap-4 ">
+        <div className="">
+        <img  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU" alt="Logo" className="w-18 mb-4" />
+        </div>
+         <div className="mt-2 font-semibold">
+         <p className="text-sm md:text-base">
             Book Appointment with Best Doctor
             <br />
             Green City Hospital
           </p>
+         </div>
         </div>
         
 
@@ -47,6 +51,7 @@ const Footer = () => {
         <p className='mt-4'>&copy; {new Date().getFullYear()}@greencity- All Rights Reserved</p>
       </div>
     </div>
+
     </div>
   )
 }

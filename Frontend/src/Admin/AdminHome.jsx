@@ -158,7 +158,7 @@ const AdminHome = () => {
         {/* Main Content Area */}
         <div className="w-full p-6">
           <Routes>
-            <Route path="/user/userAbout" element={<UserAbout/>}/>
+            
             <Route path="/dashboard" element={<AdminDashboard />} />
             <Route path="/appointment" element={<AdminAppointments />} />
             <Route path="/addDoctor" element={<AddDoctor />} />

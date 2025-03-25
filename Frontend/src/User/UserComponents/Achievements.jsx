@@ -28,11 +28,11 @@ const Achievements = () => {
       </motion.h1>
 
       {/* Achievements Grid */}
-      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 m-2">
+      <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 m-8">
         {hospitalAchievements.map((achievement, index) => (
           <motion.div
             key={index}
-            className="p-4 bg-white shadow-md rounded-lg border-l-4 border-green-500 transition-all cursor-pointer"
+            className="p-4 bg-white shadow-md rounded-lg border-l-4 border-green-500 transition-all cursor-pointer m-4"
             initial={{ opacity: 1, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: index * 0.0001 }}

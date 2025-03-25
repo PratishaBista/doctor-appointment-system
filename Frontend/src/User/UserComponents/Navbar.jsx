@@ -46,7 +46,7 @@ const Navbar = () => {
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out
               ${active === 'Our Services' ? 'text-[#D3D3D3]' : 'text-white hover:text-gray-300'}`}
-            onClick={() => handleNavigation('Our Services', '/user/ourServices')}
+            onClick={() => handleNavigation('Our Services', '/ourServices')}
           >
             Our Services
             <span
@@ -59,7 +59,7 @@ const Navbar = () => {
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out
               ${active === 'Contact Us' ? 'text-[#D3D3D3]' : 'text-white hover:text-gray-300'}`}
-            onClick={() => handleNavigation('Contact Us', '/user/userContact')}
+            onClick={() => handleNavigation('Contact Us', '/userContact')}
           >
             Contact Us
             <span
@@ -72,7 +72,7 @@ const Navbar = () => {
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out
               ${active === 'About Us' ? 'text-[#D3D3D3]' : 'text-white hover:text-gray-300'}`}
-            onClick={() => handleNavigation('About Us', '/user/userAbout')}
+            onClick={() => handleNavigation('About Us', '/userAbout')}
           >
             About Us
             <span
