@@ -111,7 +111,7 @@ const addDoctor = async (req, res) => {
     console.log("Error in addDoctor: ", error);
     return res.json({
       success: false,
-      message: "Internal server error",
+      message: error.message,
     });
   }
 };
