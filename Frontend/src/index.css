@@ -4,3 +4,6 @@
 *{
     font-family: "Open Sans", sans-serif;
 }
+::-webkit-scrollbar{
+    @apply hidden
+  }

@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
-import UserAbout from '../User/UserPages/UserAbout';
 import AddDoctor from './admin-pages/AddDoctor';
 import AdminAppointments from './admin-pages/AdminAppointments';
 import AdminDashboard from './admin-pages/AdminDashboard';
 import AdminDoctorsList from './admin-pages/AdminDoctorsList';
 
 const AdminHome = () => {
-  const navigate = useNavigate();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Mobile sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Initialize the sidebar state
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (location.pathname === "/admin") {
+    if (window.location.pathname === "/admin") {
       navigate("/admin/dashboard");
     }
-  }, [location.pathname, navigate]);
+  }, [navigate]);
 
   const handleItemClick = (index) => {
     const routes = [
@@ -29,17 +28,13 @@ const AdminHome = () => {
     setIsSidebarOpen(false); // Close the sidebar on item click
   };
 
-  useEffect(() => {
-    navigate("/admin/dashboard");
-  }, []);
-
   return (
     <>
       {/* Header */}
       <div className="flex h-[90px] items-center justify-between px-6 border-gray-300 border-2">
         <div className="flex items-center space-x-3">
           <img
-            onClick={() => navigate('/admin/dashboard')}
+            onClick={() => handleItemClick(0)}
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU"
             alt="Logo"
             className="h-12"
@@ -71,16 +66,17 @@ const AdminHome = () => {
             >
               <img
                 className="h-8 w-8 "
-                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUvgwAc6ndzBt6Cd-6ivgXpaGIXwOMDACj3g&s" // Cross icon
+                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUvgwAc6ndzBt6Cd-6ivgXpaGIXwOMDACj3g&s"
                 alt="Close"
               />
             </button>
           </div>
 
+          {/* Sidebar menu items */}
           <div
             onClick={() => handleItemClick(0)}
             className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${
-              activeIndex === 0 ? "border-l-4 border-[#146A5D]" : ""
+              activeIndex === 0 ? 'border-l-4 border-[#146A5D]' : ''
             }`}
           >
             <img
@@ -94,7 +90,7 @@ const AdminHome = () => {
           <div
             onClick={() => handleItemClick(1)}
             className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${
-              activeIndex === 1 ? "border-l-4 border-[#146A5D]" : ""
+              activeIndex === 1 ? 'border-l-4 border-[#146A5D]' : ''
             }`}
           >
             <img
@@ -108,7 +104,7 @@ const AdminHome = () => {
           <div
             onClick={() => handleItemClick(2)}
             className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${
-              activeIndex === 2 ? "border-l-4 border-[#146A5D]" : ""
+              activeIndex === 2 ? 'border-l-4 border-[#146A5D]' : ''
             }`}
           >
             <img
@@ -122,7 +118,7 @@ const AdminHome = () => {
           <div
             onClick={() => handleItemClick(3)}
             className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${
-              activeIndex === 3 ? "border-l-4 border-[#146A5D]" : ""
+              activeIndex === 3 ? 'border-l-4 border-[#146A5D]' : ''
             }`}
           >
             <img
@@ -135,31 +131,25 @@ const AdminHome = () => {
         </div>
 
         {/* Mobile Menu Button */}
-        <div
-          className="md:hidden p-4"
-          onClick={() => setIsSidebarOpen(true)}
-        >
+        <div className="md:hidden p-4" onClick={() => setIsSidebarOpen(true)}>
           <button className="">
-            {
-              isSidebarOpen ? null : (
-                <div className='bg-[#146A5D] text-white rounded-full p-2'>
-                   <img
+            {isSidebarOpen ? null : (
+              <div className="bg-[#146A5D] text-white rounded-full p-2">
+                <img
                   className="h-6 w-6"
                   src="https://img.icons8.com/material-rounded/24/ffffff/menu.png"
                   alt="Menu"
                 />
-                </div>
-               
-              )
-            }
+              </div>
+            )}
           </button>
         </div>
 
         {/* Main Content Area */}
         <div className="w-full p-6">
           <Routes>
-            
             <Route path="/dashboard" element={<AdminDashboard />} />
+            <Route path="/" element={<AdminDashboard />} />
             <Route path="/appointment" element={<AdminAppointments />} />
             <Route path="/addDoctor" element={<AddDoctor />} />
             <Route path="/doctorList" element={<AdminDoctorsList />} />
