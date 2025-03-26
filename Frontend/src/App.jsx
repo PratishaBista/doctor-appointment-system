@@ -1,10 +1,10 @@
 
+import AdminLogin from './Admin/AdminLogin';
 import './App.css';
-import UserHome from './User/UserHome';
 function App() {
   return (
     <>
-<UserHome/>
+<AdminLogin/>
 
     </>
   )}

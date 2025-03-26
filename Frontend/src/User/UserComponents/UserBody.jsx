@@ -37,18 +37,20 @@ const UserBody = () => {
       {/* Hero Section with Transparent Image */}
       <div className="relative w-[100vw] flex justify-center mt-6">
         <img 
-          className="w-[87vw] h-[500px] md:h-[570px] object-cover rounded-2xl shadow-lg opacity-90"
-          src="https://www.shutterstock.com/image-photo/cooperation-people-medical-community-teamwork-600nw-1971770123.jpg" 
+          className="w-[87vw] h-[500px] md:h-[570px] object-cover rounded-2xl shadow-lg "
+          src="https://img.freepik.com/free-photo/close-up-doctor-with-copy-space_23-2148814244.jpg?t=st=1742957571~exp=1742961171~hmac=fe85ae5ec88e437032dd745630d9162f65bff4b7dff1a0713729ae8ae0c3001e&w=1380"
           alt="Medical Team"
         />
-        <button className="absolute bottom-26  left-1/2 transform -translate-x-1/2 px-8 py-4 bg-[#146A5D] text-white rounded-xl hover:bg-[#0F5247] transition-all text-lg md:text-2xl shadow-md border-slate-500">
-          Book Appointment
-        </button>
+        <div className="absolute top-18 right-20 transform -translate-x-1/2  text-white rounded-xl  transition-all text-lg md:text-2xl opacity-80">
+          <h1 className='text-black text-4xl font-semibold w-[500px]'>All Your Health concern in a single Platform</h1>
+          <button className=' mt-4  hover:bg-[#0F5247] border-2 border-slate-100 px-8 py-4 bg-slate-300 rounded-xl shadow-2xl text-black'>Book Appointment</button>
+
+        </div>
       </div>
 
       {/* Services Section */}
       <div className="w-full max-w-5xl mt-8 p-6">
-        <h1 className="text-3xl md:text-4xl font-bold underline text-center text-gray-900">
+        <h1 className="text-3xl md:text-4xl  underline text-center text-gray-900">
           Our Services
         </h1>
       </div>
