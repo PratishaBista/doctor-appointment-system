@@ -1,6 +1,6 @@
 // API for adding doctor
 import validator from "validator";
-import bycrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import jwt from "jsonwebtoken";
@@ -63,18 +63,18 @@ const addDoctor = async (req, res) => {
     }
 
     // validation for password (length and special characters needed)
-    if (password.length < 8 || !/[!@#$%^&*]/.test(password)) {
+    if (password.length < 8 ) {
       return res.json({
         success: false,
         message:
-          "Password must be at least 8 characters long and contain special characters",
+          "Password must be at least 8 characters long",
       });
     }
 
     // hashing the password
     const saltRounds = 10;
-    const salt = await bycrypt.genSalt(saltRounds);
-    const hashedPassword = await bycrypt.hash(password, salt);
+    const salt = await bcrypt.genSalt(saltRounds);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     //upload image to cloudinary
     const result = await cloudinary.uploader.upload(imageFile.path, {
@@ -123,7 +123,8 @@ const loginAdmin = async (req, res) => {
     if (
       email === process.env.ADMIN_EMAIL &&
       password === process.env.ADMIN_PASSWORD
-    ) { const token = jwt.sign(email+password, process.env.JWT_SECRET);
+    ) {
+      const token = jwt.sign(email + password, process.env.JWT_SECRET);
       res.json({ success: true, message: "Admin logged in", token });
     } else {
       res.json({ success: false, message: "Invalid email or password" });
@@ -134,4 +135,15 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-export { addDoctor, loginAdmin };
+//API to get all doctors for admin
+const allDoctors = async (req, res) => {
+  try {
+    const doctors = await doctorModel.find({}).select("-password");
+    res.json({ success: true, doctors });
+  } catch (error) {
+    console.log("Error in allDoctors: ", error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { addDoctor, loginAdmin, allDoctors};
