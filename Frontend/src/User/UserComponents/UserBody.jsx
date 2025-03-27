@@ -31,7 +31,7 @@ const UserBody = () => {
       
       {/* Hero Title */}
       <h1 className="text-3xl md:text-5xl font-bold leading-tight text-gray-800 max-w-3xl mx-auto text-center">
-        Your Health, Our Priority 
+        Your Health Our Priority 
       </h1>
 
       {/* Hero Section with Transparent Image */}
@@ -43,7 +43,7 @@ const UserBody = () => {
         />
         <div className="absolute top-18 right-20 transform -translate-x-1/2  text-white rounded-xl  transition-all text-lg md:text-2xl opacity-80">
           <h1 className='text-black text-4xl font-semibold w-[500px]'>All Your Health concern in a single Platform</h1>
-          <button className=' mt-4  hover:bg-[#0F5247] border-2 border-slate-100 px-8 py-4 bg-slate-300 rounded-xl shadow-2xl text-black'>Book Appointment</button>
+          <button className=' mt-4  hover:bg-[#0F5247] border-2 border-slate-100 px-8 py-4 bg-slate-200 rounded-xl shadow-2xl text-black'>Book Appointment</button>
 
         </div>
       </div>

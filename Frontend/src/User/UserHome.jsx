@@ -4,7 +4,9 @@ import { Route, Routes } from 'react-router-dom';
 import Footer from './UserComponents/Footer';
 import HomeBody from './UserComponents/HomeBody';
 import Navbar from './UserComponents/Navbar';
+import MyAppointment from './UserPages/MyAppointment';
 import OurServices from './UserPages/OurServices';
+import SelectedSpeciality from './UserPages/SelectedSpeciality';
 import UserAbout from './UserPages/UserAbout';
 import UserContact from './UserPages/UserContact';
 
@@ -17,6 +19,8 @@ function UserHome() {
         <Route path="/ourServices" element={<OurServices />} />
         <Route path="/userAbout" element={<UserAbout />} />
         <Route path="/userContact" element={<UserContact />} />
+        <Route path="/selectedSpeciality" element={<SelectedSpeciality/>}/>
+        <Route path="/my-appointment/:docId" element={<MyAppointment />} />
       </Routes>
       <Footer />
     </>

@@ -1,4 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../../context/AppContext';
+import UserAllDoctors from './UserAllDoctors';
 
   const OurServices = () => {
    const doctorSpecialties = [
@@ -63,7 +66,9 @@ import React from 'react';
       img: "https://cdn-icons-png.flaticon.com/512/4006/4006267.png"
     }
   ];
-
+const {selectedSpecialty,setSelectedSpecialty}=useContext(AppContext)
+console.log(selectedSpecialty)
+const navigate =useNavigate()
   return (
     <div className="p-6 mt-8">
       <h1 className="text-3xl font-bold underline mb-6 text-center">Our Services</h1>
@@ -71,6 +76,10 @@ import React from 'react';
       <div className="flex flex-wrap gap-6 justify-center ">
         {doctorSpecialties.map((specialty, index) => (
           <div
+          onClick={()=>{setSelectedSpecialty(specialty)
+              navigate("/selectedSpeciality")
+              scrollTo(0,0)
+          }}
             key={index}
             className="transform hover:scale-105 transition duration-500 ease-in-out bg-white shadow-lg rounded-lg p-4 w-1/3 sm:w-1/4 md:w-1/6 hover:shadow-2xl"
           >
@@ -86,6 +95,7 @@ import React from 'react';
           </div>
         ))}
       </div>
+      <UserAllDoctors/>
     </div>
   );
 }
