@@ -20,21 +20,6 @@ const addDoctor = async (req, res) => {
     } = req.body;
     const imageFile = req.file;
 
-    // console.log(
-    //   {
-    //     name,
-    //     email,
-    //     password,
-    //     speciality,
-    //     degree,
-    //     experience,
-    //     about,
-    //     fees,
-    //     address,
-    //   },
-    //   imageFile
-    // );
-
     // checking for all data to add the doctor
     if (
       !name ||
@@ -46,7 +31,6 @@ const addDoctor = async (req, res) => {
       !about ||
       !fees ||
       !address
-      // !imageFile
     ) {
       return res.json({
         success: false,
@@ -63,11 +47,10 @@ const addDoctor = async (req, res) => {
     }
 
     // validation for password (length and special characters needed)
-    if (password.length < 8 ) {
+    if (password.length < 8) {
       return res.json({
         success: false,
-        message:
-          "Password must be at least 8 characters long",
+        message: "Password must be at least 8 characters long",
       });
     }
 
@@ -146,4 +129,4 @@ const allDoctors = async (req, res) => {
   }
 };
 
-export { addDoctor, loginAdmin, allDoctors};
+export { addDoctor, loginAdmin, allDoctors };
