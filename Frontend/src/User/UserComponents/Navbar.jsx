@@ -36,7 +36,7 @@ const Navbar = () => {
         {/* Logo */}
         <div className="flex items-center space-x-3">
           <img
-            className="h-[45px] w-[45px] rounded-full cursor-pointer transition transform hover:scale-105"
+            className="h-[45px] w-[45px] rounded-full cursor-pointer transition transform"
             onClick={() => {
               navigate("/");
               window.scrollTo(0, 0);
@@ -108,7 +108,8 @@ const Navbar = () => {
                 <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md py-2 z-50">
                   <p onClick={()=>navigate("/profile")}
                   className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</p>
-                  <p className="px-4 py-2 hover:bg-gray-100 cursor-pointer">My Appointments</p>
+                  <p onClick={()=>navigate('bookedAppointment')}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer">My Appointments</p>
                   <p
                     onClick={() => navigate("/auth")}
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
@@ -125,7 +126,7 @@ const Navbar = () => {
             >
               Create an Account
             </button>
-          )}
+          )}.
         </div>
       </div>
     </div>

@@ -30,7 +30,7 @@ const SelectedSpeciality = () => {
             scrollTo(0,0)
         }} className="mr-4">
           <img
-            className="h-10 w-10 border-2 border-gray-300 rounded-full p-1 hover:shadow-md transition"
+            className="h-10 w-10  rounded-full p-1 hover:shadow-md transition"
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz_Za2B3Wx4i28VoxCXNFt2fE0trwLSifnbg&s"
             alt="Go Back"
           />
