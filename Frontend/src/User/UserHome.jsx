@@ -3,6 +3,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Footer from './UserComponents/Footer';
 import HomeBody from './UserComponents/HomeBody';
+import MyProfile from './UserComponents/MyProfile';
 import Navbar from './UserComponents/Navbar';
 import MyAppointment from './UserPages/MyAppointment';
 import OurServices from './UserPages/OurServices';
@@ -19,6 +20,7 @@ function UserHome() {
         <Route path="/ourServices" element={<OurServices />} />
         <Route path="/userAbout" element={<UserAbout />} />
         <Route path="/userContact" element={<UserContact />} />
+        <Route path="/profile" element={<MyProfile />} />
         <Route path="/selectedSpeciality" element={<SelectedSpeciality/>}/>
         <Route path="/my-appointment/:docId" element={<MyAppointment />} />
       </Routes>

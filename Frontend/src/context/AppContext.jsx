@@ -2,7 +2,22 @@ import { createContext, useState } from "react";
 
 
 export const AppContext=createContext()
+
 const AppContextProvider=(props)=>{
+    const [userData,setUserData]=useState({
+        name:"Siddhant Shrestha",
+        email:"siddhantstha10@gmail.com",
+        image:"https://cdn-icons-png.flaticon.com/512/3135/3135715.png",
+        number:"090909",
+        address:{
+            line1:"balaju",
+            line2:"kathmandu"
+        },
+        gender:"male",
+        dob:"2062-11-17"
+
+    })
+    const [account,setAccount]=useState(false)
     const AllDoctors = [
         {
             id:"01",
@@ -129,7 +144,8 @@ const AppContextProvider=(props)=>{
 
     const value={
         AllDoctors,
-        selectedSpecialty,setSelectedSpecialty
+        selectedSpecialty,setSelectedSpecialty,account,setAccount,
+        userData,setUserData
         
     }
     return(

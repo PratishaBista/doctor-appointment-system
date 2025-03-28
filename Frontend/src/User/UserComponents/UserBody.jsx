@@ -41,9 +41,11 @@ const UserBody = () => {
           src="https://img.freepik.com/free-photo/close-up-doctor-with-copy-space_23-2148814244.jpg?t=st=1742957571~exp=1742961171~hmac=fe85ae5ec88e437032dd745630d9162f65bff4b7dff1a0713729ae8ae0c3001e&w=1380"
           alt="Medical Team"
         />
-        <div className="absolute top-18 right-20 transform -translate-x-1/2  text-white rounded-xl  transition-all text-lg md:text-2xl opacity-80">
+        <div className="absolute top-29 right-24 transform -translate-x-1/2  text-white rounded-xl  transition-all text-lg md:text-2xl opacity-80">
           <h1 className='text-black text-4xl font-semibold w-[500px]'>All Your Health concern in a single Platform</h1>
-          <button className=' mt-4  hover:bg-[#0F5247] border-2 border-slate-100 px-8 py-4 bg-slate-200 rounded-xl shadow-2xl text-black'>Book Appointment</button>
+          <button
+          onClick={()=>navigate("/ourServices")}
+          className=' mt-4  hover:bg-[#0F5247] border-2 border-slate-100 px-8 py-4 bg-slate-200 rounded-xl shadow-2xl text-black'>Book Appointment</button>
 
         </div>
       </div>
