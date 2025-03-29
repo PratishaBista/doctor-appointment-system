@@ -1,19 +1,20 @@
-import { useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
-import AdminHome from './AdminMain/AdminHome';
-import AdminLogin from './AdminMain/AdminLogin';
-import './App.css';
+import { Route, Routes, useLocation } from "react-router-dom";
+import AdminHome from "./AdminMain/AdminHome";
+import AdminLogin from "./AdminMain/AdminLogin";
+
 function App() {
-  const [count, setCount] = useState(0)
+  const location = useLocation();
 
   return (
     <>
-    <Routes>
-      <Route path="/login" element={<AdminLogin/>}/>
-    </Routes>
-    <AdminHome/>
+      <Routes>
+        <Route path="/login" element={<AdminLogin />} />
+      </Routes>
+
+      {/* Render AdminHome only if the path is NOT "/login" */}
+      {location.pathname !== "/login" && <AdminHome />}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
