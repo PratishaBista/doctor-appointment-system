@@ -3,6 +3,8 @@ import bcrypt from "bcrypt";
 import userModel from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
+import doctorModel from "../models/doctorModel.js";
+import appointmentModel from "../models/appointmentModel.js";
 
 //api to register user
 const registerUser = async (req, res) => {
@@ -121,4 +123,79 @@ const updateProfile = async (req, res) => {
   }
 };
 
-export { registerUser, loginUser, getProfile, updateProfile };
+// API to book appointment
+const bookAppointment = async (req, res) => {
+  try {
+    const { userId, doctorId, slotDate, slotTime } = req.body;
+    const doctorData = await doctorModel.findById(doctorId).select("-password");
+    if (!doctorData.available) {
+      return res.json({ success: false, message: "Doctor not found" });
+    }
+
+    let slots_booked = doctorData.slots_booked;
+    //checking if the slot is available or not
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        return res.json({ success: false, message: "Slot not available" });
+      } else {
+        slots_booked[slotDate].push(slotTime);
+      }
+    } else {
+      slots_booked[slotDate] = [];
+      slots_booked[slotDate].push(slotTime);
+    }
+
+    const userData = await userModel.findById(userId).select("-password");
+
+    delete doctorData.slots_booked;
+
+    const appointmentData = {
+      doctorId,
+      userId,
+      slotDate,
+      slotTime,
+      userData,
+      doctorData,
+      amount: doctorData.fees,
+      date: Date.now(),
+    };
+
+    const newAppointment = new appointmentModel(appointmentData);
+    await newAppointment.save();
+
+    // save new slots booked in doctor's data
+    await doctorModel.findByIdAndUpdate(doctorId, {
+      slots_booked,
+    });
+
+    res.json({
+      success: true,
+      message: "Appointment booked successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// API to get user appointments for frontend
+const listAppointment = async (req, res) => {
+  try {
+    const { userID } = req.body;
+    const appointments = await appointmentModel.find({ userID });
+
+    res.json({ success: true, appointments });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export {
+  registerUser,
+  loginUser,
+  getProfile,
+  updateProfile,
+  bookAppointment,
+  listAppointment,
+};
