@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../../context/AppContext';
 
 const UserBody = () => {
   const navigate =useNavigate()
@@ -25,6 +26,7 @@ const UserBody = () => {
       img:"https://cdn-icons-png.flaticon.com/512/12024/12024688.png"
     },
   ];
+  const {selectedSpecialty,setSelectedSpecialty}=useContext(AppContext)
 
   return (
     <div className="flex flex-col items-center px-4 mt-10">
@@ -62,6 +64,11 @@ const UserBody = () => {
         {doctorSpecialties.map((specialty, index) => (
           <div
             key={index}
+            onClick={()=>{setSelectedSpecialty(specialty)
+              console.log("clicked")
+              navigate("/selectedSpeciality")
+              scrollTo(0,0)
+          }}
             className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center transform hover:scale-105 transition duration-500 hover:shadow-2xl"
           >
             <img

@@ -3,10 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 
 const Navbar = () => {
-  const {userData}=useContext(AppContext)
+  const { userData, account } = useContext(AppContext);
   const [active, setActive] = useState("Home");
   const navigate = useNavigate();
-  const { account } = useContext(AppContext);
   const [dropDown, setDropDown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -32,6 +31,9 @@ const Navbar = () => {
   return (
     <div className="bg-white w-full shadow-md">
       <div className="max-w-[2200px] mx-auto flex justify-between items-center px-6 py-4">
+      {/* <button onClick={() => localStorage.clear()} className="bg-red-500 text-white px-4 py-2 rounded">
+  Clear Local Storage
+</button> */}
         
         {/* Logo */}
         <div className="flex items-center space-x-3">
@@ -44,7 +46,7 @@ const Navbar = () => {
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU"
             alt="Logo"
           />
-          <p className="text-2xl font-bold text-[#146A5D] transition duration-300 transform hover:scale-110 hover:text-gray-400">
+          <p className="text-2xl font-bold text-[#146A5D] transition duration-300 transform hover:text-gray-400">
             Green City Hospital
           </p>
         </div>
@@ -90,28 +92,50 @@ const Navbar = () => {
             <div className="relative" ref={dropdownRef}>
               <div className="flex items-center">
                 <img
-                  onClick={()=>navigate('/profile')}
-                  className="h-10 w-10 rounded-full"
+                  onClick={() => navigate("/profile")}
+                  className="h-10 w-10 rounded-full cursor-pointer"
                   src={userData.image}
                   alt="Profile"
                 />
+
                 <img
-                  onClick={() => setDropDown((prev) => !prev)}
+                   onClick={() => setDropDown((prev) => !prev)}
                   className="h-8 ml-2 mt-1 cursor-pointer"
                   src="https://www.svgrepo.com/show/345223/three-dots-vertical.svg"
                   alt="Menu"
                 />
-              </div>
+                </div>
+                
+                {console.log(dropDown)}
+
 
               {/* Dropdown Menu */}
               {dropDown && (
-                <div className="absolute right-0 mt-2 w-48 bg-white shadow-md rounded-md py-2 z-50">
-                  <p onClick={()=>navigate("/profile")}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer">Profile</p>
-                  <p onClick={()=>navigate('bookedAppointment')}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer">My Appointments</p>
+                <div className="absolute right-0 mt-2 w-48 shadow-md rounded-md py-2 z-50 bg-white">
+                  {console.log("hwow")}
                   <p
-                    onClick={() => navigate("/auth")}
+                    onClick={() => {
+                      navigate("/profile");
+                      setDropDown(false);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    Profile
+                  </p>
+                  <p
+                    onClick={() => {
+                      navigate("/bookedAppointment");
+                      setDropDown(false);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    My Appointments
+                  </p>
+                  <p
+                    onClick={() => {
+                      navigate("/auth");
+                      setDropDown(false);
+                    }}
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
                   >
                     Logout
@@ -126,7 +150,7 @@ const Navbar = () => {
             >
               Create an Account
             </button>
-          )}.
+          )}
         </div>
       </div>
     </div>

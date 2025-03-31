@@ -22,7 +22,7 @@ function UserHome() {
         <Route path="/userAbout" element={<UserAbout />} />
         <Route path="/userContact" element={<UserContact />} />
         <Route path="/profile" element={<MyProfile />} />
-        <Route path="/bookedAppointment" element={<BookedAppointment />} />
+        <Route path="/bookedAppointment/:docId" element={<BookedAppointment />} />
         <Route path="/selectedSpeciality" element={<SelectedSpeciality/>}/>
         <Route path="/my-appointment/:docId" element={<MyAppointment />} />
       </Routes>

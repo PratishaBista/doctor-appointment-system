@@ -6,11 +6,11 @@ const UserAuth = () => {
   const [authMode, setAuthMode] = useState("login"); // "login" or "signup"
   const [state, setState] = useState("");
   const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("sidd12@gmail.com");
+  const [password, setPassword] = useState("SiddhantStha");
   const [errors, setErrors] = useState({});
-  const navigate=useNavigate()
-  const {account,setAccount}=useContext(AppContext)
+  const navigate = useNavigate();
+  const { account, setAccount } = useContext(AppContext);
 
   // Email validation
   const validateEmail = (email) => {
@@ -21,6 +21,10 @@ const UserAuth = () => {
   // Password validation
   const validatePassword = (password) => {
     return password.length >= 6; // Password should be at least 6 characters long
+  };
+
+  const validateFullName = (fullName) => {
+    return fullName.length >= 6;
   };
 
   const handleSubmit = (e) => {
@@ -48,9 +52,19 @@ const UserAuth = () => {
       setPassword("");
       setErrors({});
     }
-    if(email=="sidd12@gmail.com" && password ==="Siddhant10##"){
-      navigate("/")
-      setAccount(true)
+
+    // Basic validation and login check
+    if (email === "sidd12@gmail.com" && password === "SiddhantStha") {
+      navigate("/");
+      
+      setAccount(true);
+    }
+
+    if (validateEmail(email) && validatePassword(password) && validateFullName(fullName)) {
+      navigate("/");
+      console.log("entered")
+      setAccount(true);
+      // Optionally, store user data here for future use
     }
   };
 
@@ -61,7 +75,7 @@ const UserAuth = () => {
         className="bg-white p-8 rounded-xl shadow-lg w-96 border border-gray-200"
       >
         <h2 className="text-2xl font-bold text-center mb-6 text-[#146A5D]">
-          {authMode === "login" ? "Login" : "Sign Up"} 
+          {authMode === "login" ? "Login" : "Sign Up"}
         </h2>
 
         {authMode === "signup" && (
@@ -117,7 +131,6 @@ const UserAuth = () => {
               <>Already have an account? <span onClick={() => setAuthMode("login")} className="text-[#146A5D] font-medium cursor-pointer hover:underline">Login</span></>
             )}
           </p>
-
         </div>
       </form>
     </div>

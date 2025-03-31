@@ -1,20 +1,27 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 
 const MyAppointment = () => {
   const { docId } = useParams();
-  const { AllDoctors } = useContext(AppContext);
+  const { AllDoctors,slotTime, setSlotTime,slotIndex, setSlotIndex,daysOfWeek,
+    selectedDate, setSelectedDate,selectedMonth, setSelectedMonth
+   } = useContext(AppContext);
   const [docInfo, setDocInfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
-  const [slotIndex, setSlotIndex] = useState(0);
-  const [slotTime, setSlotTime] = useState(null);
 
-  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+
+  const navigate=useNavigate()
+  const [selectedDocId,setSelectedDocId]=useState()
+
+
+
 
   useEffect(() => {
     const foundDoc = AllDoctors.find((doc) => doc.id.toString() === docId);
     setDocInfo(foundDoc || null);
+    setSelectedDocId(docId)
+    console.log(foundDoc)
   }, [docId, AllDoctors]);
 
   const getAvailableSlots = () => {
@@ -60,6 +67,22 @@ const MyAppointment = () => {
     return <p className="text-center text-gray-600 mt-10">Doctor not found...</p>;
   }
 
+  const handleBooking=()=>{
+    let existingBookings = JSON.parse(localStorage.getItem("bookedDoctors")) || [];
+
+    // Avoid duplicate bookings for the same doctor
+    // const isAlreadyBooked = existingBookings.some((doc) => doc.id === docInfo.id);
+    // if (!isAlreadyBooked) {
+      existingBookings.push(docInfo);
+      localStorage.setItem("bookedDoctors", JSON.stringify(existingBookings));
+
+
+      navigate(`/bookedAppointment/${selectedDocId}`, { state: { docId: selectedDocId } });
+    // }
+    
+  }
+  console.log(selectedDocId)
+
   return (
     <div className="p-6">
       {/* Doctor Details */}
@@ -89,10 +112,16 @@ const MyAppointment = () => {
         {/* Date Selection */}
         <div className="flex gap-3 overflow-x-auto mt-4">
           {docSlots.map((item, index) => (
+            
             <div
               key={index}
-              onClick={() => setSlotIndex(index)}
-              className={`text-center py-4 px-6 rounded-full cursor-pointer 
+              onClick={() => {setSlotIndex(index)
+                setSelectedDate(item[0] ? item[0].datetime.getDate() : null);
+                if (item[0]) {
+                  setSelectedMonth(item[0].datetime.getMonth() + 1); // Months are 0-based, so add 1
+                }
+              }}
+              className={`text-center py-4 px-6 rounded-full cursor-pointer
               ${slotIndex === index ? "bg-green-900 text-white" : "border"} transition`}
             >
               <p className="text-sm">{item[0] && daysOfWeek[item[0].datetime.getDay()]}</p>
@@ -108,8 +137,8 @@ const MyAppointment = () => {
               <p
                 key={index}
                 onClick={() => setSlotTime(item.time)}
-                className={`px-5 py-2 rounded-full cursor-pointer 
-                ${item.time === slotTime ? "bg-[#146A5D] text-white" : "border"} transition`}
+                className={`px-5 py-2 rounded-full cursor-pointer
+                ${item.time === slotTime ? "bg-[#146A5D] text-white" : "border-2"} transition`}
               >
                 {item.time}
               </p>
@@ -118,7 +147,8 @@ const MyAppointment = () => {
 
         {/* Book Button */}
         <div className="flex justify-center">
-          <button className="bg-[#146A5D] text-white px-6 py-3 rounded-full mt-6 hover:bg-green-900 transition">
+          <button   onClick={() =>handleBooking()}
+          className="bg-[#146A5D] text-white px-6 py-3 rounded-full mt-6 hover:bg-green-900 transition">
             Book an appointment
           </button>
         </div>

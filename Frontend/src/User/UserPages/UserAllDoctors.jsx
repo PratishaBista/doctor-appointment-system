@@ -19,7 +19,7 @@ const UserAllDoctors = () => {
           <motion.div
           onClick={() => navigate(`/my-appointment/${item.id}`)}
             key={index}
-            className="border border-gray-300 shadow-lg rounded-xl p-6 bg-white transition-all duration-300 hover:bg-[#146A5D] hover:text-white"
+            className="border border-gray-300 shadow-lg rounded-xl p-6 bg-white transition-all duration-300 hover:bg-slate-50 hover:text-black m-2"
             whileHover={{ scale: 1.05 }}
           >
             <img
