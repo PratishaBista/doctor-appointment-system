@@ -191,6 +191,50 @@ const listAppointment = async (req, res) => {
   }
 };
 
+// API to cancel the appointment
+const cancelAppointment = async (req, res) => {
+  try {
+    const { userId, appointmentId } = req.body;
+    const appointmentData = await appointmentModel.findById(appointmentId);
+
+    // verify appointment user
+    if (appointmentData.userId !== userId) {
+      return res.json({
+        success: false,
+        message: "You are not authorized to cancel this appointment",
+      });
+    }
+
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      cancelled: true,
+    });
+    // making the doctor slots available
+    const { doctorId, slotDate, slotTime } = appointmentData;
+    const doctorData = await doctorModel.findById(doctorId);
+    let slots_booked = doctorData.slots_booked;
+    slots_booked[slotDate] = slots_booked[slotDate].filter(
+      (e) => e !== slotTime
+    );
+
+    await doctorModel.findByIdAndUpdate(doctorId, {
+      slots_booked,
+    });
+
+    res.json({ success: true, message: "Appointment cancelled successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// const esewaPaymentInstance = new esewaPayment({
+//   key_id: '',
+//   key_secret: '',
+// });
+
+// // API to make payment
+// const esewaPayment = async (req, res) => {};
+
 export {
   registerUser,
   loginUser,
@@ -198,4 +242,5 @@ export {
   updateProfile,
   bookAppointment,
   listAppointment,
+  cancelAppointment,
 };
