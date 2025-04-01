@@ -1,69 +1,98 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AppContext } from '../../context/AppContext';
 
 const UserBody = () => {
+  const navigate =useNavigate()
   const doctorSpecialties = [
     {
       name: "Cardiology",
-      description: "Specializes in the diagnosis and treatment of heart conditions, including heart attacks, arrhythmias, and other cardiovascular diseases.",
+      description: "Specializes in heart conditions such as heart attacks, arrhythmias, and cardiovascular diseases.",
       img: "https://www.shutterstock.com/image-vector/heart-icon-flat-style-vector-600nw-2471170029.jpg"
     },
     {
       name: "Neurology",
-      description: "Focuses on the nervous system, including the brain, spinal cord, and peripheral nerves, treating disorders like epilepsy, Alzheimer's, and Parkinson's disease.",
+      description: "Focuses on brain and nervous system disorders like epilepsy, Alzheimer's, and Parkinson's disease.",
       img: "https://c8.alamy.com/comp/2NKPG2Y/neurology-icon-monochrome-simple-sign-from-medical-speialist-collection-neurology-icon-for-logo-templates-web-design-and-infographics-2NKPG2Y.jpg"
     },
     {
       name: "Orthopedics",
-      description: "Deals with the treatment of bones, joints, ligaments, tendons, and muscles, including fractures, arthritis, and sports injuries.",
+      description: "Treats bones, joints, ligaments, and muscles, including fractures, arthritis, and sports injuries.",
       img: "https://cdn-icons-png.flaticon.com/512/9340/9340043.png"
     },
     {
       name: "Psychiatry",
-      description: "Focuses on the diagnosis, treatment, and prevention of mental health disorders such as depression, anxiety, schizophrenia, and bipolar disorder.",
+      description: "Deals with mental health disorders such as depression, anxiety, schizophrenia, and bipolar disorder.",
       img:"https://cdn-icons-png.flaticon.com/512/12024/12024688.png"
-    },]
-  return (
-    <div className='mt-16 flex flex-col items-center px-4'>
-      <h1 className='text-5xl font-bold text-center max-w-3xl leading-tight text-gray-800'>
-        Your Health, Our Priority – Trusted Doctors, Caring for You
-      </h1>
-      
-      <div className='mt-6 flex flex-col items-center space-y-4 sm:flex-row sm:space-y-0 sm:space-x-6'>
-        <button className='bg-[#146A5D] hover:bg-green-900 text-white text-xl font-semibold px-6 py-3 rounded-lg shadow-md transition-all'>
-          Book an Appointment
-        </button>
-        
-        <h4 className='text-2xl font-semibold text-gray-700 text-center sm:text-left'>
-          - All your health concerns in a single platform
-        </h4>
-      </div>
-      <div className="">
-      <div className="p-6 mt-8">
-      <h1 className="text-4xl font-bold underline mb-6 text-center mt-2">Our Services</h1>
+    },
+  ];
+  const {selectedSpecialty,setSelectedSpecialty}=useContext(AppContext)
 
-      <div className="flex flex-wrap gap-6 justify-center ">
+  return (
+    <div className="flex flex-col items-center px-4 mt-10">
+      
+      {/* Hero Title */}
+      <h1 className="text-3xl md:text-5xl font-bold leading-tight text-gray-800 max-w-3xl mx-auto text-center">
+        Your Health Our Priority 
+      </h1>
+
+      {/* Hero Section with Transparent Image */}
+      <div className="relative w-[100vw] flex justify-center mt-6">
+        <img 
+          className="w-[87vw] h-[500px] md:h-[570px] object-cover rounded-2xl shadow-lg "
+          src="https://img.freepik.com/free-photo/close-up-doctor-with-copy-space_23-2148814244.jpg?t=st=1742957571~exp=1742961171~hmac=fe85ae5ec88e437032dd745630d9162f65bff4b7dff1a0713729ae8ae0c3001e&w=1380"
+          alt="Medical Team"
+        />
+        <div className="absolute top-29 right-24 transform -translate-x-1/2  text-white rounded-xl  transition-all text-lg md:text-2xl opacity-80">
+          <h1 className='text-black text-4xl font-semibold w-[500px]'>All Your Health concern in a single Platform</h1>
+          <button
+          onClick={()=>navigate("/ourServices")}
+          className=' mt-4  hover:bg-[#0F5247] border-2 border-slate-100 px-8 py-4 bg-slate-200 rounded-xl shadow-2xl text-black'>Book Appointment</button>
+
+        </div>
+      </div>
+
+      {/* Services Section */}
+      <div className="w-full max-w-5xl mt-8 p-6">
+        <h1 className="text-3xl md:text-4xl  underline text-center text-gray-900">
+          Our Services
+        </h1>
+      </div>
+
+      {/* Doctor Specialties Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6 w-full max-w-6xl px-6">
         {doctorSpecialties.map((specialty, index) => (
           <div
             key={index}
-            className="transform hover:scale-105 transition duration-500 ease-in-out bg-white shadow-lg rounded-lg p-4 w-1/3 sm:w-1/4 md:w-1/6 hover:shadow-2xl"
+            onClick={()=>{setSelectedSpecialty(specialty)
+              console.log("clicked")
+              navigate("/selectedSpeciality")
+              scrollTo(0,0)
+          }}
+            className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center transform hover:scale-105 transition duration-500 hover:shadow-2xl"
           >
-            <div className="flex justify-center mb-4 m-2">
-              <img
-                className="rounded-lg w-32 h-32 object-cover"
-                src={specialty.img}
-                alt={specialty.name}
-              />
-            </div>
+            <img
+              className="rounded-lg w-32 h-32 object-cover mb-4"
+              src={specialty.img}
+              alt={specialty.name}
+            />
             <h2 className="text-xl font-bold text-center mb-2">{specialty.name}</h2>
             <p className="text-gray-600 text-sm text-center">{specialty.description}</p>
           </div>
         ))}
       </div>
-    </div>
-      </div>
-      <button className='bg-[#146A5D] hover:bg-green-900 text-white text-xl font-semibold px-6 py-3 rounded-lg shadow-md transition-all mt-3'>
-          More
-        </button>
+
+      {/* More Button */}
+      <button
+  className="mt-8 bg-[#146A5D] hover:bg-green-900 text-white text-xl font-semibold px-8 py-3 rounded-lg shadow-md  transition-transform transform active:scale-95 active:translate-y-1"
+  onClick={() => {
+    navigate("/ourServices");
+    window.scrollTo(0, 0); // Fixed scroll function name
+  }}
+>
+  More
+</button>
+
     </div>
   );
 };

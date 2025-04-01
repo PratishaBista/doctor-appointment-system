@@ -20,7 +20,7 @@ const doctorSchema = z.object({
 
 const AddDoctor = () => {
   const [file, setFile] = useState(null);
-  
+
   // useForm hook with Zod validation
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(doctorSchema),
@@ -51,8 +51,8 @@ const AddDoctor = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="h-[80vh] w-[70vw] p-8 bg-white shadow-lg rounded-lg overflow-y-auto">
-      <h2 className="text-xl font-semibold mb-4 text-[#146A5D]">Add New </h2>
-
+      <h2 className="text-xl font-semibold mb-4 text-[#146A5D]">Add New Doctor</h2>
+      
       {/* Upload Picture */}
       <div className="flex items-center mb-4">
         <input
@@ -60,9 +60,9 @@ const AddDoctor = () => {
           onChange={handleFileChange}
           className="border-2 border-[#146A5D] p-2 rounded-lg"
         />
-        <p className="ml-4 text-[#146A5D]">Upload </p>
+        <p className="ml-4 text-[#146A5D]">Upload Picture</p>
       </div>
-
+      
       {/* Name */}
       <div className="flex flex-col mb-4">
         <label className="font-medium text-gray-700">Name</label>
@@ -73,7 +73,7 @@ const AddDoctor = () => {
         />
         {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
       </div>
-
+      
       {/* Speciality */}
       <div className="flex flex-col mb-4">
         <label className="font-medium text-gray-700">Speciality</label>
@@ -84,7 +84,7 @@ const AddDoctor = () => {
         />
         {errors.speciality && <p className="text-red-500 text-sm">{errors.speciality.message}</p>}
       </div>
-
+      
       {/* Password and Email */}
       <div className="flex space-x-4 mb-4">
         <div className="flex flex-col w-1/2">
@@ -159,7 +159,7 @@ const AddDoctor = () => {
         />
         {errors.about && <p className="text-red-500 text-sm">{errors.about.message}</p>}
       </div>
-
+      
       {/* Submit Button */}
       <div className="flex justify-end">
         <button type="submit" className="bg-[#146A5D] text-white px-6 py-2 rounded-full hover:bg-[#0F5247] transition">

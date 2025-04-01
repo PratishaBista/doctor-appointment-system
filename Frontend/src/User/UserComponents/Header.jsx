@@ -13,18 +13,18 @@ const Header = () => {
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU"
           alt="Logo"
         />
-        <p className="text-xl font-bold text-gray-800 ml-4">Green City Hospital</p>
+        <p className="text-xl font-bold text-gray-800 ml-4 ">Green City Hospital</p>
       </div>
 
       <div className="flex items-center font-bold text-black">
         <h1 className='text-2xl'>Email: greencity@gmail.com</h1>
       </div>
-
-      <div className="flex items-center">
-        <button className="text-xl font-bold bg-[#146A5D] text-white rounded-full py-2 px-6 hover:bg-[#0F5247] transition ease-in-out">
-          Sign Up
-        </button>
+      <div className="flex items-center font-bold text-black">
+        <h1 className='text-xl border rounded-full p-4'>Sign up </h1>
       </div>
+
+      
+
     </div>
   );
 }

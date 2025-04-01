@@ -1,92 +1,156 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../../context/AppContext";
 
 const Navbar = () => {
-  const [active, setActive] = useState('Home');
+  const { userData, account } = useContext(AppContext);
+  const [active, setActive] = useState("Home");
   const navigate = useNavigate();
+  const [dropDown, setDropDown] = useState(false);
+  const dropdownRef = useRef(null);
 
   const handleNavigation = (page, route) => {
-    console.log(route);
     setActive(page);
     navigate(route);
   };
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setDropDown(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="bg-[#146A5D] w-full shadow-md">
+    <div className="bg-white w-full shadow-md">
       <div className="max-w-[2200px] mx-auto flex justify-between items-center px-6 py-4">
+      {/* <button onClick={() => localStorage.clear()} className="bg-red-500 text-white px-4 py-2 rounded">
+  Clear Local Storage
+</button> */}
         
         {/* Logo */}
         <div className="flex items-center space-x-3">
           <img
-            className="h-[45px] w-[45px] rounded-full transform transition duration-300 hover:scale-110"
+            className="h-[45px] w-[45px] rounded-full cursor-pointer transition transform"
+            onClick={() => {
+              navigate("/");
+              window.scrollTo(0, 0);
+            }}
             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU"
             alt="Logo"
           />
-          <p className="text-2xl font-bold text-white transition duration-300 transform hover:scale-110 hover:text-[#D3D3D3]">
+          <p className="text-2xl font-bold text-[#146A5D] transition duration-300 transform hover:text-gray-400">
             Green City Hospital
           </p>
         </div>
 
-        {/* Navigation */}
+        {/* Navigation (Without Map Method) */}
         <div className="hidden md:flex space-x-8 font-semibold">
-          {/* Home */}
           <div
-            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out
-              ${active === 'Home' ? 'text-[#D3D3D3]' : 'text-white hover:text-gray-300'}`}
-            onClick={() => handleNavigation('Home', '/')}
+            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
+              ${active === "Home" ? "text-gray-400" : "text-[#146A5D] hover:text-gray-400"}`}
+            onClick={() => handleNavigation("Home", "/")}
           >
-            Home
-            <span
-              className={`absolute left-0 bottom-[-5px] h-[3px] w-full bg-white transform transition-all duration-300
-                ${active === 'Home' ? 'scale-x-100' : 'scale-x-0'}`}
-            ></span>
+            <p className="font-bold">Home</p>
           </div>
 
-          {/* Our Services */}
           <div
-            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out
-              ${active === 'Our Services' ? 'text-[#D3D3D3]' : 'text-white hover:text-gray-300'}`}
-            onClick={() => handleNavigation('Our Services', '/ourServices')}
+            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
+              ${active === "Our Services" ? "text-gray-400" : "text-[#146A5D] hover:text-gray-400"}`}
+            onClick={() => handleNavigation("Our Services", "/ourServices")}
           >
-            Our Services
-            <span
-              className={`absolute left-0 bottom-[-5px] h-[3px] w-full bg-white transform transition-all duration-300
-                ${active === 'Our Services' ? 'scale-x-100' : 'scale-x-0'}`}
-            ></span>
+            <p className="font-bold">Our Services</p>
           </div>
 
-          {/* Contact Us */}
           <div
-            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out
-              ${active === 'Contact Us' ? 'text-[#D3D3D3]' : 'text-white hover:text-gray-300'}`}
-            onClick={() => handleNavigation('Contact Us', '/userContact')}
+            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
+              ${active === "Contact Us" ? "text-gray-400" : "text-[#146A5D] hover:text-gray-400"}`}
+            onClick={() => handleNavigation("Contact Us", "/userContact")}
           >
-            Contact Us
-            <span
-              className={`absolute left-0 bottom-[-5px] h-[3px] w-full bg-white transform transition-all duration-300
-                ${active === 'Contact Us' ? 'scale-x-100' : 'scale-x-0'}`}
-            ></span>
+            <p className="font-bold">Contact Us</p>
           </div>
 
-          {/* About Us */}
           <div
-            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out
-              ${active === 'About Us' ? 'text-[#D3D3D3]' : 'text-white hover:text-gray-300'}`}
-            onClick={() => handleNavigation('About Us', '/userAbout')}
+            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
+              ${active === "About Us" ? "text-gray-400" : "text-[#146A5D] hover:text-gray-400"}`}
+            onClick={() => handleNavigation("About Us", "/userAbout")}
           >
-            About Us
-            <span
-              className={`absolute left-0 bottom-[-5px] h-[3px] w-full bg-white transform transition-all duration-300
-                ${active === 'About Us' ? 'scale-x-100' : 'scale-x-0'}`}
-            ></span>
+            <p className="font-bold">About Us</p>
           </div>
         </div>
 
-        {/* Sign Up Button */}
-        <div className="flex items-center">
-          <button className="text-xl font-bold bg-slate-400 text-white rounded-full py-2 px-6 hover:bg-[#0F5247] transform transition duration-300 ease-in-out hover:scale-105">
-            Sign Up
-          </button>
+        {/* Profile / Auth Button */}
+        <div className="flex items-center mr-6 relative">
+          {account ? (
+            <div className="relative" ref={dropdownRef}>
+              <div className="flex items-center">
+                <img
+                  onClick={() => navigate("/profile")}
+                  className="h-10 w-10 rounded-full cursor-pointer"
+                  src={userData.image}
+                  alt="Profile"
+                />
+
+                <img
+                   onClick={() => setDropDown((prev) => !prev)}
+                  className="h-8 ml-2 mt-1 cursor-pointer"
+                  src="https://www.svgrepo.com/show/345223/three-dots-vertical.svg"
+                  alt="Menu"
+                />
+                </div>
+                
+                {console.log(dropDown)}
+
+
+              {/* Dropdown Menu */}
+              {dropDown && (
+                <div className="absolute right-0 mt-2 w-48 shadow-md rounded-md py-2 z-50 bg-white">
+                  {console.log("hwow")}
+                  <p
+                    onClick={() => {
+                      navigate("/profile");
+                      setDropDown(false);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    Profile
+                  </p>
+                  <p
+                    onClick={() => {
+                      navigate("/bookedAppointment");
+                      setDropDown(false);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    My Appointments
+                  </p>
+                  <p
+                    onClick={() => {
+                      navigate("/auth");
+                      setDropDown(false);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-red-600"
+                  >
+                    Logout
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate("/auth")}
+              className="text-lg text-white rounded-sm py-2 px-6 hover:bg-[#0F5247] transform transition duration-300 ease-in-out hover:scale-105 bg-[#146A5D]"
+            >
+              Create an Account
+            </button>
+          )}
         </div>
       </div>
     </div>

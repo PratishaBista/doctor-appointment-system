@@ -2,9 +2,9 @@
 
 @import "tailwindcss";
 *{
-    font-family: "Open Sans", sans-serif;
-
+  font-family: "Open Sans", sans-serif;
+  overflow-x: hidden;
 }
 ::-webkit-scrollbar{
-    @apply hidden
-  }
+  @apply hidden
+}

@@ -29,7 +29,7 @@ const AdminDashboard = () => {
         {/* Doctors Card */}
         <motion.div 
           whileHover={{ scale: 1.05 }} 
-          className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center md:flex-row"
+          className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center items-center md:flex-row"
         >
           <img className="w-16 h-16" src="https://cdn-icons-png.flaticon.com/512/9193/9193824.png" alt="Doctors" />
           <div className="ml-3 hidden md:block">
