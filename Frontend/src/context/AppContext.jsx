@@ -207,6 +207,7 @@ const AppContextProvider=(props)=>{
 
 
       const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+      const [booked,setBooked]=useState(true)
 
     const value={
         AllDoctors,
@@ -217,7 +218,8 @@ const AppContextProvider=(props)=>{
         daysOfWeek,
         selectedDate, setSelectedDate,
         selectedMonth, setSelectedMonth,
-        shortMonths,months
+        shortMonths,months,
+        booked,setBooked
         
     }
     return(

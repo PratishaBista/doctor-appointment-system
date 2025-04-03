@@ -24,23 +24,23 @@ const Footer = () => {
 
         {/* Center Section */}
         <div className="flex flex-col md:w-1/4 gap-2">
-          <h1 className="text-lg font-semibold">Company</h1>
+          <h1 className="text-lg font-semibold hover:underline">Company</h1>
           <ul className="list-none space-y-2">
-            <li className="hover:text-gray-200">Home</li>
-            <li className="hover:text-gray-200">About Us</li>
-            <li className="hover:text-gray-200">Privacy Policy</li>
+            <li className="hover:underline">Home</li>
+            <li className="hover:underline">About Us</li>
+            <li className="hover:underline">Privacy Policy</li>
           </ul>
         </div>
 
         {/* Right Section */}
         <div className="flex flex-col md:w-1/4 gap-2">
-          <h1 className="text-lg font-semibold">GET IN TOUCH  </h1>
+          <h1 className="text-lg font-semibold hover:underline">GET IN TOUCH  </h1>
           <ul className="list-none space-y-2">
-            <li className="hover:text-gray-200">+1-222-333-000</li>
-            <li className="hover:text-gray-200">SiddhantShrestha54@gmail.com</li>
+            <li className="hover:underline">+1-222-333-000</li>
+            <li className="hover:underline">SiddhantShrestha54@gmail.com</li>
           </ul>
           <div className="flex items-center">
-        <h1 className='text-xl font-bold text-red-600'>Emergency Number: +09090000</h1>
+        <h1 className='text-xl font-bold text-red-600 hover:underline'>Emergency Number: +09090000</h1>
       </div>
         </div>
 
