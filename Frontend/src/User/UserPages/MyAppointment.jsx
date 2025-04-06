@@ -5,7 +5,8 @@ import { AppContext } from "../../context/AppContext";
 const MyAppointment = () => {
   const { docId } = useParams();
   const { AllDoctors,slotTime, setSlotTime,slotIndex, setSlotIndex,daysOfWeek,
-    selectedDate, setSelectedDate,selectedMonth, setSelectedMonth,booked,setBooked
+    selectedDate, setSelectedDate,selectedMonth, setSelectedMonth,booked,setBooked,
+    bookedDate,setBookedDate
    } = useContext(AppContext);
   const [docInfo, setDocInfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
@@ -65,14 +66,18 @@ const MyAppointment = () => {
     return <p className="text-center text-gray-600 mt-10">Doctor not found...</p>;
   }
 
-  const handleBooking=()=>{
+  const handleBooking = () => {
     let existingBookings = JSON.parse(localStorage.getItem("bookedDoctors")) || [];
-    existingBookings.push({...docInfo, slotTime});
+    existingBookings.push({ ...docInfo, slotTime });
     localStorage.setItem("bookedDoctors", JSON.stringify(existingBookings));
+  
+    setBooked(true);
+    setBookedDate(slotTime); // ✅ Store the selected time in bookedDate
     setIsAlreadyBooked(true);
+  
     navigate(`/bookedAppointment/${selectedDocId}`, { state: { docId: selectedDocId } });
-  }
-
+  };
+  
   return (
     <div className="p-6">
       <div className="flex flex-col lg:flex-row gap-6">
