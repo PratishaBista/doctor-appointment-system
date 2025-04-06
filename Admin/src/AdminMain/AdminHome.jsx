@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import AddDoctor from '../admin-pages/AddDoctor';
 import AdminAppointments from '../admin-pages/AdminAppointments';
 import AdminDashboard from '../admin-pages/AdminDashboard';
 import AdminDoctorsList from '../admin-pages/AdminDoctorsList';
+import { AdminContext } from '../context/adminContext';
 
 const AdminHome = () => {
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Initialize the sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { admin_token, setAdminToken } = useContext(AdminContext);
+
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    navigate('/');
+    admin_token && setAdminToken('');
+    admin_token && localStorage.removeItem('admin_token');
+  }
 
   useEffect(() => {
     if (window.location.pathname === "/admin") {
@@ -25,7 +34,7 @@ const AdminHome = () => {
     ];
     navigate(routes[index]);
     setActiveIndex(index);
-    setIsSidebarOpen(false); // Close the sidebar on item click
+    setIsSidebarOpen(false);
   };
 
   return (
@@ -40,10 +49,11 @@ const AdminHome = () => {
             className="h-12"
           />
           <p className="text-xl font-bold text-gray-800">Green City Hospital</p>
+          <p className='border px-2.5 py-0.5 rounded-full border-gray-500 text-grey-600'>Admin</p>
         </div>
 
         <button
-          onClick={() => navigate("/login")}
+          onClick={handleLogout}
           className="bg-[#146A5D] text-white h-[40px] w-[160px] rounded-full hover:bg-[#0F5247] transition"
         >
           Logout
@@ -54,9 +64,8 @@ const AdminHome = () => {
       <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
         <div
-          className={`h-[90vh] w-full md:w-[250px] rounded-lg shadow-md p-4 flex flex-col justify-start space-y-4 border-2 border-gray-300 mt-1 transition-all ${
-            isSidebarOpen ? 'block' : 'hidden md:block'
-          }`}
+          className={`h-[90vh] w-full md:w-[250px] rounded-lg shadow-md p-4 flex flex-col justify-start space-y-4 border-2 border-gray-300 mt-1 transition-all ${isSidebarOpen ? 'block' : 'hidden md:block'
+            }`}
         >
           {/* Close Button for Sidebar (Mobile view) */}
           <div className="md:hidden flex justify-end mb-4">
@@ -75,9 +84,8 @@ const AdminHome = () => {
           {/* Sidebar menu items */}
           <div
             onClick={() => handleItemClick(0)}
-            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${
-              activeIndex === 0 ? 'border-l-4 border-[#146A5D]' : ''
-            }`}
+            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${activeIndex === 0 ? 'border-l-4 border-[#146A5D]' : ''
+              }`}
           >
             <img
               className="h-[40px]"
@@ -89,9 +97,8 @@ const AdminHome = () => {
 
           <div
             onClick={() => handleItemClick(1)}
-            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${
-              activeIndex === 1 ? 'border-l-4 border-[#146A5D]' : ''
-            }`}
+            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${activeIndex === 1 ? 'border-l-4 border-[#146A5D]' : ''
+              }`}
           >
             <img
               className="h-[40px]"
@@ -103,9 +110,8 @@ const AdminHome = () => {
 
           <div
             onClick={() => handleItemClick(2)}
-            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${
-              activeIndex === 2 ? 'border-l-4 border-[#146A5D]' : ''
-            }`}
+            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${activeIndex === 2 ? 'border-l-4 border-[#146A5D]' : ''
+              }`}
           >
             <img
               className="h-[40px]"
@@ -117,9 +123,8 @@ const AdminHome = () => {
 
           <div
             onClick={() => handleItemClick(3)}
-            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${
-              activeIndex === 3 ? 'border-l-4 border-[#146A5D]' : ''
-            }`}
+            className={`flex items-center space-x-3 p-2 rounded-lg cursor-pointer transition ${activeIndex === 3 ? 'border-l-4 border-[#146A5D]' : ''
+              }`}
           >
             <img
               className="h-[40px]"
