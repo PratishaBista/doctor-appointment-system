@@ -4,7 +4,7 @@ import AddDoctor from '../admin-pages/AddDoctor';
 import AdminAppointments from '../admin-pages/AdminAppointments';
 import AdminDashboard from '../admin-pages/AdminDashboard';
 import AdminDoctorsList from '../admin-pages/AdminDoctorsList';
-import { AdminContext } from '../context/adminContext';
+import { AdminContext } from '../context/AdminContext';
 
 const AdminHome = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -27,10 +27,10 @@ const AdminHome = () => {
 
   const handleItemClick = (index) => {
     const routes = [
-      "/dashboard",
-      "/appointment",
-      "/addDoctor",
-      "/doctorList",
+      "/admin-dashboard",
+      "/all-appointments",
+      "/add-doctor",
+      "/doctor-list",
     ];
     navigate(routes[index]);
     setActiveIndex(index);
@@ -153,11 +153,11 @@ const AdminHome = () => {
         {/* Main Content Area */}
         <div className="w-full p-6">
           <Routes>
-            <Route path="/dashboard" element={<AdminDashboard />} />
-            <Route path="/" element={<AdminDashboard />} />
-            <Route path="/appointment" element={<AdminAppointments />} />
-            <Route path="/addDoctor" element={<AddDoctor />} />
-            <Route path="/doctorList" element={<AdminDoctorsList />} />
+            <Route path='/' element={<></>} />
+            <Route path='/admin-dashboard' element={<AdminDashboard />} />
+            <Route path='/all-appointments' element={<AdminAppointments />} />
+            <Route path='/add-doctor' element={<AddDoctor />} />
+            <Route path='/doctor-list' element={<AdminDoctorsList />} />
           </Routes>
         </div>
       </div>

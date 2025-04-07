@@ -4,7 +4,8 @@ import AdminLogin from "./AdminMain/AdminLogin";
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useContext } from "react";
-import { AdminContext } from "./context/adminContext";
+import { AdminContext } from "./context/AdminContext";
+
 
 const App = () => {
   const { admin_token } = useContext(AdminContext);
@@ -15,10 +16,12 @@ const App = () => {
   }, [admin_token]);
 
   return admin_token ? (
-    <div>
-      <ToastContainer />
-      <AdminHome />
-    </div>
+    <>
+      <div>
+        <ToastContainer />
+        <AdminHome />
+      </div>
+    </>
   ) : (
     <>
       <AdminLogin />
