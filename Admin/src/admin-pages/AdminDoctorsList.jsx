@@ -55,7 +55,7 @@ const AdminDoctorsList = () => {
     >
       
       <motion.div
-        className="border h-[400px] border-[#146A5D] shadow-lg rounded-xl p-4 w-80 bg-white transition-all duration-300 hover:bg-[#146A5D] hover:text-white"
+        className="border h-[400px] border-[#146A5D] shadow-lg rounded-xl p-4 w-80 bg-white transition-all duration-300 hover:bg-slate-50 hover:text-black"
         whileHover={{ scale: 1.05 }}
       >
         {/* Doctor Image */}

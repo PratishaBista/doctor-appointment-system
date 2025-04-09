@@ -156,13 +156,13 @@ const DoctorDashboard = () => {
                   <>
                     <img
                       onClick={() => handleTick(index)}
-                      className="h-[48px] border-2 rounded-full p-2 cursor-pointer"
-                      src="https://www.freeiconspng.com/thumbs/check-tick-icon/tick-icon-30.png"
+                      className="h-[40px] rounded-full cursor-pointer border-1 py-1"
+                      src="https://t4.ftcdn.net/jpg/12/79/11/19/360_F_1279111963_sjO4ulr9Gaxj0c8rYBF3ddWHaL67okY3.jpg"
                       alt="Tick"
                     />
                     <img
                       onClick={() => handleCross(index)}
-                      className="h-[48px] ml-8 border-2 rounded-full p-2 cursor-pointer"
+                        className="h-[40px] rounded-full cursor-pointer border-1 p-2 py-2 ml-6"
                       src="https://cdn.pixabay.com/photo/2022/03/23/02/48/cross-7086307_1280.png"
                       alt="Cross"
                     />
