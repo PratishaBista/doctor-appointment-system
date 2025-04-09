@@ -37,11 +37,35 @@ const AdminContextProvider = ({ children }) => {
   console.log("Initial token from localStorage:", localStorage.getItem("admin_token"));
   console.log("Initial token from state:", admin_token);
 
+  const changeAvailability = async  (docId) => {
+    try {
+      const { data } = await axios.post(
+        backendUrl + "/api/admin/change-availability",
+        { docId },
+        {
+          headers: {
+            admin_token,
+          },
+        }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        getAllDoctors();
+      } else {
+        toast.error(data.message);
+      }
+
+    } catch (error) {
+      toast.error(error.message);
+    }
+  }
+
   const value = {
     admin_token,
     setAdminToken,
     backendUrl,
-    doctors, getAllDoctors
+    doctors, getAllDoctors, changeAvailability
   };
 
   return (
