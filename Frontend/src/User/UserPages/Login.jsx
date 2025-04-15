@@ -71,15 +71,16 @@ const Login = () => {
       }
 
     } catch (error) {
+      console.log("Login error:", error.message);
       toast.error("Something went wrong! Please try again.");
     }
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     if (token) {
       navigate("/");
     }
-}, [token])
+  }, [token])
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
