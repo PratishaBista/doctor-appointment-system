@@ -128,6 +128,20 @@ const bookAppointment = async (req, res) => {
   try {
     const { userId, doctorId, slotDate, slotTime } = req.body;
     const doctorData = await doctorModel.findById(doctorId).select("-password");
+
+    if (!doctorData) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found with given ID"
+      });
+    }
+    
+    if (!doctorData.available) {
+      return res.status(400).json({
+        success: false,
+        message: "Doctor is not available for appointments"
+      });
+    }
     if (!doctorData.available) {
       return res.json({ success: false, message: "Doctor not found" });
     }

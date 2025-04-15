@@ -87,7 +87,7 @@ const UserBody = () => {
   className="mt-8 bg-[#146A5D] hover:bg-green-900 text-white text-xl font-semibold px-8 py-3 rounded-lg shadow-md  transition-transform transform active:scale-95 active:translate-y-1"
   onClick={() => {
     navigate("/ourServices");
-    window.scrollTo(0, 0); // Fixed scroll function name
+    window.scrollTo(0, 0); 
   }}
 >
   More

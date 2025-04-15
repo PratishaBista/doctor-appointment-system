@@ -1,22 +1,24 @@
+// App.jsx
 import { Route, Routes, useLocation } from "react-router-dom";
 import './App.css';
 import AppContextProvider from './context/AppContext';
-import UserAuth from "./User/userAuth";
+import Login from "./User/UserPages/Login";
 import UserHome from './User/UserHome';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const location = useLocation();
+
   return (
     <AppContextProvider>
-       <Routes>
-        <Route path="/auth" element={<UserAuth />} />
+      <Routes>
+        <Route path="/*" element={<UserHome />} />
+        <Route path="/auth" element={<Login />} />
       </Routes>
-
-      {/* Render AdminHome only if the path is NOT "/login" */}
-      {location.pathname !== "/auth" && <UserHome />}
-
-    
-
+      <ToastContainer />
     </AppContextProvider>
-  )}
+  );
+}
+
 export default App;

@@ -1,55 +1,87 @@
 import { motion } from "framer-motion";
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 
 const UserAllDoctors = () => {
-    const {AllDoctors} =useContext(AppContext)
-    console.log(AllDoctors)
-    const navigate=useNavigate()
+    const { doctors, getDoctorsData } = useContext(AppContext);
+    const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
-  return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-5xl font-bold mt-20 text-center text-gray-800">
-        All Doctors
-      </h1>
+    useEffect(() => {
+        const fetchDoctors = async () => {
+            try {
+                await getDoctorsData();
+            } catch (error) {
+                console.error("Failed to load doctors:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
 
-      <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 mt-12">
-        {AllDoctors.map((item, index) => (
-          <motion.div
-          onClick={() => navigate(`/my-appointment/${item.id}`)}
-            key={index}
-            className="border border-gray-300 shadow-lg rounded-xl p-6 bg-white transition-all duration-300 hover:bg-slate-50 hover:text-black m-2"
-            whileHover={{ scale: 1.05 }}
-          >
-            <img
-              className="w-full h-48 object-cover rounded-lg mb-4"
-              src={item.image}
-              alt={item.Name}
-            />
+        fetchDoctors();
+    }, [getDoctorsData]);
 
-            <h2 className="text-xl font-bold text-center">{item.Name}</h2>
-            <p className="text-center text-gray-600 transition-all duration-300 hover:text-white">
-              {item.Speciality}
-            </p>
-            <p className="text-sm mt-2">Degree: {item.Degree}</p>
-            <p className="text-sm">Description: {item.Description}</p>
-            <p className="text-sm font-semibold mt-2">Fees: {item.Fees}</p>
-
-            <div className="flex items-center justify-center mt-4">
-              <label className="flex items-center cursor-pointer">
-                <input type="checkbox" className="hidden peer" />
-                <div className="w-14 h-7 bg-gray-300 rounded-full peer-checked:bg-green-500 relative">
-                  <div className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform peer-checked:translate-x-7"></div>
-                </div>
-                <span className="ml-2 font-bold">Available</span>
-              </label>
+    if (loading) {
+        return (
+            <div className="container mx-auto px-4 text-center mt-20">
+                <h1 className="text-5xl font-bold">Loading Doctors...</h1>
             </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
+        );
+    }
+
+    if (!doctors || doctors.length === 0) {
+        return (
+            <div className="container mx-auto px-4 text-center mt-20">
+                <h1 className="text-5xl font-bold">No Doctors Available</h1>
+            </div>
+        );
+    }
+
+    return (
+        <div className="container mx-auto px-4">
+            <h1 className="text-5xl font-bold mt-20 text-center text-gray-800">
+                All Doctors
+            </h1>
+
+            <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-6 mt-12">
+                {doctors.map((doctors, index) => (
+                    <motion.div
+                        onClick={() => navigate(`/my-appointment/${doctors._id}`)}
+                        key={index}
+                        className="border border-gray-300 shadow-lg rounded-xl p-6 bg-white transition-all duration-300 hover:bg-slate-50 hover:text-black m-2"
+                        whileHover={{ scale: 1.05 }}
+                    >
+                        <img
+                            className="w-full h-48 object-cover rounded-lg mb-4"
+                            src={doctors.image}
+                            alt={doctors.name}
+                        />
+
+                        <h2 className="text-xl font-bold text-center">{doctors.name}</h2>
+                        <p className="text-center text-gray-600 transition-all duration-300 hover:text-white">
+                            {doctors.speciality}
+                        </p>
+                        <p className="text-sm mt-2">Degree: {doctors.degree}</p>
+                        <p className="text-sm">Description: {doctors.about}</p>
+                        <p className="text-sm font-semibold mt-2">Fees: Rs. {doctors.fees}</p>
+
+                        <div className="flex items-center justify-center mt-4">
+                            <div className="flex items-center gap-2">
+                                <span
+                                    className={`h-3 w-3 rounded-full ${doctors.available ? "bg-green-500" : "bg-red-400"
+                                        }`}
+                                ></span>
+                                <span className="text-sm font-semibold">
+                                    {doctors.available ? "Available" : "Unavailable"}
+                                </span>
+                            </div>
+                        </div>
+                    </motion.div>
+                ))}
+            </div>
+        </div>
+    );
 };
 
 export default UserAllDoctors;

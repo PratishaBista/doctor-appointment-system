@@ -67,7 +67,6 @@ import UserAllDoctors from './UserAllDoctors';
     }
   ];
 const {selectedSpecialty,setSelectedSpecialty}=useContext(AppContext)
-console.log(selectedSpecialty)
 const navigate =useNavigate()
   return (
     <div className="p-6 mt-8">
