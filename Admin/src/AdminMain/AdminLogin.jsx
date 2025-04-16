@@ -1,15 +1,16 @@
 import React, { useContext, useState } from "react";
-import { assets } from "../assets/assets";
 import { AdminContext } from "../context/AdminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { DoctorContext } from "../context/DoctorContext";
 
 const AdminLogin = () => {
   const [state, setState] = useState("Admin");
   const { setAdminToken, backendUrl } = useContext(AdminContext);
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
+  const { setDoctorToken } = useContext(DoctorContext);
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
 
@@ -17,21 +18,43 @@ const AdminLogin = () => {
     event.preventDefault();
 
     try {
-      const { data } = await axios.post(`${backendUrl}/api/admin/login`, {
-        email,
-        password,
-      });
+      if (state === "Admin") {
+        const { data } = await axios.post(`${backendUrl}/api/admin/login`, {
+          email,
+          password,
+        });
 
-      console.log("Login response:", data);
+        console.log("Login response:", data);
 
-      if (data.success) {
-        console.log("Storing token:", data.token);
-        localStorage.setItem("admin_token", data.token);
-        setAdminToken(data.token);
-        toast.success("Login successful!");
+        if (data.success) {
+          console.log("Storing token:", data.token);
+          localStorage.setItem("admin_token", data.token);
+          setAdminToken(data.token);
+          toast.success("Login successful!");
+          navigate("/admin/dashboard"); 
+        } else {
+          toast.error(data.message);
+        }
+
       } else {
-        toast.error(data.message);
+        const { data } = await axios.post(`${backendUrl}/api/doctor/login`, {
+          email,
+          password,
+        });
+
+        console.log("Login response:", data);
+
+        if (data.success) {
+          console.log("Storing token:", data.token);
+          localStorage.setItem("doctor_token", data.token);
+          setDoctorToken(data.token);
+          toast.success("Login successful!");
+          navigate("/doctor/dashboard");
+        } else {
+          toast.error(data.message);
+        }
       }
+
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Login failed. Please try again.");
@@ -83,9 +106,6 @@ const AdminLogin = () => {
         {/* Submit Button */}
         <div className="text-center">
           <button
-            onClick={() => {
-              navigate("/admin-dashboard")
-            }}
             type="submit"
             className="w-full bg-[#146A5D] text-white font-semibold px-4 py-3 rounded-lg hover:bg-[#0f5249] transition-all duration-300 shadow-md"
           >
