@@ -1,13 +1,26 @@
-import { useState } from 'react'
-import './App.css'
-import DoctorHome from './DoctorHome'
+import { Route, Routes, useLocation } from 'react-router-dom';
+import './App.css';
+import DoctorHome from './DoctorHome';
+import DoctorContextProvider from './doctorContext/DoctorContext';
+
+import Login from './Login';
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const location = useLocation();
   return (
     <>
-    <DoctorHome/>
+      <DoctorContextProvider>
+       <Routes>
+        <Route path="/Login" element={<Login />} />
+      </Routes>
+
+      {location.pathname !== "/Login" && <DoctorHome />}
+
+    
+
+    </DoctorContextProvider>
+
     </>
   )
 }

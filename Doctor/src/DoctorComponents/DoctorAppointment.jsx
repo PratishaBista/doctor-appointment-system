@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { DocContext } from "../doctorContext/DocContext";
+import { DoctorContext } from "../doctorContext/DoctorContext";
 
 const DoctorAppointment = () => {
-  const { appointments, setAppointments } = useContext(DocContext);
+  const { appointments, setAppointments } = useContext(DoctorContext);
 
   // Function to update appointment status
   const updateStatus = (id, newStatus) => {
@@ -38,7 +38,7 @@ const DoctorAppointment = () => {
             <div className="w-20 text-center">{appt.fees}</div>
             <div
               className={`w-32 text-center font-semibold ${
-                appt.status === "Completed" ? "text-green-600" : appt.status === "Cancelled" ? "text-red-600" : "text-gray-500"
+                appt.status === "Booked" ? "text-green-600" : appt.status === "Rejected" ? "text-red-600" : "text-gray-500"
               }`}
             >
               {appt.status}
@@ -49,13 +49,13 @@ const DoctorAppointment = () => {
                   className="rounded-full h-[25px] border-2 p-1 cursor-pointer"
                   src="https://t4.ftcdn.net/jpg/05/19/99/45/360_F_519994541_TABPKuZ1QFkxo7uo33kYa0CBLnQ5MUq6.jpg"
                   alt="Tick"
-                  onClick={() => updateStatus(appt.id, "Completed")}
+                  onClick={() => updateStatus(appt.id, "Booked")}
                 />
                 <img
                   className="rounded-full h-[25px] border-2 p-1 cursor-pointer"
                   src="https://cdn.pixabay.com/photo/2022/03/23/02/48/cross-7086307_1280.png"
                   alt="Cross"
-                  onClick={() => updateStatus(appt.id, "Cancelled")}
+                  onClick={() => updateStatus(appt.id, "Rejected")}
                 />
               </button>
             </div>

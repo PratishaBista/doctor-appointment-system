@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
-import { DocContext } from '../doctorContext/DocContext';
+import { DoctorContext } from '../doctorContext/DoctorContext';
 
 const PatientsData = () => {
-    const {appointments, setAppointments}=useContext(DocContext)
+    const {appointments, setAppointments}=useContext(DoctorContext)
   return (
     <div>
       

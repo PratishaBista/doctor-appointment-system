@@ -59,7 +59,7 @@ const UserAllDoctors = () => {
                         />
 
                         <h2 className="text-xl font-bold text-center">{doctors.name}</h2>
-                        <p className="text-center text-gray-600 transition-all duration-300 hover:text-white">
+                        <p className="text-center text-gray-600 transition-all duration-300">
                             {doctors.speciality}
                         </p>
                         <p className="text-sm mt-2">Degree: {doctors.degree}</p>

@@ -4,15 +4,13 @@ import AdminLogin from "./AdminMain/AdminLogin";
 import { ToastContainer, toast } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import React, { useEffect, useContext } from "react";
-import { AdminContext } from "./context/AdminContext";
+import { AdminContext } from "./context/adminContext";
 
 
 const App = () => {
   const { admin_token } = useContext(AdminContext);
 
   useEffect(() => {
-    console.log("App component rendering with token:", admin_token);
-    console.log("LocalStorage token:", localStorage.getItem("admin_token"));
   }, [admin_token]);
 
   return admin_token ? (
