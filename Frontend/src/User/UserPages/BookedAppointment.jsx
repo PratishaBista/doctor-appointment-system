@@ -30,7 +30,7 @@ const BookedAppointment = () => {
         animate={{ opacity: 1, y: 0 }} 
         transition={{ duration: 0.5 }}
       >
-        Your Booked Appointments
+        Your Booked Appointments 
       </motion.h1>
 
       {allBookedDoctors.length === 0 ? (

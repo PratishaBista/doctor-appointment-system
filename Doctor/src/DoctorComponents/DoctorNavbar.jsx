@@ -1,8 +1,9 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 
 const DoctorNavbar = () => {
-
+const navigate=useNavigate()
 
   return (
     <div className="max-w-[2200px] mx-auto flex justify-between items-center px-6 py-4 shadow max-h-[197px]">
@@ -30,7 +31,7 @@ const DoctorNavbar = () => {
 
       {/* Logout Button */}
       <button
-       
+       onClick={()=>navigate("/doctorLogin")}
         className="bg-[#146A5D] text-white h-[40px] w-[160px] rounded-full hover:bg-[#0F5247] transition"
       >
         Logout

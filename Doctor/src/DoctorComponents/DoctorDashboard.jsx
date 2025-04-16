@@ -27,6 +27,54 @@ const initialBookedPatients = [
     date: "12 Oct 2025 at 10AM",
     status: null,
   },
+  {
+    name: "Siddhant Shrestha",
+    img: "https://static.vecteezy.com/system/resources/thumbnails/004/607/791/small_2x/man-face-emotive-icon-smiling-male-character-in-blue-shirt-flat-illustration-isolated-on-white-happy-human-psychological-portrait-positive-emotions-user-avatar-for-app-web-design-vector.jpg",
+    date: "30 Mar 2025 at 10AM",
+    status: null,
+  },
+  {
+    name: "Sidd",
+    img: "https://static.vecteezy.com/system/resources/thumbnails/004/607/791/small_2x/man-face-emotive-icon-smiling-male-character-in-blue-shirt-flat-illustration-isolated-on-white-happy-human-psychological-portrait-positive-emotions-user-avatar-for-app-web-design-vector.jpg",
+    date: "30 Dec 2025 at 10AM",
+    status: null,
+  },
+  {
+    name: "Ram Bahadur",
+    img: "https://static.vecteezy.com/system/resources/thumbnails/004/607/791/small_2x/man-face-emotive-icon-smiling-male-character-in-blue-shirt-flat-illustration-isolated-on-white-happy-human-psychological-portrait-positive-emotions-user-avatar-for-app-web-design-vector.jpg",
+    date: "30 Aug 2026 at 10AM",
+    status: null,
+  },
+  {
+    name: "Customer",
+    img: "https://static.vecteezy.com/system/resources/thumbnails/004/607/791/small_2x/man-face-emotive-icon-smiling-male-character-in-blue-shirt-flat-illustration-isolated-on-white-happy-human-psychological-portrait-positive-emotions-user-avatar-for-app-web-design-vector.jpg",
+    date: "12 Oct 2025 at 10AM",
+    status: null,
+  },
+  {
+    name: "Siddhant Shrestha",
+    img: "https://static.vecteezy.com/system/resources/thumbnails/004/607/791/small_2x/man-face-emotive-icon-smiling-male-character-in-blue-shirt-flat-illustration-isolated-on-white-happy-human-psychological-portrait-positive-emotions-user-avatar-for-app-web-design-vector.jpg",
+    date: "30 Mar 2025 at 10AM",
+    status: null,
+  },
+  {
+    name: "Sidd",
+    img: "https://static.vecteezy.com/system/resources/thumbnails/004/607/791/small_2x/man-face-emotive-icon-smiling-male-character-in-blue-shirt-flat-illustration-isolated-on-white-happy-human-psychological-portrait-positive-emotions-user-avatar-for-app-web-design-vector.jpg",
+    date: "30 Dec 2025 at 10AM",
+    status: null,
+  },
+  {
+    name: "Ram Bahadur",
+    img: "https://static.vecteezy.com/system/resources/thumbnails/004/607/791/small_2x/man-face-emotive-icon-smiling-male-character-in-blue-shirt-flat-illustration-isolated-on-white-happy-human-psychological-portrait-positive-emotions-user-avatar-for-app-web-design-vector.jpg",
+    date: "30 Aug 2026 at 10AM",
+    status: null,
+  },
+  {
+    name: "Customer",
+    img: "https://static.vecteezy.com/system/resources/thumbnails/004/607/791/small_2x/man-face-emotive-icon-smiling-male-character-in-blue-shirt-flat-illustration-isolated-on-white-happy-human-psychological-portrait-positive-emotions-user-avatar-for-app-web-design-vector.jpg",
+    date: "12 Oct 2025 at 10AM",
+    status: null,
+  },
 ];
 
 const DoctorDashboard = () => {
@@ -131,7 +179,7 @@ const DoctorDashboard = () => {
         <h1 className="text-3xl font-bold underline w-[700px] text-center">Recent Bookings</h1>
         <div className="max-h-[1px] bg-black w-screen mt-1"></div>
 
-        <div className="">
+        <div className=" overflow-y-auto">
           {bookedPatients.map((item, index) => (
             <div
               key={index}

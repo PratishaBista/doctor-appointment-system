@@ -7,6 +7,14 @@ const AdminDashboard = () => {
     { id: 2, doctor: "Dr. John Doe", date: "24 March 2025", status: "Booked" },
     { id: 3, doctor: "Dr. Jane Smith", date: "25 March 2025", status: "Booked" },
     { id: 4, doctor: "Dr. Emily Johnson", date: "26 March 2025", status: "Booked" },
+    { id: 1, doctor: "Dr. Aadash Khadka", date: "23 March 2025", status: "Booked" },
+    { id: 2, doctor: "Dr. John Doe", date: "24 March 2025", status: "Booked" },
+    { id: 3, doctor: "Dr. Jane Smith", date: "25 March 2025", status: "Booked" },
+    { id: 4, doctor: "Dr. Emily Johnson", date: "26 March 2025", status: "Booked" },
+    { id: 1, doctor: "Dr. Aadash Khadka", date: "23 March 2025", status: "Booked" },
+    { id: 2, doctor: "Dr. John Doe", date: "24 March 2025", status: "Booked" },
+    { id: 3, doctor: "Dr. Jane Smith", date: "25 March 2025", status: "Booked" },
+    { id: 4, doctor: "Dr. Emily Johnson", date: "26 March 2025", status: "Booked" },
   ]);
 
   const handleCancel = (id) => {
@@ -29,7 +37,7 @@ const AdminDashboard = () => {
         {/* Doctors Card */}
         <motion.div 
           whileHover={{ scale: 1.05 }} 
-          className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center items-center md:flex-row"
+          className="flex  bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center items-center md:flex-row"
         >
           <img className="w-16 h-16" src="https://cdn-icons-png.flaticon.com/512/9193/9193824.png" alt="Doctors" />
           <div className="ml-3 hidden md:block">
@@ -76,10 +84,10 @@ const AdminDashboard = () => {
 
       {/* Booking List */}
       <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-        className="mt-6 w-[95%] mx-auto"
+        className="mt-6 w-[95%] mx-auto h-[500px] overflow-y-auto"
       >
         {bookings.map((booking) => (
-          <div key={booking.id} className="mt-4 flex items-center bg-white shadow-md p-4 rounded-lg">
+          <div key={booking.id} className="mt-4  flex items-center bg-white shadow-md p-4 rounded-lg">
             <img className="h-[70px] rounded-full" src="https://media.istockphoto.com/id/177373093/photo/indian-male-doctor.jpg?s=612x612&w=0&k=20&c=5FkfKdCYERkAg65cQtdqeO_D0JMv6vrEdPw3mX1Lkfg=" alt="Doctor" />
             <div className="ml-4">
               <h1 className="text-lg font-semibold">{booking.doctor}</h1>

@@ -17,7 +17,7 @@ const DocContextProvider = (props) => {
     email: "siddhantshrestha54@gmail.com",
     degree: "MBBS",
     experience:"8 years",
-    fee: "120",
+    fee: "1200",
     about: "lorem as asn alskdnal alkdsma",
   });
 
