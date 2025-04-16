@@ -1,65 +1,42 @@
 import React, { useContext, useState } from "react";
-import { AdminContext } from "../context/AdminContext";
+// import { AdminContext } from "../../Admin/src/context/AdminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { DoctorContext } from "../context/DoctorContext";
+import { DoctorContext } from "./doctorContext/DoctorContext";
 
-const AdminLogin = () => {
+const Login = () => {
   const [state, setState] = useState("Admin");
-  const { setAdminToken, backendUrl } = useContext(AdminContext);
+  // const { setAdminToken, backendUrl } = useContext(AdminContext);
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
-  const { setDoctorToken } = useContext(DoctorContext);
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
+  const { setDoctorToken } = useContext(DoctorContext);
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
 
     try {
-      if (state === "Admin") {
-        const { data } = await axios.post(`${backendUrl}/api/admin/login`, {
-          email,
-          password,
-        });
-
-        console.log("Login response:", data);
-
-        if (data.success) {
-          console.log("Storing token:", data.token);
-          localStorage.setItem("admin_token", data.token);
-          setAdminToken(data.token);
-          toast.success("Login successful!");
-          navigate("/admin/dashboard"); 
-        } else {
-          toast.error(data.message);
-        }
-
+      const { data } = await axios.post(`${backendUrl}/api/doctor/login`, {
+        email,
+        password,
+      });
+      if (data.success) {
+        console.log("Storing token:", data.token);
+        localStorage.setItem("doctor_token", data.token);
+        setDoctorToken(data.token);
+        toast.success("Login successful!");
       } else {
-        const { data } = await axios.post(`${backendUrl}/api/doctor/login`, {
-          email,
-          password,
-        });
-
-        console.log("Login response:", data);
-
-        if (data.success) {
-          console.log("Storing token:", data.token);
-          localStorage.setItem("doctor_token", data.token);
-          setDoctorToken(data.token);
-          toast.success("Login successful!");
-          navigate("/doctor/dashboard");
-        } else {
-          toast.error(data.message);
-        }
+        toast.error(data.message);
       }
 
     } catch (error) {
       console.error("Login error:", error);
       toast.error("Login failed. Please try again.");
     }
-  };
+  }
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -106,6 +83,9 @@ const AdminLogin = () => {
         {/* Submit Button */}
         <div className="text-center">
           <button
+            onClick={() => {
+              navigate("/doctorDashboard")
+            }}
             type="submit"
             className="w-full bg-[#146A5D] text-white font-semibold px-4 py-3 rounded-lg hover:bg-[#0f5249] transition-all duration-300 shadow-md"
           >
@@ -142,4 +122,4 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+export default Login;

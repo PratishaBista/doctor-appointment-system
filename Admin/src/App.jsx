@@ -1,31 +1,46 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import AdminHome from "./AdminMain/AdminHome";
 import AdminLogin from "./AdminMain/AdminLogin";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
-import React, { useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { AdminContext } from "./context/AdminContext";
-
+import { DoctorContext } from "./context/DoctorContext";
+import DoctorHome from "./doctor/DoctorHome";
 
 const App = () => {
   const { admin_token } = useContext(AdminContext);
+  const { doctor_token } = useContext(DoctorContext);
 
-  useEffect(() => {
-    console.log("App component rendering with token:", admin_token);
-    console.log("LocalStorage token:", localStorage.getItem("admin_token"));
-  }, [admin_token]);
-
-  return admin_token ? (
+  return (
     <>
-      <div>
-        <ToastContainer />
-        <AdminHome />
-      </div>
-    </>
-  ) : (
-    <>
-      <AdminLogin />
       <ToastContainer />
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<AdminLogin />} />
+        
+        {/* Admin Protected Routes */}
+        <Route 
+          path="/admin/*" 
+          element={admin_token ? <AdminHome /> : <Navigate to="/login" replace />} 
+        />
+        
+        {/* Doctor Protected Routes */}
+        <Route 
+          path="/doctor/*" 
+          element={doctor_token ? <DoctorHome /> : <Navigate to="/login" replace />} 
+        />
+        
+        {/* Default Redirect */}
+        <Route 
+          path="*" 
+          element={
+            admin_token ? <Navigate to="/admin/dashboard" replace /> :
+            doctor_token ? <Navigate to="/doctor/dashboard" replace /> :
+            <Navigate to="/login" replace />
+          } 
+        />
+      </Routes>
     </>
   );
 };
