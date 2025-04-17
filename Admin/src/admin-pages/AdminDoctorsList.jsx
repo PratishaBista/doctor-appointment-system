@@ -1,133 +1,75 @@
-import { motion } from "framer-motion";
-import React from "react";
+import React, { useEffect } from "react";
+import { useContext } from "react";
+import { AdminContext } from "../context/AdminContext";
 
 const AdminDoctorsList = () => {
+  const { doctors, admin_token, getAllDoctors, changeAvailability } = useContext(AdminContext);
+
+  useEffect(() => {
+    if (admin_token) {
+      getAllDoctors();
+    }
+  }, [admin_token]);
+
   return (
-    <div className="md:flex ">
-
-   <div className="">
-   <motion.div
-      className="flex m-4"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      
-      <motion.div
-        className="border h-[400px] border-[#146A5D] shadow-lg rounded-xl p-4 w-80 bg-white transition-all duration-300 hover:bg-[#146A5D] hover:text-white"
-        whileHover={{ scale: 1.05 }}
-      >
-        {/* Doctor Image */}
-        <img
-          className="w-full h-56 object-cover rounded-lg transition-all duration-300"
-          src="https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small_2x/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg"
-          alt="Doctor"
-        />
-
-        {/* Doctor Name & Specialty */}
-        <h1 className="text-xl font-bold text-black  mt-3 text-center transition-all duration-300 hover:text-white">
-          Dr. Aadesh Khadka
-        </h1>
-        <p className="text-black font-semibold text-sm text-center transition-all duration-300 hover:text-white">
-          General Physician
-        </p>
-
-        {/* Availability Toggle */}
-        <div className="flex items-center justify-center mt-4">
-          <input type="checkbox" id="availability" className="" />
-          <motion.label
-            htmlFor="availability"
-            className="flex items-center text-black font-bold px-3 py-1 rounded-full cursor-pointer transition-all duration-300 peer-checked:bg-gray-300 peer-checked:text-gray-700 hover:bg-white hover:text-[#146A5D]"
-            whileTap={{ scale: 0.9 }}
+    <div className="md:flex flex-wrap gap-6 justify-center p-6">
+      {doctors.length > 0 ? (
+        doctors.map((doctor, index) => (
+          <div
+            key={doctor._id || index}
+            className="border border-[#146A5D] rounded-xl p-6 w-80 bg-white shadow-lg"
           >
-            <span>Available</span>
-          </motion.label>
-        </div>
-      </motion.div>
-    </motion.div>
-   </div>
-   <div className="">
-   <motion.div
-      className="flex m-4"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      
-      <motion.div
-        className="border h-[400px] border-[#146A5D] shadow-lg rounded-xl p-4 w-80 bg-white transition-all duration-300 hover:bg-[#146A5D] hover:text-white"
-        whileHover={{ scale: 1.05 }}
-      >
-        {/* Doctor Image */}
-        <img
-          className="w-full h-56 object-cover rounded-lg transition-all duration-300"
-          src="https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small_2x/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg"
-          alt="Doctor"
-        />
+            {/* Doctor Image */}
+            <img
+              className="w-full h-56 object-cover rounded-lg mb-4"
+              src={doctor.image}
+              alt={doctor.name}
+            />
 
-        {/* Doctor Name & Specialty */}
-        <h1 className="text-xl font-bold text-black  mt-3 text-center transition-all duration-300 hover:text-white">
-          Dr. Aadesh Khadka
-        </h1>
-        <p className="text-black font-semibold text-sm text-center transition-all duration-300 hover:text-white">
-          General Physician
-        </p>
+            {/* Doctor Name & Specialty */}
+            <h1 className="text-xl font-bold text-[#146A5D] mb-2 text-center">
+              {doctor.name}
+            </h1>
+            <p className="text-[#146A5D] text-center font-semibold mb-4">
+              {doctor.speciality}
+            </p>
 
-        {/* Availability Toggle */}
-        <div className="flex items-center justify-center mt-4">
-          <input type="checkbox" id="availability" className="" />
-          <motion.label
-            htmlFor="availability"
-            className="flex items-center text-black font-bold px-3 py-1 rounded-full cursor-pointer transition-all duration-300 peer-checked:bg-gray-300 peer-checked:text-gray-700 hover:bg-white hover:text-[#146A5D]"
-            whileTap={{ scale: 0.9 }}
-          >
-            <span>Available</span>
-          </motion.label>
-        </div>
-      </motion.div>
-    </motion.div>
-   </div>
-   <div className="">
-   <motion.div
-      className="flex m-4"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      
-      <motion.div
-        className="border h-[400px] border-[#146A5D] shadow-lg rounded-xl p-4 w-80 bg-white transition-all duration-300 hover:bg-[#146A5D] hover:text-white"
-        whileHover={{ scale: 1.05 }}
-      >
-        {/* Doctor Image */}
-        <img
-          className="w-full h-56 object-cover rounded-lg transition-all duration-300"
-          src="https://static.vecteezy.com/system/resources/thumbnails/026/375/249/small_2x/ai-generative-portrait-of-confident-male-doctor-in-white-coat-and-stethoscope-standing-with-arms-crossed-and-looking-at-camera-photo.jpg"
-          alt="Doctor"
-        />
+            {/* Doctor Additional Info */}
+            <div className="text-sm text-gray-700 mb-4">
+              <p className="mb-2">
+                <span className="font-semibold">Degree:</span> {doctor.degree}
+              </p>
+              <p className="mb-2">
+                <span className="font-semibold">Experience:</span>
+                {doctor.experience} {doctor.experience === 1 ? 'year' : 'years'}
+              </p>
 
-        {/* Doctor Name & Specialty */}
-        <h1 className="text-xl font-bold text-black  mt-3 text-center transition-all duration-300 hover:text-white">
-          Dr. Aadesh Khadka
-        </h1>
-        <p className="text-black font-semibold text-sm text-center transition-all duration-300 hover:text-white">
-          General Physician
-        </p>
+              <p className="mb-2">
+                <span className="font-semibold">Fees:</span> Rs {doctor.fees}
+              </p>
+            </div>
 
-        {/* Availability Toggle */}
-        <div className="flex items-center justify-center mt-4">
-          <input type="checkbox" id="availability" className="" />
-          <motion.label
-            htmlFor="availability"
-            className="flex items-center text-black font-bold px-3 py-1 rounded-full cursor-pointer transition-all duration-300 peer-checked:bg-gray-300 peer-checked:text-gray-700 hover:bg-white hover:text-[#146A5D]"
-            whileTap={{ scale: 0.9 }}
-          >
-            <span>Available</span>
-          </motion.label>
-        </div>
-      </motion.div>
-    </motion.div>
-   </div>
+            {/* Availability Checkbox */}
+            <div className="flex items-center justify-start mt-4">
+              <input
+                onChange={() => changeAvailability(doctor._id)}
+                type="checkbox"
+                id={`availability-${index}`}
+                className="mr-2"
+                defaultChecked={doctor.available}
+              />
+              <label
+                htmlFor={`availability-${index}`}
+                className="text-sm text-gray-700"
+              >
+                Available
+              </label>
+            </div>
+          </div>
+        ))
+      ) : (
+        <p className="text-center text-gray-500">No doctors found.</p>
+      )}
     </div>
   );
 };

@@ -15,7 +15,7 @@ const doctorRouter = express.Router();
 
 doctorRouter.get("/list", doctorList);
 doctorRouter.post("/login", loginDoctor); // API for doctor login
-doctorRouter.post("/appointments", authDoctor, appointmentsDoctor); // API to get doctor appointments for doctor
+doctorRouter.get("/appointments", authDoctor, appointmentsDoctor); // API to get doctor appointments for doctor
 doctorRouter.post("/appointment-complete", authDoctor, appointmentComplete); // API to mark appointment as complete
 doctorRouter.post("/appointment-cancel", authDoctor, appointmentCancel); // API to cancel appointment for doctor panel
 doctorRouter.get("/dashboard", authDoctor, doctorDashboard); // API to get dashboard data for doctor

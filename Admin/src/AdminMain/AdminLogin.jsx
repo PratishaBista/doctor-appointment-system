@@ -1,53 +1,70 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import { AdminContext } from "../context/AdminContext";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { DoctorContext } from "../context/DoctorContext";
 
 const AdminLogin = () => {
   const [state, setState] = useState("Admin");
+  const { setAdminToken, backendUrl } = useContext(AdminContext);
   const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const { setDoctorToken } = useContext(DoctorContext);
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
 
-  // Email validation
-  const validateEmail = (email) => {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailRegex.test(email);
-  };
+  const onSubmitHandler = async (event) => {
+    event.preventDefault();
 
-  // Password validation
-  const validatePassword = (password) => {
-    return password.length >= 6; // Password should be at least 6 characters long
-  };
+    try {
+      if (state === "Admin") {
+        const { data } = await axios.post(`${backendUrl}/api/admin/login`, {
+          email,
+          password,
+        });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+        console.log("Login response:", data);
 
-    let formErrors = {};
-    // Validate email
-    if (!email || !validateEmail(email)) {
-      formErrors.email = "Please enter a valid email address.";
-    }
+        if (data.success) {
+          console.log("Storing token:", data.token);
+          localStorage.setItem("admin_token", data.token);
+          setAdminToken(data.token);
+          toast.success("Login successful!");
+          navigate("/admin/dashboard"); 
+        } else {
+          toast.error(data.message);
+        }
 
-    // Validate password
-    if (!password || !validatePassword(password)) {
-      formErrors.password = "Password must be at least 6 characters long.";
-    }
+      } else {
+        const { data } = await axios.post(`${backendUrl}/api/doctor/login`, {
+          email,
+          password,
+        });
 
-    // If errors exist, set them in state
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-    } else {
-      // If no errors, proceed with login (for now, just log it)
-      console.log("Login attempted for:", state);
-      // Reset form and errors
-      setEmail("");
-      setPassword("");
-      setErrors({});
+        console.log("Login response:", data);
+
+        if (data.success) {
+          console.log("Storing token:", data.token);
+          localStorage.setItem("doctor_token", data.token);
+          setDoctorToken(data.token);
+          toast.success("Login successful!");
+          navigate("/doctor/dashboard");
+        } else {
+          toast.error(data.message);
+        }
+      }
+
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("Login failed. Please try again.");
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form
-        onSubmit={handleSubmit}
+        onSubmit={onSubmitHandler}
         className="bg-white p-8 rounded-xl shadow-lg w-96 border border-gray-200"
       >
         <h2 className="text-2xl font-bold text-center mb-6 text-[#146A5D]">
@@ -59,8 +76,8 @@ const AdminLogin = () => {
           <label className="block text-gray-700 font-medium mb-1">Email:</label>
           <input
             type="email"
-            value={email}
             onChange={(e) => setEmail(e.target.value)}
+            value={email}
             required
             className={`w-full p-3 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-[#146A5D] focus:outline-none`}
             placeholder="Enter your email"
@@ -75,8 +92,8 @@ const AdminLogin = () => {
           <label className="block text-gray-700 font-medium mb-1">Password:</label>
           <input
             type="password"
-            value={password}
             onChange={(e) => setPassword(e.target.value)}
+            value={password}
             required
             className={`w-full p-3 border ${errors.password ? "border-red-500" : "border-gray-300"} rounded-lg focus:ring-2 focus:ring-[#146A5D] focus:outline-none`}
             placeholder="Enter your password"

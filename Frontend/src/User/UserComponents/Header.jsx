@@ -13,11 +13,11 @@ const Header = () => {
           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU"
           alt="Logo"
         />
-        <p className="text-xl font-bold text-gray-800 ml-4 ">Green City Hospital</p>
+        <p className="text-xl font-bold text-gray-800 ml-4 ">PrimeLine Hospital</p>
       </div>
 
       <div className="flex items-center font-bold text-black">
-        <h1 className='text-2xl'>Email: greencity@gmail.com</h1>
+        <h1 className='text-2xl'>Email: primeline.plh@gmail.com</h1>
       </div>
       <div className="flex items-center font-bold text-black">
         <h1 className='text-xl border rounded-full p-4'>Sign up </h1>
