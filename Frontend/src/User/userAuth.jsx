@@ -9,18 +9,17 @@ const UserAuth = () => {
   const [email, setEmail] = useState("sidd12@gmail.com");
   const [password, setPassword] = useState("SiddhantStha");
   const [errors, setErrors] = useState({});
+  const [generalError, setGeneralError] = useState("");
   const navigate = useNavigate();
   const { account, setAccount } = useContext(AppContext);
 
-  // Email validation
   const validateEmail = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email);
   };
 
-  // Password validation
   const validatePassword = (password) => {
-    return password.length >= 6; // Password should be at least 6 characters long
+    return password.length >= 6;
   };
 
   const validateFullName = (fullName) => {
@@ -29,42 +28,53 @@ const UserAuth = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setGeneralError(""); // Reset general error before submission
     let formErrors = {};
 
-    if (authMode === "signup" && !fullName.trim()) {
-      formErrors.fullName = "Full name is required.";
-    }
+    try {
+      if (authMode === "signup" && !fullName.trim()) {
+        formErrors.fullName = "Full name is required.";
+      }
 
-    if (!email || !validateEmail(email)) {
-      formErrors.email = "Please enter a valid email address.";
-    }
+      if (!email || !validateEmail(email)) {
+        formErrors.email = "Please enter a valid email address.";
+      }
 
-    if (!password || !validatePassword(password)) {
-      formErrors.password = "Password must be at least 6 characters long.";
-    }
+      if (!password || !validatePassword(password)) {
+        formErrors.password = "Password must be at least 6 characters long.";
+      }
 
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors);
-    } else {
+      if (Object.keys(formErrors).length > 0) {
+        setErrors(formErrors);
+        return;
+      }
+
       console.log(`${authMode} attempted for:`, { state, email, fullName });
+
+      // Simulate authentication logic
+      if (email === "sidd12@gmail.com" && password === "SiddhantStha") {
+        setAccount(true);
+        navigate("/");
+        return;
+      }
+
+      if (
+        validateEmail(email) &&
+        validatePassword(password) &&
+        (authMode === "login" || validateFullName(fullName))
+      ) {
+        setAccount(true);
+        navigate("/");
+        return;
+      }
+
       setFullName("");
       setEmail("");
       setPassword("");
       setErrors({});
-    }
-
-    // Basic validation and login check
-    if (email === "sidd12@gmail.com" && password === "SiddhantStha") {
-      navigate("/");
-      
-      setAccount(true);
-    }
-
-    if (validateEmail(email) && validatePassword(password) && validateFullName(fullName)) {
-      navigate("/");
-      console.log("entered")
-      setAccount(true);
-      // Optionally, store user data here for future use
+    } catch (error) {
+      console.error("Unexpected error during authentication:", error);
+      setGeneralError("Something went wrong. Please try again.");
     }
   };
 
@@ -77,6 +87,12 @@ const UserAuth = () => {
         <h2 className="text-2xl font-bold text-center mb-6 text-[#146A5D]">
           {authMode === "login" ? "Login" : "Sign Up"}
         </h2>
+
+        {generalError && (
+          <div className="mb-4 text-red-600 text-sm text-center font-medium">
+            {generalError}
+          </div>
+        )}
 
         {authMode === "signup" && (
           <div className="mb-5">
@@ -126,9 +142,31 @@ const UserAuth = () => {
 
           <p className="text-gray-600 text-sm mt-3">
             {authMode === "login" ? (
-              <>New user? <span onClick={() => setAuthMode("signup")} className="text-[#146A5D] font-medium cursor-pointer hover:underline">Sign Up</span></>
+              <>New user?{" "}
+                <span
+                  onClick={() => {
+                    setAuthMode("signup");
+                    setErrors({});
+                    setGeneralError("");
+                  }}
+                  className="text-[#146A5D] font-medium cursor-pointer hover:underline"
+                >
+                  Sign Up
+                </span>
+              </>
             ) : (
-              <>Already have an account? <span onClick={() => setAuthMode("login")} className="text-[#146A5D] font-medium cursor-pointer hover:underline">Login</span></>
+              <>Already have an account?{" "}
+                <span
+                  onClick={() => {
+                    setAuthMode("login");
+                    setErrors({});
+                    setGeneralError("");
+                  }}
+                  className="text-[#146A5D] font-medium cursor-pointer hover:underline"
+                >
+                  Login
+                </span>
+              </>
             )}
           </p>
         </div>
