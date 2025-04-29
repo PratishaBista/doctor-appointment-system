@@ -1,5 +1,5 @@
-import { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 
@@ -78,7 +78,6 @@ const AppContextProvider = (props) => {
         loadUserProfileData,
         doctors, getDoctorsData,
         selectedSpecialty, setSelectedSpecialty, account, setAccount,
-        userData, setUserData,
         slotTime, setSlotTime,
         slotIndex, setSlotIndex,
         daysOfWeek,

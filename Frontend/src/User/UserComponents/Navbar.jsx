@@ -91,6 +91,7 @@ const Navbar = () => {
 
         {/* Profile / Auth Button */}
         <div className="flex items-center mr-6 relative">
+        <img className="h-[60px] mr-4" src="https://static.vecteezy.com/system/resources/previews/006/086/198/original/notification-icon-for-web-vector.jpg" alt="" />
           {token ? (
             <div className="relative" ref={dropdownRef}>
               <div className="flex items-center">

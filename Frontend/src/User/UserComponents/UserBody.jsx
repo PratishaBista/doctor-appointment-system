@@ -47,7 +47,7 @@ const UserBody = () => {
           <h1 className='text-black text-4xl font-semibold w-[500px]'>All Your Health concern in a single Platform</h1>
           <button
           onClick={()=>navigate("/ourServices")}
-          className=' mt-4  hover:bg-[#0F5247] border-2 border-slate-100 px-8 py-4 bg-slate-200 rounded-xl shadow-2xl text-black'>Book Appointment</button>
+          className=' mt-4  hover:bg-[#d6f3ee] border-2 border-slate-100 px-8 py-4 bg-slate-200 rounded-xl shadow-2xl text-black'>Book Appointment</button>
 
         </div>
       </div>

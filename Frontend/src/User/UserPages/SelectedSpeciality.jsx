@@ -15,10 +15,12 @@ const SelectedSpeciality = () => {
       </div>
     );
   }
-  const filteredDoctors = AllDoctors.filter(
-    (doctor) => doctor.Speciality === selectedSpecialty.name
+  const filteredDoctors = (AllDoctors || []).filter(
+    (doctor) => doctor.Speciality === selectedSpecialty?.name
   );
-  console.log(filteredDoctors)
+  console.log(filteredDoctors);
+  
+  
   const navigate=useNavigate()
 
   return (
