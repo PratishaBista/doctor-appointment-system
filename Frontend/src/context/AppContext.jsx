@@ -54,6 +54,7 @@ const AppContextProvider = (props) => {
     const [account, setAccount] = useState(false)
 
     const [selectedSpecialty, setSelectedSpecialty] = useState({})
+    const [notifications, setNotifications] = useState({})
     const [slotTime, setSlotTime] = useState(null);
     const [slotIndex, setSlotIndex] = useState(0);
     const [selectedDate, setSelectedDate] = useState(null);
@@ -83,7 +84,8 @@ const AppContextProvider = (props) => {
         daysOfWeek,
         selectedDate, setSelectedDate,
         selectedMonth, setSelectedMonth,
-        shortMonths, months
+        shortMonths, months,
+        notifications, setNotifications
 
     }
 
