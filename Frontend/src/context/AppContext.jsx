@@ -54,7 +54,14 @@ const AppContextProvider = (props) => {
     const [account, setAccount] = useState(false)
 
     const [selectedSpecialty, setSelectedSpecialty] = useState({})
-    const [notifications, setNotifications] = useState({})
+    const [notifications, setNotifications] = useState([{
+        header:"head 1 is the head until head",
+        body:"lorem sdnckasnf sfonvskld lskadmlad asldkmalda, d'laskmas alakssca'l see more",
+        
+    },{
+        header:"head 2",
+        body:"body2 Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio dolore quae obcaecati cumque id dicta natus, quidem exercitationem, cum itaque, quisquam assumenda adipisci dignissimos tempore sed voluptas ullam nostrum nobis."
+    }])
     const [slotTime, setSlotTime] = useState(null);
     const [slotIndex, setSlotIndex] = useState(0);
     const [selectedDate, setSelectedDate] = useState(null);
