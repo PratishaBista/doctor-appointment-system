@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
+import HealthSolutionLogo from "../../assets/HealthSolutionLogo.png";
+
 
 const Navbar = () => {
   const { token, setToken, userData = {} } = useContext(AppContext);
@@ -34,70 +36,96 @@ const Navbar = () => {
   }, []);
 
   return (
-    <div className="bg-white w-full shadow-md">
-      <div className="max-w-[2200px] mx-auto flex justify-between items-center px-6 py-4">
-        {/* Logo */}
-        <div className="flex items-center space-x-3">
-          <img
-            className="h-[45px] w-[45px] rounded-full cursor-pointer transition transform"
-            onClick={() => {
-              navigate("/");
-              window.scrollTo(0, 0);
-            }}
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU"
-            alt="Logo"
-          />
-          <p onClick={() => {
-            navigate("/");
-          }} className="text-2xl font-bold text-[#146A5D] cursor-pointer">
-            PrimeLine Hospital
-          </p>
+    <div className="bg-white w-full">
+      {/* Top Contact Bar */}
+      <div className="bg-[#ffffff] text-black py-2 px-15">
+        <div className="max-w-[2500px] mx-auto flex justify-between items-center">
+          <div className="flex items-center cursor-pointer">
+            <img
+              onClick={() => { navigate("/"); window.scrollTo(0, 0); }}
+              className="h-20 w-25 mr-4 transition transform"
+              src={HealthSolutionLogo}
+              alt="HealthSolution Logo"
+            />
+          </div>
+          <div className="flex items-center space-x-6">
+            <div className="flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8 mr-2 text-[#4CAF50]"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+              </svg>
+              <span>+977 9841234567</span>
+            </div>
+            <div className="flex items-center">
+              <a
+                href="mailto:info@healthsolution.com"
+                className="flex items-center"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-8 w-8 mr-2 text-[#4CAF50]"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                  <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                </svg>
+                <span>info@healthsolution.com</span>
+              </a>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Navigation (Without Map Method) */}
+      {/* Main Navigation Bar */}
+      <div className="max-w-[2500px] mx-auto flex justify-between items-center px-15 py-0">
         <div className="hidden md:flex space-x-8 font-semibold">
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
-              ${active === "Home" ? "text-gray-400" : "text-[#146A5D] hover:text-gray-400"}`}
+              ${active === "Home" ? "text-[#0288D1]" : "text-gray-700 hover:text-[#0288D1]"}`}
             onClick={() => handleNavigation("Home", "/")}
           >
-            <p className="font-bold">Home</p>
+            <p className="font-medium">Home</p>
           </div>
 
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
-              ${active === "Our Services" ? "text-gray-400" : "text-[#146A5D] hover:text-gray-400"}`}
+              ${active === "Our Services" ? "text-[#0288D1]" : "text-gray-700 hover:text-[#0288D1]"}`}
             onClick={() => handleNavigation("Our Services", "/ourServices")}
           >
-            <p className="font-bold">Our Services</p>
+            <p className="font-medium">Our Services</p>
           </div>
 
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
-              ${active === "Contact Us" ? "text-gray-400" : "text-[#146A5D] hover:text-gray-400"}`}
+              ${active === "Contact Us" ? "text-[#0288D1]" : "text-gray-700 hover:text-[#0288D1]"}`}
             onClick={() => handleNavigation("Contact Us", "/userContact")}
           >
-            <p className="font-bold">Contact Us</p>
+            <p className="font-medium">Contact Us</p>
           </div>
 
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
-              ${active === "About Us" ? "text-gray-400" : "text-[#146A5D] hover:text-gray-400"}`}
+              ${active === "About Us" ? "text-[#0288D1]" : "text-gray-700 hover:text-[#0288D1]"}`}
             onClick={() => handleNavigation("About Us", "/userAbout")}
           >
-            <p className="font-bold">About Us</p>
+            <p className="font-medium">About Us</p>
           </div>
         </div>
 
-        {/* Profile / Auth Button */}
-        <div className="flex items-center mr-6 relative">
+        {/* Profile */}
+        <div className="flex items-center relative">
           {token ? (
             <div className="relative" ref={dropdownRef}>
               <div className="flex items-center">
                 <img
                   onClick={() => navigate("/profile")}
                   className="h-10 w-10 rounded-full cursor-pointer"
-                  src={userData?.image || defaultImage} 
+                  src={userData?.image || defaultImage}
                   alt="Profile"
                 />
 
@@ -111,13 +139,13 @@ const Navbar = () => {
 
               {/* Dropdown Menu */}
               {dropDown && (
-                <div className="absolute right-0 mt-2 w-48 shadow-md rounded-md py-2 z-50 bg-white">
+                <div className="absolute right-0 mt-2 w-48 shadow-md rounded-md py-2 z-50 bg-white border border-gray-200">
                   <p
                     onClick={() => {
                       navigate("/profile");
                       setDropDown(false);
                     }}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
                   >
                     Profile
                   </p>
@@ -126,7 +154,7 @@ const Navbar = () => {
                       navigate("/bookedAppointment");
                       setDropDown(false);
                     }}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-gray-700"
                   >
                     My Appointments
                   </p>
@@ -146,9 +174,10 @@ const Navbar = () => {
           ) : (
             <button
               onClick={() => navigate("/auth")}
-              className="text-lg text-white rounded-sm py-2 px-6 hover:bg-[#0F5247] transform transition duration-300 ease-in-out hover:scale-105 bg-[#146A5D]"
+              className="px-8 py-3 text-lg font-semibold rounded-xl shadow-2xl transition-all hover:brightness-115
+          bg-[#0288D1] text-white border-2 border-white/20"
             >
-              Create an Account
+              Get Started
             </button>
           )}
         </div>

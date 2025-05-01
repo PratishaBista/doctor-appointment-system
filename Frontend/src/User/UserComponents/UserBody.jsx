@@ -1,9 +1,10 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
+import banner from "../../assets/Banner.jpg"
 
 const UserBody = () => {
-  const navigate =useNavigate()
+  const navigate = useNavigate()
   const doctorSpecialties = [
     {
       name: "Cardiology",
@@ -23,34 +24,50 @@ const UserBody = () => {
     {
       name: "Psychiatry",
       description: "Deals with mental health disorders such as depression, anxiety, schizophrenia, and bipolar disorder.",
-      img:"https://cdn-icons-png.flaticon.com/512/12024/12024688.png"
+      img: "https://cdn-icons-png.flaticon.com/512/12024/12024688.png"
     },
   ];
-  const {selectedSpecialty,setSelectedSpecialty}=useContext(AppContext)
+  const { selectedSpecialty, setSelectedSpecialty } = useContext(AppContext)
 
   return (
-    <div className="flex flex-col items-center px-4 mt-10">
-      
-      {/* Hero Title */}
-      <h1 className="text-3xl md:text-5xl font-bold leading-tight text-gray-800 max-w-3xl mx-auto text-center">
-        Your Health Our Priority 
-      </h1>
+    <div className="relative w-full h-[50vh] overflow-hidden">
+      {/* Banner */}
+      <img
+        className="w-full h-full object-cover"
+        src={banner}
+        alt="Health Solution Banner"
+      />
 
-      {/* Hero Section with Transparent Image */}
-      <div className="relative w-[100vw] flex justify-center mt-6">
-        <img 
-          className="w-[87vw] h-[500px] md:h-[570px] object-cover rounded-2xl shadow-lg "
-          src="https://img.freepik.com/free-photo/close-up-doctor-with-copy-space_23-2148814244.jpg?t=st=1742957571~exp=1742961171~hmac=fe85ae5ec88e437032dd745630d9162f65bff4b7dff1a0713729ae8ae0c3001e&w=1380"
-          alt="Medical Team"
-        />
-        <div className="absolute top-29 right-24 transform -translate-x-1/2  text-white rounded-xl  transition-all text-lg md:text-2xl opacity-80">
-          <h1 className='text-black text-4xl font-semibold w-[500px]'>All Your Health concern in a single Platform</h1>
-          <button
-          onClick={()=>navigate("/ourServices")}
-          className=' mt-4  hover:bg-[#0F5247] border-2 border-slate-100 px-8 py-4 bg-slate-200 rounded-xl shadow-2xl text-black'>Book Appointment</button>
+      <div className="absolute top-0 left-0 w-full h-full flex items-start justify-start">
+        <div className="bg-gradient-to-r from-black/40 to-transparent w-full h-full flex items-start pt-20 md:pt-32 pl-6 md:pl-20">
+          <div className="max-w-4xl">
+            {/* Title */}
+            <h1 className="text-4xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
+              Quality Care
+            </h1>
 
+            {/* Subtitle and Button */}
+            <h2 className="text-xl md:text-1xl font-medium mb-6 text-gray-100 drop-shadow-md pb-2">
+              <span className="border-b-5 border-[#0288D1] inline-block">
+                All Your Health Concerns in a Single Platform
+              </span>
+            </h2>
+
+            {/* <p className="text-sm md:text-base text-gray-200 mb-4 max-w-xl">
+              We help you make informed decisions about your health by bringing together trusted resources and real-time access to care.
+            </p> */}
+
+            <button
+              onClick={() => navigate("/ourServices")}
+              className="px-8 py-4 text-lg font-semibold rounded-xl shadow-2xl transition-all hover:brightness-115
+          bg-[#0288D1] text-white border-2 border-white/20"
+            >
+              Make an Appointment
+            </button>
+          </div>
         </div>
       </div>
+
 
       {/* Services Section */}
       <div className="w-full max-w-5xl mt-8 p-6">
@@ -64,11 +81,12 @@ const UserBody = () => {
         {doctorSpecialties.map((specialty, index) => (
           <div
             key={index}
-            onClick={()=>{setSelectedSpecialty(specialty)
+            onClick={() => {
+              setSelectedSpecialty(specialty)
               console.log("clicked")
               navigate("/selectedSpeciality")
-              scrollTo(0,0)
-          }}
+              scrollTo(0, 0)
+            }}
             className="bg-white shadow-lg rounded-lg p-6 flex flex-col items-center transform hover:scale-105 transition duration-500 hover:shadow-2xl"
           >
             <img
@@ -84,16 +102,16 @@ const UserBody = () => {
 
       {/* More Button */}
       <button
-  className="mt-8 bg-[#146A5D] hover:bg-green-900 text-white text-xl font-semibold px-8 py-3 rounded-lg shadow-md  transition-transform transform active:scale-95 active:translate-y-1"
-  onClick={() => {
-    navigate("/ourServices");
-    window.scrollTo(0, 0); 
-  }}
->
-  More
-</button>
+        className="mt-8 bg-[#146A5D] hover:bg-green-900 text-white text-xl font-semibold px-8 py-3 rounded-lg shadow-md  transition-transform transform active:scale-95 active:translate-y-1"
+        onClick={() => {
+          navigate("/ourServices");
+          window.scrollTo(0, 0);
+        }}
+      >
+        More
+      </button>
 
-    </div>
+    </div >
   );
 };
 
