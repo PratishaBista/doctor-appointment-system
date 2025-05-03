@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import banner from "../../assets/Banner.jpg"
+import { motion } from "framer-motion";
 
 const UserBody = () => {
   const navigate = useNavigate()
@@ -40,7 +41,7 @@ const UserBody = () => {
 
       <div className="absolute top-0 left-0 w-full h-full flex items-start justify-start">
         <div className="bg-gradient-to-r from-black/40 to-transparent w-full h-full flex items-start pt-20 md:pt-32 pl-6 md:pl-20">
-          <div className="max-w-4xl">
+          <div className="max-w-4xl px-20">
             {/* Title */}
             <h1 className="text-4xl md:text-7xl font-bold text-white mb-6 drop-shadow-lg">
               Quality Care
@@ -58,15 +59,50 @@ const UserBody = () => {
             </p> */}
 
             <button
-              onClick={() => navigate("/ourServices")}
+              onClick={() => navigate("/FindDoctors")}
               className="px-8 py-4 text-lg font-semibold rounded-xl shadow-2xl transition-all hover:brightness-115
           bg-[#0288D1] text-white border-2 border-white/20"
+              whileTap={{ scale: 0.98 }}
             >
               Make an Appointment
             </button>
           </div>
+          {/* Opening Hours Card */}
+          <motion.div
+            className="absolute top-45 right-40 bg-white p-6 rounded-xl shadow-lg border-l-4 border-[#0288D1] w-96 max-w-xl"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.3 }}
+          >
+            <h2 className="text-2xl font-bold text-[#0288D1] mb-4">Servicing Hours</h2>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Sunday - Thursday</span>
+                <span className="text-gray-600">8:00 AM - 7:00 PM</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Friday</span>
+                <span className="text-gray-600">11:00 AM - 11:00 PM</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="font-medium">Saturday</span>
+                <span className="text-gray-600">11:00 AM - 5:00 PM</span>
+              </div>
+            </div>
+
+            <motion.button
+              onClick={() => navigate("/FindDoctors")}
+              className="w-full py-3 px-6 text-lg font-semibold rounded-lg shadow-md transition-all hover:brightness-105 bg-[#0288D1] text-white"
+              whileTap={{ scale: 0.98 }}
+            >
+              Book Now
+            </motion.button>
+          </motion.div>
         </div>
       </div>
+
+
 
 
       {/* Services Section */}

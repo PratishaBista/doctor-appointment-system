@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
-import HealthSolutionLogo from "../../assets/HealthSolutionLogo.png";
-
+import HealthSolutionLogo from "../../assets/HealthSolutionLogo.svg";
 
 const Navbar = () => {
   const { token, setToken, userData = {} } = useContext(AppContext);
@@ -82,7 +81,7 @@ const Navbar = () => {
       </div>
 
       {/* Main Navigation Bar */}
-      <div className="max-w-[2500px] mx-auto flex justify-between items-center px-15 py-0">
+      <div className="max-w-[2500px] mx-auto flex justify-between items-center px-40 py-3">
         <div className="hidden md:flex space-x-8 font-semibold">
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
@@ -98,6 +97,22 @@ const Navbar = () => {
             onClick={() => handleNavigation("Our Services", "/ourServices")}
           >
             <p className="font-medium">Our Services</p>
+          </div>
+
+          <div
+            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
+              ${active === "Department" ? "text-[#0288D1]" : "text-gray-700 hover:text-[#0288D1]"}`}
+            onClick={() => handleNavigation("Department", "/Department")}
+          >
+            <p className="font-medium">Department</p>
+          </div>
+
+          <div
+            className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
+              ${active === "Find Doctors" ? "text-[#0288D1]" : "text-gray-700 hover:text-[#0288D1]"}`}
+            onClick={() => handleNavigation("Find Doctors", "/FindDoctors")}
+          >
+            <p className="font-medium">Find Doctors</p>
           </div>
 
           <div
@@ -176,9 +191,11 @@ const Navbar = () => {
               onClick={() => navigate("/auth")}
               className="px-8 py-3 text-lg font-semibold rounded-xl shadow-2xl transition-all hover:brightness-115
           bg-[#0288D1] text-white border-2 border-white/20"
+              whileTap={{ scale: 0.98 }}
             >
-              Get Started
+              Login/Signup
             </button>
+
           )}
         </div>
       </div>

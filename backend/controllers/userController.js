@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import nodemailer from "nodemailer";
 
 //api to register user
 const registerUser = async (req, res) => {
@@ -70,6 +71,97 @@ const loginUser = async (req, res) => {
   }
 };
 
+
+// Function to send password reset email
+const sendResetEmail = (email, resetToken) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`; // URL to your frontend reset password page
+
+
+  // Email content
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Password Reset Request",
+    text: `Click on the following link to reset your password: ${resetLink}`,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+
+
+// API to handle password reset request
+// This API will send a password reset link to the user's email
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  console.log("Requested email:", email);
+
+  try {
+    const user = await userModel.findOne({ email });
+    console.log("User found:", user);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    try {
+      await sendResetEmail(email, resetToken);
+      res.json({
+        success: true,
+        message: "Password reset link sent to your email",
+      });
+    } catch (emailError) {
+      console.error("Error sending email: ", emailError);
+      res.json({
+        success: false,
+        message: "Failed to send reset email",
+      });
+    }
+  } catch (error) {
+    console.error("Error in forgotPassword API: ", error);
+    res.json({ success: false, message: "Something went wrong" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+   // Verify the token and decode the user ID
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await userModel.findById(decoded.id);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password in the database
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password has been updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Invalid or expired reset token" });
+  }
+};
+
 // api to get user profile details
 const getProfile = async (req, res) => {
   try {
@@ -132,14 +224,14 @@ const bookAppointment = async (req, res) => {
     if (!doctorData) {
       return res.status(404).json({
         success: false,
-        message: "Doctor not found with given ID"
+        message: "Doctor not found with given ID",
       });
     }
-    
+
     if (!doctorData.available) {
       return res.status(400).json({
         success: false,
-        message: "Doctor is not available for appointments"
+        message: "Doctor is not available for appointments",
       });
     }
     if (!doctorData.available) {
@@ -241,13 +333,6 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
-// const esewaPaymentInstance = new esewaPayment({
-//   key_id: '',
-//   key_secret: '',
-// });
-
-// // API to make payment
-// const esewaPayment = async (req, res) => {};
 
 export {
   registerUser,
@@ -255,6 +340,9 @@ export {
   getProfile,
   updateProfile,
   bookAppointment,
+  sendResetEmail,
+  forgotPassword,
+  resetPassword,
   listAppointment,
   cancelAppointment,
 };

@@ -160,8 +160,6 @@ const MyAppointment = () => {
     setDocSlots(slotsArray);
   };
 
-
-  // Fetch slots when doctor info is available
   useEffect(() => {
     if (docInfo) {
       getAvailableSlots();

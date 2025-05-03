@@ -5,10 +5,10 @@ import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaShieldAlt, FaFileMedica
 
 const Footer = () => {
   return (
-    <footer className="bg-[#ffffff] text-black">
+    <footer className="bg-[#01579B] text-white">
       <div className="max-w-7xl mx-auto px-6 py-12">
         {/* Main Footer Content */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-4">
 
           <div className="space-y-4">
             <div className="flex items-center">
@@ -17,9 +17,9 @@ const Footer = () => {
                 alt="HealthSolution Logo"
                 className="h-20 w-25 mr-3"
               />
-              
+
             </div>
-            <p className="text-gray-800 text-sm">
+            <p className="text-[#F1F1F1] text-sm">
               Your trusted healthcare partner for seamless doctor appointments and medical care.
             </p>
             <div className="flex space-x-4">
@@ -40,22 +40,22 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4 border-b border-[#4CAF50] pb-2">Quick Links</h3>
+            <h3 className="text-lg font-semibold mb-4 pb-2">Quick Links</h3>
             <ul className="space-y-2">
               <li><a href="/doctors" className="transition-colors flex items-center">
-                <span className="mr-2">•</span> Find a Doctor
+                <span className="mr-2"></span> Find a Doctor
               </a></li>
               <li><a href="/specialties" className="transition-colors flex items-center">
-                <span className="mr-2">•</span> Specialties
+                <span className="mr-2"></span> Specialties
               </a></li>
               <li><a href="/appointments" className="transition-colors flex items-center">
-                <span className="mr-2">•</span> My Appointments
+                <span className="mr-2"></span> My Appointments
               </a></li>
             </ul>
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4 border-b border-[#4CAF50] pb-2">Contact Us</h3>
+            <h3 className="text-lg font-semibold mb-4 pb-2">Contact Us</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
                 <FaMapMarkerAlt className="text-[#4CAF50] mt-1 mr-3 flex-shrink-0" />
@@ -77,7 +77,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-4 border-b border-[#4CAF50] pb-2">Important</h3>
+            <h3 className="text-lg font-semibold mb-4 pb-2">Important</h3>
             <ul className="space-y-2">
               <li><a href="/privacy" className="transition-colors flex items-center">
                 <FaShieldAlt className="text-[#4CAF50] mr-2" />
@@ -88,10 +88,10 @@ const Footer = () => {
                 Terms of Service
               </a></li>
               <li><a href="/faq" className="transition-colors flex items-center">
-                <span className="mr-2">•</span> FAQ
+                <span className="mr-2"></span> FAQ
               </a></li>
               <li><a href="/feedback" className="transition-colors flex items-center">
-                <span className="mr-2">•</span> Patient Feedback
+                <span className="mr-2"></span> Patient Feedback
               </a></li>
             </ul>
           </div>
@@ -105,13 +105,13 @@ const Footer = () => {
               <p className="text-[#4CAF50] text-sm">24/7 Emergency Services</p>
             </div>
           </div>
-          <a href="tel:+9779801234567" className="bg-white text-red-600 px-4 py-2 rounded-md font-semibold hover:bg-gray-100 transition-colors">
+          {/* <a href="tel:+9779801234567" className=" text-red-600 rounded-md font-semibold hover:bg-gray-100 transition-colors">
             Dial: +977 9801234567
-          </a>
+          </a> */}
         </div>
 
-        <div className="pt-6 flex flex-col md:flex-row justify-center items-center">
-          <p className="text-gray-800 text-sm mb-4 md:mb-0">
+        <div className="pt-6 flex flex-col md:flex-row justify-left items-center">
+          <p className="text-[#F1F1F1] text-sm mb-4 md:mb-0">
             &copy; {new Date().getFullYear()} HealthSolution. All rights reserved.
           </p>
         </div>
