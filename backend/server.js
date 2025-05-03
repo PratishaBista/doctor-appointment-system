@@ -15,16 +15,16 @@ connectCloudinary();
 
 // middlewares
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:5173", "http://localhost:5174"],
+  })
+);
 
 // api endpoints
-
 app.use("/api/admin", adminRouter);
-// localhost:4000/api/admin/add-doctor
 app.use("/api/doctor", doctorRouter);
-// localhost:4000/api/doctor/list
-app.use('/api/user', userRouter);
-// localhost:4000/api/user/register
+app.use("/api/user", userRouter);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

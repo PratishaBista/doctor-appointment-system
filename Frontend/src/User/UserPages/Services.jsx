@@ -1,10 +1,13 @@
 import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
-import UserAllDoctors from './UserAllDoctors';
 
-  const OurServices = () => {
-   const doctorSpecialties = [
+
+//* This component displays a list of doctor specialties with their descriptions and images.
+//* When a specialty is clicked, it sets the selected specialty in the context and navigates to the selectedSpeciality page.
+//* The specialties are hardcoded in an array and displayed in a responsive grid layout. later this page might have to be removed or replaced
+const OurServices = () => {
+  const doctorSpecialties = [
     {
       name: "Cardiology",
       description: "Specializes in the diagnosis and treatment of heart conditions, including heart attacks, arrhythmias, and other cardiovascular diseases.",
@@ -38,12 +41,12 @@ import UserAllDoctors from './UserAllDoctors';
     {
       name: "Psychiatry",
       description: "Focuses on the diagnosis, treatment, and prevention of mental health disorders such as depression, anxiety, schizophrenia, and bipolar disorder.",
-      img:"https://cdn-icons-png.flaticon.com/512/12024/12024688.png"
+      img: "https://cdn-icons-png.flaticon.com/512/12024/12024688.png"
     },
     {
       name: "Gastroenterology",
       description: "Specializes in the digestive system, treating conditions like irritable bowel syndrome (IBS), ulcers, liver disease, and colorectal cancer.",
-      img:"https://cdn-icons-png.flaticon.com/512/12106/12106213.png"
+      img: "https://cdn-icons-png.flaticon.com/512/12106/12106213.png"
     },
     {
       name: "Obstetrics and Gynecology",
@@ -66,8 +69,8 @@ import UserAllDoctors from './UserAllDoctors';
       img: "https://cdn-icons-png.flaticon.com/512/4006/4006267.png"
     }
   ];
-const {selectedSpecialty,setSelectedSpecialty}=useContext(AppContext)
-const navigate =useNavigate()
+  const { selectedSpecialty, setSelectedSpecialty } = useContext(AppContext)
+  const navigate = useNavigate()
   return (
     <div className="p-6 mt-8">
       <h1 className="text-3xl font-bold underline mb-6 text-center">Our Services</h1>
@@ -75,10 +78,11 @@ const navigate =useNavigate()
       <div className="flex flex-wrap gap-6 justify-center ">
         {doctorSpecialties.map((specialty, index) => (
           <div
-          onClick={()=>{setSelectedSpecialty(specialty)
+            onClick={() => {
+              setSelectedSpecialty(specialty)
               navigate("/selectedSpeciality")
-              scrollTo(0,0)
-          }}
+              scrollTo(0, 0)
+            }}
             key={index}
             className="transform hover:scale-105 transition duration-500 ease-in-out bg-white shadow-lg rounded-lg p-4 w-1/3 sm:w-1/4 md:w-1/6 hover:shadow-2xl"
           >
@@ -94,7 +98,6 @@ const navigate =useNavigate()
           </div>
         ))}
       </div>
-      <UserAllDoctors/>
     </div>
   );
 }
