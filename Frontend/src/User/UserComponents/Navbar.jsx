@@ -91,13 +91,13 @@ const Navbar = () => {
             <p className="font-medium">Home</p>
           </div>
 
-          <div
+          {/* <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
               ${active === "Our Services" ? "text-[#0288D1]" : "text-gray-700 hover:text-[#0288D1]"}`}
             onClick={() => handleNavigation("Our Services", "/ourServices")}
           >
             <p className="font-medium">Our Services</p>
-          </div>
+          </div> */}
 
           <div
             className={`relative cursor-pointer text-lg transition duration-300 ease-in-out 
