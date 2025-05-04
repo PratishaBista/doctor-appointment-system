@@ -10,12 +10,15 @@ import MyAppointment from './UserPages/MyAppointment';
 import OurServices from './UserPages/OurServices';
 import SelectedSpeciality from './UserPages/SelectedSpeciality';
 import UserAbout from './UserPages/UserAbout';
+import UserPayment from './UserPages/UserPayment';
+
 import UserContact from './UserPages/UserContact';
 
 function UserHome() {
   return (
     <>
       <Navbar />
+      <UserPayment/>
       <Routes>
         <Route path="/" element={<HomeBody />} />
         <Route path="/ourServices" element={<OurServices />} />
