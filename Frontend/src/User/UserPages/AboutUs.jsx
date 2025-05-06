@@ -160,7 +160,7 @@ const UserAbout = () => {
             </p>
           </div>
           <div className="text-center mt-8">
-            <button className="px-8 py-3 bg-[#0288D1] text-white hover:brightness-115 font-medium rounded-md transition-colors text-lg" whileTap={{ scale: 0.98 }}>
+            <button className="px-8 py-3 bg-[#0288D1] text-white hover:brightness-115 font-medium rounded-md transition-colors text-lg">
               Our Medical Departments →
             </button>
           </div>

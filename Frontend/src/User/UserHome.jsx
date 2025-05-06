@@ -2,10 +2,8 @@ import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Footer from './UserComponents/Footer';
 import HomeBody from './UserComponents/HomeBody';
-import MyProfile from './UserComponents/MyProfile';
 import Navbar from './UserComponents/Navbar';
-import BookedAppointment from './UserPages/BookedAppointment';
-import MyAppointment from './UserPages/MyAppointment';
+import BookAppointment from './UserPages/BookAppointment';
 import SelectedSpeciality from './UserPages/SelectedSpeciality';
 import UserAbout from './UserPages/AboutUs';
 import UserContact from './UserPages/ContactUs';
@@ -32,10 +30,8 @@ function UserHome() {
         <Route path="/userAbout" element={<UserAbout />} />
         <Route path="/Department" element={<Department />} />
         <Route path="/userContact" element={<UserContact />} />
-        <Route path="/profile" element={<MyProfile />} />
-        <Route path="/bookedAppointment" element={<BookedAppointment />} />
         <Route path="/selectedSpeciality" element={<SelectedSpeciality />} />
-        <Route path="/my-appointment/:docId" element={<MyAppointment />} />
+        <Route path="/book-appointment/:docId" element={<BookAppointment />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>

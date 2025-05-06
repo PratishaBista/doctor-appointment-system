@@ -71,7 +71,6 @@ const loginUser = async (req, res) => {
   }
 };
 
-
 // Function to send password reset email
 const sendResetEmail = (email, resetToken) => {
   const transporter = nodemailer.createTransport({
@@ -84,7 +83,6 @@ const sendResetEmail = (email, resetToken) => {
 
   const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`; // URL to your frontend reset password page
 
-
   // Email content
   const mailOptions = {
     from: process.env.EMAIL,
@@ -95,7 +93,6 @@ const sendResetEmail = (email, resetToken) => {
 
   return transporter.sendMail(mailOptions);
 };
-
 
 // API to handle password reset request
 // This API will send a password reset link to the user's email
@@ -137,7 +134,7 @@ const resetPassword = async (req, res) => {
   const { token, newPassword } = req.body;
 
   try {
-   // Verify the token and decode the user ID
+    // Verify the token and decode the user ID
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await userModel.findById(decoded.id);
     if (!user) {
@@ -284,16 +281,23 @@ const bookAppointment = async (req, res) => {
   }
 };
 
-// API to get user appointments for frontend
+// GET /appointments?userID=xyz
 const listAppointment = async (req, res) => {
   try {
-    const { userID } = req.body;
-    const appointments = await appointmentModel.find({ userID });
+    const { userId } = req.body;
 
-    res.json({ success: true, appointments });
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required" });
+    }
+
+    const appointments = await appointmentModel.find({ userId });
+
+    res.status(200).json({ success: true, appointments });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Error fetching appointments:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -332,7 +336,6 @@ const cancelAppointment = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-
 
 export {
   registerUser,

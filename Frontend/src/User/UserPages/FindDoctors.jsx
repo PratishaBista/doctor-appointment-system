@@ -195,7 +195,7 @@ const FindDoctors = () => {
                 {currentDoctors.map((doctor, index) => (
                   <motion.div
                     key={index}
-                    onClick={() => navigate(`/my-appointment/${doctor._id}`)}
+                    onClick={() => navigate(`/book-appointment/${doctor._id}`)}
                     className="cursor-pointer bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col h-full"
                     whileHover={{ y: -5 }}
                   >
@@ -222,7 +222,7 @@ const FindDoctors = () => {
                           className="w-full py-2 bg-[#0288D1] text-white rounded-lg hover:bg-[#0277BD] transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/my-appointment/${doctor._id}`);
+                            navigate(`/book-appointment/${doctor._id}`);
                           }}
                         >
                           Book Appointment

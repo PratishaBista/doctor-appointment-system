@@ -2,6 +2,9 @@ import doctorModel from "../models/doctorModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
+import nodemailer from "nodemailer";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const changeAvailability = async (req, res) => {
   try {
@@ -82,7 +85,7 @@ const sendResetEmail = (email, resetToken) => {
     },
   });
 
-  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`; // URL to your frontend reset password page
+  const resetLink = `${process.env.STAFF_URL}/reset-password?token=${resetToken}`; // URL to your frontend reset password page
 
   // Email content
   const mailOptions = {
@@ -102,10 +105,10 @@ const forgotPassword = async (req, res) => {
   console.log("Requested email:", email);
 
   try {
-    const doctor = await userModel.findOne({ email });
-    console.log("User found:", doctor);
+    const doctor = await doctorModel.findOne({ email });
+    console.log("Doctor found:", doctor);
     if (!doctor) {
-      return res.json({ success: false, message: "User not found" });
+      return res.json({ success: false, message: "Doctor not found" });
     }
 
     const resetToken = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET, {
@@ -137,9 +140,9 @@ const resetPassword = async (req, res) => {
   try {
     // Verify the token and decode the user ID
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const doctor = await userModel.findById(decoded.id);
+    const doctor = await doctorModel.findById(decoded.id);
     if (!doctor) {
-      return res.json({ success: false, message: "Admin not found" });
+      return res.json({ success: false, message: "Doctor not found" });
     }
 
     // Hash the new password
@@ -147,8 +150,8 @@ const resetPassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
     // Update the password in the database
-    user.password = hashedPassword;
-    await user.save();
+    doctor.password = hashedPassword;
+    await doctor.save();
 
     res.json({
       success: true,
@@ -237,7 +240,6 @@ const appointmentCancel = async (req, res) => {
 };
 
 //api to get dashboard data for doctor panel
-
 const doctorDashboard = async (req, res) => {
   try {
     const { doctorId } = req.body;

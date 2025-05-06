@@ -17,88 +17,88 @@ const Services = () => {
       title: "Travel Health Consultant",
       description: "Planning a trip? Get vaccinations and travel health advice",
       image: "/images/travel-health-specialist.webp",
-      link: "/services/travel-health",
+      link: "/department",
     },
     {
       title: "Couples Therapist",
       description: "Strengthen your relationship with expert guidance and support",
       image: "/images/CoupleTherapist.jpg",
-      link: "/services/couples-therapist",
+      link: "/department",
     },
     {
       title: "Sports Psychologist",
       description: "Boost your mental game with expert sports psychology",
       image: "/images/sports-psychologist.jpg",
-      link: "/services/sports-psychologist",
+      link: "/department",
     },
     {
       title: "Laughter Therapist",
       description: "De-stress with sessions focused on the healing power of laughter",
       image: "/images/Laughter-therapist.webp",
-      link: "/services/laughter-therapist",
+      link: "/department",
     },
     {
       title: "Mindfulness Coach",
       description: "Learn techniques to stay present, calm, and focused",
       image: "/images/mindfulness-coach.webp",
-      link: "/services/mindfulness-coach",
+      link: "/department",
     },
     {
       title: "Career Counselor",
       description: "Feeling stuck? Get expert advice to navigate your career path",
       image: "/images/career-counselor.webp",
-      link: "/services/career-counselor",
+      link: "/department",
     },
     {
       title: "Sleep Specialist",
       description: "Trouble sleeping? Discover treatments for better rest and recovery",
       image: "/images/sleep-specialist.avif",
-      link: "/services/sleep-specialist",
+      link: "/department",
     },
-
     {
       title: "Gynecologist/Obstetrician",
       description: "Explore for women's health, pregnancy and infertility treatments",
       image: "/images/gynecologist.webp",
-      link: "/services/gynecologist",
+      link: "/department",
     },
     {
       title: "Dietitian/Nutrition",
       description: "Get guidance on eating right, weight management and sports nutrition",
       image: "/images/nutritionist.webp",
-      link: "/services/dietitian",
+      link: "/department",
     },
     {
       title: "Physiotherapist",
       description: "Pulled a muscle? Get it treated by a trained physiotherapist",
       image: "/images/physiotherapist.webp",
-      link: "/services/physiotherapist",
+      link: "/department",
     },
     {
       title: "General Surgeon",
       description: "Need to get operated? Find the right surgeon",
       image: "/images/general-surgeon.webp",
-      link: "/services/surgeon",
+      link: "/department",
     },
     {
       title: "Cardiologist",
       description: "Heart issues? Consult a specialist for cardiac care",
       image: "/images/cardiologist.webp",
-      link: "/services/cardiologist",
+      link: "/department",
     },
     {
       title: "Dermatologist",
       description: "Skin concerns? Get expert advice and treatment",
       image: "/images/dermatologist.webp",
-      link: "/services/dermatologist",
+      link: "/department",
     },
     {
       title: "Orthopedic",
       description: "Bone and joint care from trusted specialists",
       image: "/images/orthopedic.webp",
-      link: "/services/orthopedic",
+      link: "/department",
     },
   ];
+
 
   const checkScrollPosition = () => {
     if (scrollRef.current) {
