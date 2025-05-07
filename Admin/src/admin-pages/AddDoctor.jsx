@@ -7,12 +7,11 @@ import axios from 'axios';
 import { AdminContext } from '../context/AdminContext';
 import { useRef } from 'react';
 
-
 // Validation schema
 const doctorSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
   speciality: z.string().min(3, 'Speciality must be at least 3 characters'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(8, 'Password must be at least 6 characters'),
   email: z.string().email('Invalid email format'),
   degree: z.string().min(2, 'Degree must be at least 2 characters'),
   address1: z.string().min(5, 'Address Line 1 must be at least 5 characters'),
@@ -25,6 +24,7 @@ const doctorSchema = z.object({
 const AddDoctor = () => {
   const { backendUrl, admin_token } = useContext(AdminContext);
   const [docImg, setDocImg] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
 
   const {
@@ -37,15 +37,22 @@ const AddDoctor = () => {
     resolver: zodResolver(doctorSchema),
   });
 
-
   const handleFileChange = (e) => {
-    setDocImg(e.target.files[0]);
+    if (e.target.files[0]) {
+      setDocImg(e.target.files[0]);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
   };
 
   const onSubmit = async (data) => {
     if (!docImg) {
       return toast.error('Please upload a profile picture.');
     }
+
+    setIsSubmitting(true);
 
     try {
       const formData = new FormData();
@@ -62,11 +69,6 @@ const AddDoctor = () => {
       formData.append('experience', data.experience);
       formData.append('fees', data.fees);
       formData.append('about', data.about);
-
-      //console log form data
-      formData.forEach((value, key) => {
-        console.log(`${key}`, `${value}`);
-      });
 
       const response = await axios.post(`${backendUrl}/api/admin/add-doctor`, formData, {
         headers: { admin_token }
@@ -85,173 +87,262 @@ const AddDoctor = () => {
       } else {
         toast.error(response.data.message || 'Failed to add doctor');
       }
-
-
     } catch (error) {
       console.error(error);
-      toast.error('Something went wrong while adding the doctor.');
+      toast.error(error.response?.data?.message || 'Something went wrong while adding the doctor.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="h-[80vh] w-[70vw] p-8 bg-white shadow-lg rounded-lg overflow-y-auto"
-    >
-      <h2 className="text-xl font-semibold mb-4 text-[#146A5D]">Add New Doctor</h2>
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white shadow-xl rounded-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-[#0288D1] px-6 py-4">
+            <h2 className="text-2xl font-bold text-white">Add New Doctor</h2>
+            <p className="text-blue-100">Fill in the details below to register a new doctor</p>
+          </div>
 
-      {/* Upload Picture */}
-      <div className="flex items-center mb-4">
-        <input
-          type="file"
-          onChange={handleFileChange}
-          className="hidden" 
-          ref={fileInputRef}
-          id="file-input"
-        />
-        <label
-          htmlFor="file-input"
-          className="border-2 border-[#146A5D] p-2 rounded-lg ml-4 text-[#146A5D] cursor-pointer"
-        >{docImg ? 'Replace Image' : 'Select Image'}
+          <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+            {/* Profile Picture Section */}
+            <div className="flex flex-col items-center mb-6">
+              <div
+                onClick={triggerFileInput}
+                className="relative w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center cursor-pointer overflow-hidden border-4 border-white shadow-md hover:border-[#0288D1] transition-all duration-300"
+              >
+                {docImg ? (
+                  <img
+                    src={URL.createObjectURL(docImg)}
+                    alt="Doctor's profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="text-center p-4">
+                    <svg className="w-12 h-12 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <span className="text-xs text-gray-500 mt-2 block">Click to upload</span>
+                  </div>
+                )}
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  ref={fileInputRef}
+                  id="file-input"
+                  accept="image/*"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={triggerFileInput}
+                className="mt-4 text-sm text-[#0288D1] hover:text-[#0277BD] font-medium"
+              >
+                {docImg ? 'Change Photo' : 'Upload Photo'}
+              </button>
+              {!docImg && (
+                <p className="mt-1 text-xs text-red-500">Profile picture is required</p>
+              )}
+            </div>
 
-        </label>
+            {/* Personal Information Section */}
+            <div className="border-b border-gray-200 pb-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Personal Information</h3>
+              <div className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-6">
+                <div className="sm:col-span-3">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                    Full Name *
+                  </label>
+                  <input
+                    {...register('name')}
+                    id="name"
+                    placeholder="Dr. Pratisha Bista"
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.name ? 'border-red-300' : 'border'}`}
+                  />
+                  {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="speciality" className="block text-sm font-medium text-gray-700">
+                    Speciality *
+                  </label>
+                  <input
+                    {...register('speciality')}
+                    id="speciality"
+                    placeholder="Cardiology, Neurology, etc."
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.speciality ? 'border-red-300' : 'border'}`}
+                  />
+                  {errors.speciality && <p className="mt-1 text-sm text-red-600">{errors.speciality.message}</p>}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                    Email Address *
+                  </label>
+                  <input
+                    {...register('email')}
+                    id="email"
+                    type="email"
+                    placeholder="doctor@example.com"
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.email ? 'border-red-300' : 'border'}`}
+                  />
+                  {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                    Password *
+                  </label>
+                  <input
+                    {...register('password')}
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.password ? 'border-red-300' : 'border'}`}
+                  />
+                  {errors.password && <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>}
+                </div>
+              </div>
+            </div>
+
+            {/* Professional Information Section */}
+            <div className="border-b border-gray-200 pb-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Professional Information</h3>
+              <div className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-6">
+                <div className="sm:col-span-3">
+                  <label htmlFor="degree" className="block text-sm font-medium text-gray-700">
+                    Degree *
+                  </label>
+                  <input
+                    {...register('degree')}
+                    id="degree"
+                    placeholder="MD, MBBS, PhD, etc."
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.degree ? 'border-red-300' : 'border'}`}
+                  />
+                  {errors.degree && <p className="mt-1 text-sm text-red-600">{errors.degree.message}</p>}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="experience" className="block text-sm font-medium text-gray-700">
+                    Experience *
+                  </label>
+                  <input
+                    {...register('experience')}
+                    id="experience"
+                    placeholder="5 years, 10+ years, etc."
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.experience ? 'border-red-300' : 'border'}`}
+                  />
+                  {errors.experience && <p className="mt-1 text-sm text-red-600">{errors.experience.message}</p>}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <label htmlFor="fees" className="block text-sm font-medium text-gray-700">
+                    Consultation Fees (₹) *
+                  </label>
+                  <div className="mt-1 relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500 sm:text-sm">₹</span>
+                    </div>
+                    <input
+                      {...register('fees')}
+                      id="fees"
+                      type="number"
+                      placeholder="500"
+                      className={`block w-full pl-7 pr-12 rounded-md border-gray-300 focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.fees ? 'border-red-300' : 'border'}`}
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <span className="text-gray-500 sm:text-sm">.00</span>
+                    </div>
+                  </div>
+                  {errors.fees && <p className="mt-1 text-sm text-red-600">{errors.fees.message}</p>}
+                </div>
+              </div>
+            </div>
+
+            {/* Address Information Section */}
+            <div className="border-b border-gray-200 pb-6">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Address Information</h3>
+              <div className="grid grid-cols-1 gap-y-4 gap-x-6 sm:grid-cols-6">
+                <div className="sm:col-span-6">
+                  <label htmlFor="address1" className="block text-sm font-medium text-gray-700">
+                    Address Line 1 *
+                  </label>
+                  <input
+                    {...register('address1')}
+                    id="address1"
+                    placeholder="Street address, P.O. box, company name"
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.address1 ? 'border-red-300' : 'border'}`}
+                  />
+                  {errors.address1 && <p className="mt-1 text-sm text-red-600">{errors.address1.message}</p>}
+                </div>
+
+                <div className="sm:col-span-6">
+                  <label htmlFor="address2" className="block text-sm font-medium text-gray-700">
+                    Address Line 2
+                  </label>
+                  <input
+                    {...register('address2')}
+                    id="address2"
+                    placeholder="Apartment, suite, unit, building, floor, etc."
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm border"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* About Section */}
+            <div>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">About the Doctor</h3>
+              <div>
+                <label htmlFor="about" className="block text-sm font-medium text-gray-700">
+                  Professional Bio *
+                </label>
+                <textarea
+                  {...register('about')}
+                  id="about"
+                  rows={4}
+                  placeholder="Brief description of the doctor's qualifications, expertise, and approach..."
+                  className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.about ? 'border-red-300' : 'border'}`}
+                />
+                {errors.about && <p className="mt-1 text-sm text-red-600">{errors.about.message}</p>}
+              </div>
+            </div>
+
+            {/* Form Actions */}
+            <div className="flex justify-end pt-6">
+              <button
+                type="button"
+                onClick={() => {
+                  reset();
+                  setDocImg(false);
+                  if (fileInputRef.current) fileInputRef.current.value = '';
+                }}
+                className="mr-4 bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0288D1]"
+              >
+                Clear Form
+              </button>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className={`inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#0288D1] hover:bg-[#0277BD] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0288D1] ${isSubmitting ? 'opacity-75 cursor-not-allowed' : ''}`}
+              >
+                {isSubmitting ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Adding...
+                  </>
+                ) : 'Add Doctor'}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-
-      {/* Image Display */}
-      {docImg && (
-        <div className="mb-4">
-          <img
-            src={URL.createObjectURL(docImg)} 
-            alt="Doctor's profile"
-            className="w-24 h-24 rounded-full object-cover border-2 border-[#146A5D] mx-auto"
-          />
-        </div>
-      )}
-
-
-      {/* Name */}
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Fullname</label>
-          <input
-            {...register('name')}
-            placeholder="Enter Doctor's Fullname"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-          {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-        </div>
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Speciality</label>
-          <input
-            {...register('speciality')}
-            placeholder="Enter Doctor's Speciality"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-          {errors.speciality && <p className="text-red-500 text-sm">{errors.speciality.message}</p>}
-        </div>
-      </div>
-
-      {/* Password and Email */}
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Email</label>
-          <input
-            {...register('email')}
-            placeholder="Enter Email"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-          {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-        </div>
-
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Set Password</label>
-          <input
-            {...register('password')}
-            type="password"
-            placeholder="Enter Password"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-          {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
-        </div>
-
-      </div>
-
-      {/* Degree and Experience */}
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Degree</label>
-          <input
-            {...register('degree')}
-            placeholder="Enter Degree"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-          {errors.degree && <p className="text-red-500 text-sm">{errors.degree.message}</p>}
-        </div>
-
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Experience</label>
-          <input
-            {...register('experience')}
-            placeholder="Enter Experience"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-          {errors.experience && <p className="text-red-500 text-sm">{errors.experience.message}</p>}
-        </div>
-      </div>
-
-      {/* Address */}
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Address Line 1</label>
-          <input
-            {...register('address1')}
-            placeholder="Enter Address Line 1"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-          {errors.address1 && <p className="text-red-500 text-sm">{errors.address1.message}</p>}
-        </div>
-
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Address Line 2 (Optional)</label>
-          <input
-            {...register('address2')}
-            placeholder="Enter Address Line 2"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-        </div>
-      </div>
-
-      {/* Fees and About */}
-      <div className="flex space-x-4 mb-4">
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">Fees</label>
-          <input
-            {...register('fees')}
-            type="number"
-            placeholder="Enter Fees"
-            className="border-2 border-[#146A5D] p-2 rounded-lg"
-          />
-          {errors.fees && <p className="text-red-500 text-sm">{errors.fees.message}</p>}
-        </div>
-
-        <div className="flex flex-col w-1/2">
-          <label className="font-medium text-gray-700">About</label>
-          <textarea
-            {...register('about')}
-            placeholder="Describe the doctor"
-            className="border-2 border-[#146A5D] p-2 rounded-lg h-24 resize-none"
-          />
-          {errors.about && <p className="text-red-500 text-sm">{errors.about.message}</p>}
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        className="bg-[#146A5D] text-white py-2 px-6 rounded-lg hover:bg-[#0f4e44] transition duration-300"
-      >
-        Add Doctor
-      </button>
-    </form>
+    </div>
   );
 };
 

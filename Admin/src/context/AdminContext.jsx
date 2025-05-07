@@ -7,6 +7,7 @@ export const AdminContext = createContext();
 const AdminContextProvider = ({ children }) => {
   const [admin_token, setAdminToken] = useState(localStorage.getItem("admin_token") || '');
   const [doctors, setDoctors] = useState([]);
+  const [pathologists, setPathologists] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [dashData, setDashData] = useState(false);
 
@@ -35,6 +36,23 @@ const AdminContextProvider = ({ children }) => {
       toast.error(error.message);
     }
   }
+
+  const getAllPathologists = async () => {
+    try {
+        const { data } = await axios.get(backendUrl + "/api/admin/pathologists", { headers: { admin_token } });
+
+        if (data.success) {
+            setPathologists(data.data);  
+            console.log("Pathologists data:", data.data);  
+        } else {
+            toast.error(data.message);
+        }
+
+    } catch (error) {
+        toast.error(error.message);
+    }
+}
+
 
   const changeAvailability = async (docId) => {
     try {
@@ -119,6 +137,9 @@ const AdminContextProvider = ({ children }) => {
     admin_token,
     dashData,
     setAdminToken,
+    getAllPathologists,
+    pathologists,
+    setPathologists,
     backendUrl,
     doctors, getAllDoctors, changeAvailability,
     appointments, setAppointments, getAllAppointments, cancelAppointment, getDashboardData,
