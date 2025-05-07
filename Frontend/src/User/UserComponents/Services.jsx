@@ -119,7 +119,7 @@ const Services = () => {
         behavior: "smooth",
       });
 
-      setTimeout(() => setAutoScrollEnabled(true), 20000);
+      setTimeout(() => setAutoScrollEnabled(true), 10000);
     }
   };
 
@@ -132,7 +132,7 @@ const Services = () => {
           behavior: "smooth",
         });
       }
-    }, 20000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [autoScrollEnabled, showRightArrow]);
