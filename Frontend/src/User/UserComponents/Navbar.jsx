@@ -130,13 +130,22 @@ const Navbar = () => {
               </div>
             </div>
           ) : (
-            <button
-              onClick={() => navigate("/auth")}
-              className="px-8 py-3 text-lg font-semibold rounded-xl shadow-2xl transition-all hover:brightness-115
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => navigate("/auth")}
+                className="px-6 py-2 text-lg font-semibold rounded-xl shadow-xl transition-all hover:brightness-115
                 bg-[#0288D1] text-white border-2 border-white/20"
-            >
-              Login/Signup
-            </button>
+              >
+                User Login
+              </button>
+              <button
+                onClick={() => window.location.href = `${import.meta.env.VITE_STAFF_URL}/login`}
+                className="px-6 py-2 text-lg font-semibold rounded-xl shadow-xl transition-all hover:brightness-115
+        bg-[#4CAF50] text-white border-2 border-white/20"
+              >
+                Staff Login
+              </button>
+            </div>
           )}
         </div>
       </div>
