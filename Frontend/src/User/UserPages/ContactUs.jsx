@@ -30,11 +30,11 @@ const UserContact = () => {
           transition={{ duration: 0.6 }}
           className="bg-white p-8 rounded-xl shadow-md"
         >
-          <h2 className="text-2xl font-semibold text-[#146A5D] mb-6">Hospital Information</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-6">Hospital Information</h2>
 
           <div className="space-y-6">
             <div className="flex items-start">
-              <div className="text-[#0288D1] mt-1 mr-4">
+              <div className="text-[#4CAF50] mt-1 mr-4">
                 <FaMapMarkerAlt size={20} />
               </div>
               <div>
@@ -44,7 +44,7 @@ const UserContact = () => {
             </div>
 
             <div className="flex items-start">
-              <div className="text-[#0288D1] mt-1 mr-4">
+              <div className="text-[#4CAF50] mt-1 mr-4">
                 <FaPhone size={20} />
               </div>
               <div>
@@ -54,7 +54,7 @@ const UserContact = () => {
             </div>
 
             <div className="flex items-start">
-              <div className="text-[#0288D1] mt-1 mr-4">
+              <div className="text-[#4CAF50] mt-1 mr-4">
                 <FaEnvelope size={20} />
               </div>
               <div>
@@ -131,7 +131,7 @@ const UserContact = () => {
         transition={{ duration: 0.6, delay: 0.4 }}
         className="bg-[#f8fafc] p-8 rounded-xl shadow-sm mb-20"
       >
-        <h2 className="text-2xl font-semibold text-[#146A5D] mb-6">Visiting Our Hospital</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Visiting Our Hospital</h2>
         <div className="grid md:grid-cols-2 gap-8">
           <div>
             <h3 className="font-medium text-gray-800 mb-3">Parking Information</h3>

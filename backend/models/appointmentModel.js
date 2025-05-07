@@ -17,7 +17,6 @@ const appointmentSchema = new mongoose.Schema(
     // feedback: { type: String, default: "" }, // feedback given by the user
     // rating: { type: Number, default: 0 }, // rating given by the user
     // doctorFeedback: { type: String, default: "" }, // feedback given by the doctor
-    // doctorRating: { type: Number, default: 0 }, // rating given by the doctor
   },
 );
 

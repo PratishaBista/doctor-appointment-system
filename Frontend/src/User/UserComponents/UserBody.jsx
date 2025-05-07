@@ -62,7 +62,7 @@ const UserBody = () => {
               onClick={() => navigate("/FindDoctors")}
               className="px-8 py-4 text-lg font-semibold rounded-xl shadow-2xl transition-all hover:brightness-115
           bg-[#0288D1] text-white border-2 border-white/20"
-              whileTap={{ scale: 0.98 }}
+
             >
               Make an Appointment
             </button>
@@ -94,7 +94,7 @@ const UserBody = () => {
             <motion.button
               onClick={() => navigate("/FindDoctors")}
               className="w-full py-3 px-6 text-lg font-semibold rounded-lg shadow-md transition-all hover:brightness-105 bg-[#0288D1] text-white"
-              whileTap={{ scale: 0.98 }}
+
             >
               Book Now
             </motion.button>

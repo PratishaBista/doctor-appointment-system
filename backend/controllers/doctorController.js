@@ -2,6 +2,9 @@ import doctorModel from "../models/doctorModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
+import nodemailer from "nodemailer";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const changeAvailability = async (req, res) => {
   try {
@@ -69,6 +72,94 @@ const loginDoctor = async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
+  }
+};
+
+// Function to send password reset email
+const sendResetEmail = (email, resetToken) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const resetLink = `${process.env.STAFF_URL}/reset-password?token=${resetToken}`; // URL to your frontend reset password page
+
+  // Email content
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Password Reset Request",
+    text: `Click on the following link to reset your password: ${resetLink}`,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+
+// API to handle password reset request
+// This API will send a password reset link to the user's email
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  console.log("Requested email:", email);
+
+  try {
+    const doctor = await doctorModel.findOne({ email });
+    console.log("Doctor found:", doctor);
+    if (!doctor) {
+      return res.json({ success: false, message: "Doctor not found" });
+    }
+
+    const resetToken = jwt.sign({ id: doctor._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    try {
+      await sendResetEmail(email, resetToken);
+      res.json({
+        success: true,
+        message: "Password reset link sent to your email",
+      });
+    } catch (emailError) {
+      console.error("Error sending email: ", emailError);
+      res.json({
+        success: false,
+        message: "Failed to send reset email",
+      });
+    }
+  } catch (error) {
+    console.error("Error in forgotPassword API: ", error);
+    res.json({ success: false, message: "Something went wrong" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    // Verify the token and decode the user ID
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const doctor = await doctorModel.findById(decoded.id);
+    if (!doctor) {
+      return res.json({ success: false, message: "Doctor not found" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password in the database
+    doctor.password = hashedPassword;
+    await doctor.save();
+
+    res.json({
+      success: true,
+      message: "Password has been updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Invalid or expired reset token" });
   }
 };
 
@@ -149,7 +240,6 @@ const appointmentCancel = async (req, res) => {
 };
 
 //api to get dashboard data for doctor panel
-
 const doctorDashboard = async (req, res) => {
   try {
     const { doctorId } = req.body;
@@ -229,6 +319,9 @@ export {
   loginDoctor,
   appointmentsDoctor,
   appointmentComplete,
+  resetPassword,
+  sendResetEmail,
+  forgotPassword,
   appointmentCancel,
   doctorDashboard,
   doctorProfile,
