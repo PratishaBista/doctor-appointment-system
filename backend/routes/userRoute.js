@@ -1,6 +1,9 @@
 import express from "express";
+
 import {
   registerUser,
+  forgotPassword,
+  resetPassword,
   loginUser,
   getProfile,
   updateProfile,
@@ -23,8 +26,11 @@ userRouter.post(
   authUser,
   updateProfile
 );
-userRouter.post('/book-appointment', authUser, bookAppointment);
-userRouter.get('/appointments', authUser, listAppointment);
-userRouter.post('/cancel-appointment', authUser, cancelAppointment);
+userRouter.post("/book-appointment", authUser, bookAppointment);
+userRouter.get("/appointments", authUser, listAppointment);
+userRouter.post("/cancel-appointment", authUser, cancelAppointment);
+
+userRouter.post("/forgot-password", forgotPassword);
+userRouter.post("/reset-password", resetPassword);
 
 export default userRouter;

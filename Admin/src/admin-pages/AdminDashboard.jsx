@@ -2,6 +2,8 @@ import { motion } from "framer-motion";
 import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../context/AdminContext";
 import { AppContext } from "../context/AppContext";
+import { FiUsers, FiCalendar, FiUserPlus, FiClock } from "react-icons/fi";
+import { BarChart, PieChart } from "../components/charts";
 
 const AdminDashboard = () => {
   const {
@@ -13,143 +15,232 @@ const AdminDashboard = () => {
 
   const { formatDate } = useContext(AppContext);
 
-  // const dashData = {
-  //   doctors: 5,
-  //   appointments: 20,
-  //   patients: 50,
-  // };
-
   useEffect(() => {
     if (admin_token) {
       getDashboardData();
     }
   }, [admin_token]);
 
+  // Process actual data for charts
+  const processChartData = () => {
+    if (!dashData) return { appointmentsData: null, doctorsSpecializationData: null };
+
+    // Process appointments data for bar chart
+    const appointmentsData = {
+      labels: dashData.appointmentsTrend?.map(item => item.month) || [],
+      datasets: [
+        {
+          label: 'Appointments',
+          data: dashData.appointmentsTrend?.map(item => item.count) || [],
+          backgroundColor: '#0288D1',
+        },
+      ],
+    };
+
+    // Process doctors by specialization for pie chart
+    const doctorsSpecializationData = {
+      labels: dashData.doctorsBySpecialization?.map(item => item.speciality) || [],
+      datasets: [
+        {
+          data: dashData.doctorsBySpecialization?.map(item => item.count) || [],
+          backgroundColor: [
+            '#0288D1',
+            '#4CAF50',
+            '#FFC107',
+            '#FF5722',
+            '#9C27B0',
+          ],
+        },
+      ],
+    };
+
+    return { appointmentsData, doctorsSpecializationData };
+  };
+
+  const { appointmentsData, doctorsSpecializationData } = processChartData();
+
   return (
     dashData && (
-      <div className="min-h-[90vh] w-[80vw] p-6 bg-gray-100 overflow-y-auto">
+      <div className="min-h-[90vh] w-full p-6 bg-[#F5F6FA] overflow-y-auto">
         {/* Dashboard Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {/* Doctors Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-xl shadow-sm p-6 flex items-center"
+          >
+            <div className="p-3 rounded-lg bg-[#0288D1]/10 text-[#0288D1]">
+              <FiUserPlus size={24} />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Total Doctors</p>
+              <h3 className="text-2xl font-bold text-gray-800">{dashData.doctors}</h3>
+            </div>
+          </motion.div>
+
+          {/* Appointments Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-xl shadow-sm p-6 flex items-center"
+          >
+            <div className="p-3 rounded-lg bg-[#4CAF50]/10 text-[#4CAF50]">
+              <FiCalendar size={24} />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Appointments</p>
+              <h3 className="text-2xl font-bold text-gray-800">{dashData.appointments}</h3>
+            </div>
+          </motion.div>
+
+          {/* Patients Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-xl shadow-sm p-6 flex items-center"
+          >
+            <div className="p-3 rounded-lg bg-[#FFC107]/10 text-[#FFC107]">
+              <FiUsers size={24} />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Patients</p>
+              <h3 className="text-2xl font-bold text-gray-800">{dashData.patients}</h3>
+            </div>
+          </motion.div>
+
+          {/* Pending Appointments Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-xl shadow-sm p-6 flex items-center"
+          >
+            <div className="p-3 rounded-lg bg-[#FF5722]/10 text-[#FF5722]">
+              <FiClock size={24} />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">Pending</p>
+              <h3 className="text-2xl font-bold text-gray-800">{dashData.pendingAppointments || 0}</h3>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Appointments Chart - Only show if data exists */}
+          {appointmentsData && (
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-xl shadow-sm p-6"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">Appointments Overview</h3>
+                <select className="text-sm border rounded-lg px-3 py-1 bg-gray-50">
+                  <option>Last 6 Months</option>
+                  <option>Last Year</option>
+                  <option>Last 3 Years</option>
+                </select>
+              </div>
+              <div className="h-64">
+                <BarChart data={appointmentsData} />
+              </div>
+            </motion.div>
+          )}
+
+          {/* Doctors Specialization Chart - Only show if data exists */}
+          {doctorsSpecializationData && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-xl shadow-sm p-6"
+            >
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Doctors by Specialization</h3>
+              <div className="h-64">
+                <PieChart data={doctorsSpecializationData} />
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Recent Appointments Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          className="bg-white rounded-xl shadow-sm overflow-hidden"
         >
-          {/* Doctors */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center md:flex-row"
-          >
-            <img
-              className="w-16 h-16"
-              src="https://cdn-icons-png.flaticon.com/512/9193/9193824.png"
-              alt="Doctors"
-            />
-            <div className="ml-3 text-center md:text-left">
-              <h1 className="text-2xl font-bold text-[#146A5D]">{dashData.doctors}</h1>
-              <p className="text-gray-500">Doctors</p>
-            </div>
-          </motion.div>
+          <div className="px-6 py-4 border-b border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-800">Recent Appointments</h3>
+          </div>
 
-          {/* Appointments */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center md:flex-row"
-          >
-            <img
-              className="w-16 h-16"
-              src="https://static.vecteezy.com/system/resources/thumbnails/024/150/216/small_2x/calendar-icon-vector.jpg"
-              alt="Appointments"
-            />
-            <div className="ml-3 text-center md:text-left">
-              <h1 className="text-2xl font-bold text-[#146A5D]">{dashData.appointments}</h1>
-              <p className="text-gray-500">Appointments</p>
-            </div>
-          </motion.div>
-
-          {/* Patients */}
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="flex items-center bg-white shadow-lg rounded-lg p-4 transition flex-col justify-center md:flex-row"
-          >
-            <img
-              className="w-16 h-16"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQx4WPMRwUZHH4CIYhmmhdmOPjBP03sSfRshQ&s"
-              alt="Patients"
-            />
-            <div className="ml-3 text-center md:text-left">
-              <h1 className="text-2xl font-bold text-[#146A5D]">{dashData.patients}</h1>
-              <p className="text-gray-500">Patients</p>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Latest Bookings Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="flex items-center bg-white shadow-2xl p-4 mt-10 rounded-lg"
-        >
-          <img
-            className="h-[70px]"
-            src="https://static.vecteezy.com/system/resources/thumbnails/046/720/280/small_2x/booking-icon-line-icon-for-your-website-mobile-presentation-and-logo-design-vector.jpg"
-            alt="Bookings"
-          />
-          <h1 className="text-3xl font-bold ml-4">Latest Bookings</h1>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: -50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-6 w-[95%] mx-auto"
-        >
-          {dashData.latestAppointments?.length === 0 && (
-            <p className="text-gray-600 italic">No recent bookings found.</p>
-          )}
-
-          {dashData.latestAppointments?.map((item, index) => (
-            <div
-              key={index}
-              className="mt-4 flex items-center bg-white shadow-md p-4 rounded-lg"
-            >
-              <img
-                className="h-[70px] w-[70px] rounded-full object-cover"
-                src={item.doctorData?.image || "https://via.placeholder.com/70"}
-                alt="Doctor"
-              />
-              <div className="ml-4">
-                <h1 className="text-lg font-semibold">{item.doctorData?.name}</h1>
-                <p className="text-gray-500">
-                  Booking on <strong>{formatDate(item.slotDate)}</strong> at{" "}
-                  <strong>{item.slotTime}</strong>
-                </p>
-                <p
-                  className={`text-sm font-bold ${item.cancelled ? "text-red-500" : "text-green-600"
-                    }`}
-                >
-                  {item.cancelled ? "Cancelled" : "Booked"}
-                </p>
+          <div className="divide-y divide-gray-100">
+            {dashData.latestAppointments?.length === 0 ? (
+              <div className="p-6 text-center text-gray-500">
+                No recent appointments found
               </div>
-
-              {/* {!item.cancelled && (
-                <button
-                  onClick={() => cancelAppointment(item._id)}
-                  className="ml-auto"
+            ) : (
+              dashData.latestAppointments?.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="p-4 flex items-center hover:bg-gray-50 transition-colors"
                 >
                   <img
-                    className="h-[50px]"
-                    src="https://media.istockphoto.com/id/1198849693/vector/cancel-icon-flat-illustration-of-cancel-vector-icon-cancel-sign-symbol-on-white-background.jpg?s=612x612&w=0&k=20&c=6vGokNVvNFp_sudDF_tWWDAtFr1L3lh9JtspLxfwh6Q="
-                    alt="Cancel"
+                    className="h-10 w-10 rounded-full object-cover"
+                    src={item.doctorData?.image || "https://via.placeholder.com/40"}
+                    alt="Doctor"
                   />
-                </button>
-              )} */}
-            </div>
-          ))}
-
+                  <div className="ml-4 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-medium text-gray-800">{item.doctorData?.name}</h4>
+                      <span className={`text-xs px-2 py-1 rounded-full ${item.cancelled
+                          ? "bg-red-100 text-red-800"
+                          : item.payment?.status === 'completed'
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}>
+                        {item.cancelled
+                          ? "Cancelled"
+                          : item.payment?.status === 'completed'
+                            ? "Confirmed"
+                            : "Pending Payment"}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500">
+                      {formatDate(item.slotDate)} at {item.slotTime}
+                    </p>
+                    {item.payment?.status === 'completed' && (
+                      <p className="text-xs text-gray-400 mt-1">
+                        Paid: ${item.amount} via {item.payment?.gateway}
+                      </p>
+                    )}
+                  </div>
+                  {!item.cancelled && (
+                    <button
+                      onClick={() => cancelAppointment(item._id)}
+                      className="ml-4 text-red-500 hover:text-red-700 transition-colors text-sm"
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </motion.div>
+              ))
+            )}
+          </div>
         </motion.div>
-
       </div>
     )
   );

@@ -4,12 +4,20 @@ import AddDoctor from '../admin-pages/AddDoctor';
 import AdminAppointments from '../admin-pages/AdminAppointments';
 import AdminDashboard from '../admin-pages/AdminDashboard';
 import AdminDoctorsList from '../admin-pages/AdminDoctorsList';
+import AddPathologist from '../admin-pages/AddPathologist';
+import AdminPathologistList from '../admin-pages/AdminPathologistList';
 import { AdminContext } from '../context/AdminContext';
+import HealthSolutionLogo from '../assets/HealthSolutionLogo.svg';
+import { Link } from 'react-router-dom';
+
+
 
 const AdminHome = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { admin_token, setAdminToken } = useContext(AdminContext);
+  const [notificationCount, setNotificationCount] = useState(3); 
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -23,7 +31,10 @@ const AdminHome = () => {
     if (path.includes('dashboard')) setActiveIndex(0);
     else if (path.includes('appointments')) setActiveIndex(1);
     else if (path.includes('add-doctor')) setActiveIndex(2);
-    else if (path.includes('doctor-list')) setActiveIndex(3);
+    else if (path.includes('add-pathologist')) setActiveIndex(3);
+    else if (path.includes('doctor-list')) setActiveIndex(4);
+    else if (path.includes('pathologist-list')) setActiveIndex(5);
+
   }, []);
 
   const handleItemClick = (index) => {
@@ -31,7 +42,9 @@ const AdminHome = () => {
       "/admin/dashboard",
       "/admin/appointments",
       "/admin/add-doctor",
+      "/admin/add-pathologist",
       "/admin/doctor-list",
+      "/admin/pathologist-list",
     ];
     navigate(routes[index]);
     setActiveIndex(index);
@@ -39,111 +52,163 @@ const AdminHome = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-[#F5F6FA]">
       {/* Header */}
-      <div className="flex h-[90px] items-center justify-between px-6 border-b border-gray-300 bg-white sticky top-0 z-50">
-        <div className="flex items-center space-x-3">
-          <img
-            onClick={() => handleItemClick(0)}
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU"
-            alt="Logo"
-            className="h-12 cursor-pointer"
-          />
-          <p className="text-xl font-bold text-gray-800">Green City Hospital</p>
-          <p className='border px-2.5 py-0.5 rounded-full border-gray-500 text-gray-600'>Admin</p>
+      <div className="flex h-16 items-center justify-between px-6 bg-white shadow-sm sticky top-0 z-50">
+        <div className="flex items-center space-x-4">
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="md:hidden text-gray-600"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+
+          {/* Logo */}
+          <div className="flex items-center justify-center h-20 px-4 border-b border-gray-200">
+            <img
+              src={HealthSolutionLogo}
+              alt="HealthSolution Logo"
+              className="h-12"
+              onClick={() => navigate("/")}
+            />
+          </div>
+          <span className="text-sm bg-[#0288D1]/10 text-[#0288D1] px-2.5 py-0.5 rounded-full">Admin</span>
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="bg-[#146A5D] text-white h-[40px] w-[160px] rounded-full hover:bg-[#0F5247] transition flex items-center justify-center gap-2"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-          </svg>
-          Logout
-        </button>
+        <div className="flex items-center space-x-6">
+          {/* Notifications */}
+          <Link
+            to="/admin/notifications"
+            className="p-1 text-gray-400 hover:text-gray-500 relative"
+          >
+            <span className="sr-only">Notifications</span>
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            {notificationCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                {notificationCount}
+              </span>
+            )}
+          </Link>
+          <div className="hidden md:flex items-center space-x-2">
+            <div className="h-8 w-8 rounded-full bg-[#0288D1] flex items-center justify-center text-white font-medium">
+              {admin_token?.name?.charAt(0) || 'A'}
+            </div>
+            <span className="text-sm font-medium text-gray-700">{admin_token?.name || 'Admin'}</span>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="text-sm font-medium text-gray-600 hover:text-[#0288D1] transition flex items-center gap-1"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+            </svg>
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Main container for sidebar and content */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div
-          className={`h-full w-[250px] bg-white p-4 flex flex-col border-r border-gray-300 transition-all duration-300 ${
-            isSidebarOpen ? 'block fixed inset-y-0 z-50 md:relative' : 'hidden md:block'
-          }`}
+          className={`h-full w-64 bg-white p-4 flex flex-col shadow-sm transition-all duration-300 ${isSidebarOpen ? 'fixed inset-y-0 z-40 md:relative' : 'hidden md:block'
+            }`}
         >
-          {/* Close Button for Sidebar (Mobile view) */}
-          <div className="md:hidden flex justify-end mb-4">
-            <button
-              className="text-gray-800 p-2"
-              onClick={() => setIsSidebarOpen(false)}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
           {/* Sidebar menu items */}
-          <div className="space-y-2">
+          <div className="space-y-1 mt-4">
             {[
-              { 
-                index: 0, 
-                label: "Dashboard", 
-                icon: "https://media.istockphoto.com/id/1186939191/vector/dashboard-icon-in-flat-style-finance-analyzer-vector-illustration-on-white-isolated.jpg?s=612x612&w=0&k=20&c=Uvzz2_C--rDfG9-oAJeS6HuYnvnvp7UFfY5rhGlvkPw=" 
+              {
+                index: 0,
+                label: "Dashboard",
+                icon: (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                  </svg>
+                )
               },
-              { 
-                index: 1, 
-                label: "Appointments", 
-                icon: "https://static.vecteezy.com/system/resources/thumbnails/024/150/216/small_2x/calendar-icon-vector.jpg" 
+              {
+                index: 1,
+                label: "Appointments",
+                icon: (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                  </svg>
+                )
               },
-              { 
-                index: 2, 
-                label: "Add Doctor", 
-                icon: "https://static.vecteezy.com/system/resources/thumbnails/001/500/603/small/add-icon-free-vector.jpg" 
+              {
+                index: 2,
+                label: "Add Doctor",
+                icon: (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                  </svg>
+                )
               },
-              { 
-                index: 3, 
-                label: "Doctors List", 
-                icon: "https://static.vecteezy.com/system/resources/previews/005/544/718/non_2x/profile-icon-design-free-vector.jpg" 
+              {
+                index: 3,
+                label: "Add Pathologist",
+                icon: (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                  </svg>
+                )
+              },
+              {
+                index: 4,
+                label: "Doctors List",
+                icon: (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
+                  </svg>
+                )
+              },
+              {
+                index: 5,
+                label: "Pathologist List",
+                icon: (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v1h-3zM4.75 12.094A5.973 5.973 0 004 15v1H1v-1a3 3 0 013.75-2.906z" />
+                  </svg>
+                )
               }
             ].map((item) => (
-              <div
+              <button
                 key={item.index}
                 onClick={() => handleItemClick(item.index)}
-                className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition ${
-                  activeIndex === item.index ? 'bg-gray-100 border-l-4 border-[#146A5D]' : 'hover:bg-gray-50'
-                }`}
+                className={`w-full flex items-center space-x-3 p-3 rounded-lg transition ${activeIndex === item.index
+                  ? 'bg-[#0288D1]/10 text-[#0288D1] font-medium'
+                  : 'text-gray-600 hover:bg-gray-100'
+                  }`}
               >
-                <img className="h-6 w-6" src={item.icon} alt={`${item.label} Icon`} />
-                <p className="text-gray-800 font-medium">{item.label}</p>
-              </div>
+                <span className={`${activeIndex === item.index ? 'text-[#0288D1]' : 'text-gray-500'}`}>
+                  {item.icon}
+                </span>
+                <span>{item.label}</span>
+              </button>
             ))}
           </div>
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto p-6 bg-gray-50">
-          <Routes>
-            <Route path="/dashboard" element={<AdminDashboard />} />
-            <Route path="/appointments" element={<AdminAppointments />} />
-            <Route path="/add-doctor" element={<AddDoctor />} />
-            <Route path="/doctor-list" element={<AdminDoctorsList />} />
-            <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
-          </Routes>
+        <div className={`flex-1 overflow-y-auto p-6 transition-all duration-300 ${isSidebarOpen ? 'ml-64 md:ml-0' : 'ml-0'
+          }`}>
+          <div className="bg-white rounded-lg shadow-sm p-6">
+            <Routes>
+              <Route path="/dashboard" element={<AdminDashboard />} />
+              <Route path="/appointments" element={<AdminAppointments />} />
+              <Route path="/add-doctor" element={<AddDoctor />} />
+              <Route path="/add-pathologist" element={<AddPathologist />} />
+              <Route path="/doctor-list" element={<AdminDoctorsList />} />
+              <Route path="/pathologist-list" element={<AdminPathologistList />} />
+              <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+            </Routes>
+          </div>
         </div>
-
-        {/* Mobile Menu Button */}
-        {!isSidebarOpen && (
-          <button 
-            onClick={() => setIsSidebarOpen(true)}
-            className="md:hidden fixed bottom-6 right-6 bg-[#146A5D] text-white rounded-full p-3 shadow-lg z-40"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        )}
       </div>
     </div>
   );
