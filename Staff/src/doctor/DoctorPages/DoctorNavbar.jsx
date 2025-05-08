@@ -1,11 +1,14 @@
+// DoctorNavbar.jsx
 import React, { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { DoctorContext } from "../../context/DoctorContext";
 import { toast } from "react-toastify";
+import { FiMenu, FiBell, FiLogOut } from "react-icons/fi";
+import HealthSolutionLogo from "../../assets/HealthSolutionLogo.svg";
 
-const DoctorNavbar = () => {
+const DoctorNavbar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
-  const { setDoctorToken } = useContext(DoctorContext);
+  const { setDoctorToken, doctorData } = useContext(DoctorContext);
 
   const handleLogout = () => {
     localStorage.removeItem('doctor_token');
@@ -14,42 +17,48 @@ const DoctorNavbar = () => {
     navigate("/login");
   };
 
-  const handleLogoClick = () => {
-    window.scrollTo(0, 0);
-    navigate("/doctor/dashboard");
-  };
-
   return (
-    <div className="w-full mx-auto flex justify-between items-center px-6 py-4 shadow bg-white sticky top-0 z-50">
-      {/* Logo & Hospital Name */}
-      <div className="flex items-center space-x-3">
+    <div className="flex h-16 items-center justify-between px-6 bg-white shadow-sm sticky top-0 z-50">
+
+      <div className="flex items-center justify-center h-20 px-4 border-b border-gray-200">
         <img
-          className="h-[45px] w-[45px] rounded-full cursor-pointer transition-transform hover:scale-105"
-          onClick={handleLogoClick}
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQfxenNNiYLFgw9ADWtnw8ORRX02r2APch0Z_jYq_REVUFTAvHOP94Jn7uxdN_iF7lt3k&usqp=CAU"
-          alt="Hospital Logo"
+          src={HealthSolutionLogo}
+          alt="HealthSolution Logo"
+          className="h-12"
+          onClick={() => navigate("/")}
         />
-        <p
-          className="text-2xl font-bold text-[#146A5D] transition duration-300 hover:text-gray-500 cursor-pointer"
-          onClick={handleLogoClick}
+        {/* <div className="flex items-center space-x-4"> */}
+        <button
+          onClick={toggleSidebar}
+          className="md:hidden text-gray-600"
         >
-          Green City Hospital
-        </p>
-        <div className="border border-[#146A5D] rounded-full p-2 px-4 text-[#146A5D] text-sm font-medium">
-          Doctor Portal
-        </div>
+          <FiMenu className="w-6 h-6" />
+        </button>
+        <span className="text-sm bg-[#0288D1]/10 text-[#0288D1] px-2.5 py-0.5 rounded-full">Doctor</span>
       </div>
 
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        className="bg-[#146A5D] text-white h-[40px] w-[160px] rounded-full hover:bg-[#0F5247] transition flex items-center justify-center space-x-2"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-        </svg>
-        <span>Logout</span>
-      </button>
+      <div className="flex items-center space-x-6">
+        <button className="p-1 text-gray-400 hover:text-gray-500 relative">
+          <span className="sr-only">Notifications</span>
+          <FiBell className="w-6 h-6" />
+          <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+
+        <div className="hidden md:flex items-center space-x-2">
+          <div className="h-8 w-8 rounded-full bg-[#0288D1] flex items-center justify-center text-white font-medium">
+            {doctorData?.name?.charAt(0) || 'D'}
+          </div>
+          <span className="text-sm font-medium text-gray-700">{doctorData?.name || 'Doctor'}</span>
+        </div>
+
+        <button
+          onClick={handleLogout}
+          className="text-sm font-medium text-gray-600 hover:text-[#0288D1] transition flex items-center gap-1"
+        >
+          <FiLogOut className="w-5 h-5" />
+          Logout
+        </button>
+      </div>
     </div>
   );
 };

@@ -1,18 +1,3 @@
-
-// const formData = new FormData();
-// formData.append('name', editableData.name);
-// formData.append('email', editableData.email);
-// formData.append('phone', editableData.phone);
-// formData.append('speciality', editableData.speciality);
-// formData.append('degree', editableData.degree);
-// formData.append('experience', editableData.experience);
-// formData.append('fees', editableData.fees);
-// formData.append('about', editableData.about);
-// formData.append('address', JSON.stringify(editableData.address));
-
-// if (image) {
-//   formData.append('image', image);
-// }
 import { Pencil, Save, XCircle } from "lucide-react";
 import React, { useContext, useEffect, useState } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
@@ -138,7 +123,7 @@ const DoctorProfile = () => {
           {/* Experience (readonly) */}
           <div>
             <h2 className="text-gray-600 font-medium">Experience</h2>
-            <p className="text-gray-700">{doctorData.experience} years</p>
+            <p className="text-gray-700">{doctorData.experience}</p>
           </div>
 
           {/* Fees (editable) */}

@@ -1,15 +1,15 @@
+// DoctorHome.jsx
 import React, { useState } from "react";
-import { Route, Routes, useNavigate, useLocation } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import DocSideBar from "./DoctorPages/DocSideBar";
 import DoctorAppointment from "./DoctorPages/DoctorAppointment";
 import DoctorDashboard from "./DoctorPages/DoctorDashboard";
 import DoctorNavbar from "./DoctorPages/DoctorNavbar";
 import DoctorProfile from "./DoctorPages/DoctorProfile";
-import PatientsData from "./DoctorPages/PatientsData";
+import PatientAppointmentDetail from "./DoctorPages/PatientAppointmentDetail";
 
 const DoctorHome = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
 
   const toggleSidebar = () => {
@@ -17,18 +17,20 @@ const DoctorHome = () => {
   };
 
   return (
-    <div className="h-screen flex flex-col">
-      <DoctorNavbar />
+    <div className="min-h-screen flex flex-col bg-[#F5F6FA]">
+      <DoctorNavbar toggleSidebar={toggleSidebar} />
       <div className="flex flex-1 overflow-hidden">
-        <DocSideBar />
-        <div className="flex-1 p-6 bg-gray-100 overflow-y-auto">
-          <Routes>
-            <Route path="/dashboard" element={<DoctorDashboard />} />
-            <Route path="/appointments" element={<DoctorAppointment />} />
-            <Route path="/profile" element={<DoctorProfile />} />
-            <Route path="/patients" element={<PatientsData />} />
-            <Route path="*" element={<navigate to="/dashboard" replace />} />
-          </Routes>
+        <DocSideBar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+        <div className={`flex-1 overflow-y-auto transition-all duration-300 ${isSidebarOpen ? 'ml-64 md:ml-0' : 'ml-0'}`}>
+          <div className="p-6">
+            <Routes>
+              <Route path="dashboard" element={<DoctorDashboard />} />
+              <Route path="appointments" element={<DoctorAppointment />} />
+              <Route path="appointments/:appointmentId" element={<PatientAppointmentDetail />} />
+              <Route path="profile" element={<DoctorProfile />} />
+              <Route index element={<DoctorDashboard />} />
+            </Routes>
+          </div>
         </div>
       </div>
     </div>
