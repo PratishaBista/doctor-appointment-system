@@ -9,6 +9,8 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ProfilePage from './User/UserPages/Profile';
 import AppointmentsPage from './User/UserPages/Appointments';
+import PatientAppointmentDetail from './User/UserPages/PatientAppointmentDetail';
+import LabReports from './User/UserPages/LabReports';
 
 function App() {
   return (
@@ -20,9 +22,10 @@ function App() {
           <Route index element={<AppointmentsPage />} />
           {/* <Route path="notifications" element={<NotificationsPage />} /> */}
           <Route path="appointments" element={<AppointmentsPage />} />
+          <Route path="appointments/:appointmentId" element={<PatientAppointmentDetail />} />
           <Route path="profile" element={<ProfilePage />} />
-          {/* <Route path="settings" element={<SettingsPage />} />
-          <Route path="lab-results" element={<LabResultsPage />} /> */}
+          {/* <Route path="settings" element={<SettingsPage />} /> */}
+          <Route path="lab-reports" element={<LabReports />} />
         </Route>
       </Routes>
       <ToastContainer />

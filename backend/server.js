@@ -6,10 +6,9 @@ import connectCloudinary from "./config/cloudinary.js";
 import adminRouter from "./routes/adminRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import userRouter from "./routes/userRoute.js";
-import reportRouter from "./routes/reportRoute.js";
-import mongoose from "mongoose";
-// import appointmentModel from "./models/appointmentModel.js";
-import paymentRouter from "./routes/paymentRoute.js";
+import pathologistRouter from "./routes/pathologistRoute.js";
+import notificationRouter from "./routes/notificationRoute.js";
+import paymentRouter from './routes/paymentRoute.js';
 
 // Initialize Express
 const app = express();
@@ -19,16 +18,18 @@ const port = process.env.PORT || 5000;
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  // "http://.com"
-];
+  process.env.FRONTEND_URL,
+  process.env.STAFF_URL,
+  process.env.ADMIN_URL
+].filter(Boolean); 
 
 // Database Connections
 connectDB();
 connectCloudinary();
 
 // Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" })); // Increased for file uploads
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(
   cors({
     origin: allowedOrigins,
@@ -40,30 +41,16 @@ app.use(
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter);
-app.use("/api/payment", paymentRouter);
-app.use("/api/report", reportRouter);
-
-// Environment Verification Endpoint
-app.get("/api/verify-env", (req, res) => {
-  res.json({
-    nodeEnv: process.env.NODE_ENV,
-    periPay: {
-      apiKey: process.env.PERIPAY_API_KEY
-        ? "****" + process.env.PERIPAY_API_KEY.slice(-4)
-        : "Not set",
-      apiUrl: process.env.PERIPAY_API_URL,
-      returnUrl: process.env.PERIPAY_RETURN_URL,
-    },
-    database: {
-      connected: mongoose.connection.readyState === 1,
-    },
-  });
-});
+app.use("/api/pathologist", pathologistRouter);
+app.use("/api/notifications", notificationRouter);
+app.use('/api/payment', paymentRouter);
 
 // Health Check
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
+    database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
+    cloudinary: process.env.CLOUDINARY_CLOUD_NAME ? "Configured" : "Not Configured",
     timestamp: new Date().toISOString(),
   });
 });
@@ -71,15 +58,41 @@ app.get("/health", (req, res) => {
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error("Global Error Handler:", err);
-  res.status(500).json({
+  
+  // Handle file upload errors specifically
+  if (err.code === "LIMIT_FILE_SIZE") {
+    return res.status(413).json({
+      success: false,
+      message: "File too large (max 10MB)",
+    });
+  }
+
+  res.status(err.status || 500).json({
     success: false,
-    message: "Internal server error",
-    error: process.env.NODE_ENV === "development" ? err.message : undefined,
+    message: err.message || "Internal server error",
+    error: process.env.NODE_ENV === "development" ? err.stack : undefined,
+  });
+});
+
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Endpoint not found",
   });
 });
 
 // Start Server
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
-  console.log(`Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`
+  Server running on port ${port}
+  Environment: ${process.env.NODE_ENV || "development"}
+  Available Routes:
+  - /api/admin
+  - /api/doctor
+  - /api/user
+  - /api/pathologist
+  - /api/notifications
+  - /api/payment
+  `);
 });

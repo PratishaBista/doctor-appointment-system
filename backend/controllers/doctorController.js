@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import appointmentModel from "../models/appointmentModel.js";
 import nodemailer from "nodemailer";
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 const changeAvailability = async (req, res) => {
@@ -313,6 +313,241 @@ const updateDoctorProfile = async (req, res) => {
   }
 };
 
+const requestLabTest = async (req, res) => {
+  try {
+    const { appointmentId, tests } = req.body; // tests is now an array of test objects
+    
+    // Validate input
+    if (!tests || !Array.isArray(tests) || tests.length === 0) {
+      return res.json({ 
+        success: false, 
+        message: "At least one test must be specified" 
+      });
+    }
+
+    // Update appointment with test requests
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      {
+        $push: {
+          labTests: {
+            $each: tests.map(test => ({
+              testType: test.testType,
+              testCode: test.testCode || '',
+              doctorNotes: test.notes || '',
+              status: 'requested'
+            }))
+          }
+        },
+        labTestRequired: true
+      },
+      { new: true }
+    );
+
+    // Create notification for patient
+    await notificationModel.create({
+      userId: updatedAppointment.userId,
+      userType: "patient",
+      title: "Lab Test Requested",
+      message: `Your doctor has requested ${tests.length} lab test(s)`,
+      relatedEntity: "appointment",
+      relatedEntityId: appointmentId,
+    });
+
+    res.json({ 
+      success: true, 
+      message: "Lab tests requested successfully",
+      appointment: updatedAppointment
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+const getPendingTestsForDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.body;
+    
+    const appointments = await appointmentModel
+      .find({
+        doctorId,
+        'labTests.status': { $in: ['requested', 'sample_collected'] }
+      })
+      .select('labTests userData slotDate')
+      .populate('userData', 'name');
+
+    res.json({
+      success: true,
+      data: appointments
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch pending tests"
+    });
+  }
+};
+
+const getPendingLabTests = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    
+    const appointment = await appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      return res.json({ success: false, message: "Appointment not found" });
+    }
+
+    const pendingTests = appointment.labTests.filter(
+      test => test.status !== 'completed'
+    );
+
+    res.json({
+      success: true,
+      tests: pendingTests,
+      appointmentId: appointment._id
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const updateTestStatus = async (req, res) => {
+  try {
+    const { appointmentId, testIndex, status } = req.body;
+    
+    const updateKey = `labTests.${testIndex}.status`;
+    
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      { $set: { [updateKey]: status } },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Test status updated",
+      appointment: updatedAppointment
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+// Get patient's lab reports
+const getPatientLabReports = async (req, res) => {
+  try {
+    const { patientId } = req.body;
+    const reports = await labReportModel
+      .find({
+        patientId,
+        doctorId: req.doctor._id,
+      })
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, reports });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Add doctor notes to appointment
+const addDoctorNotes = async (req, res) => {
+  try {
+    const { appointmentId, notes } = req.body;
+
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      doctorNotes: notes,
+    });
+
+    res.json({ success: true, message: "Notes added successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Mark appointment as follow-up required
+const markFollowUp = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      followUpRequired: true,
+    });
+
+    // Create notification for patient
+    await notificationModel.create({
+      userId: req.doctor._id,
+      userType: "doctor",
+      title: "Follow Up Required",
+      message:
+        "Your doctor has marked this appointment as requiring a follow-up.",
+      relatedEntity: "appointment",
+      relatedEntityId: appointmentId,
+    });
+
+    res.json({ success: true, message: "Follow-up marked successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Get doctor notifications
+const getDoctorNotifications = async (req, res) => {
+  try {
+    const notifications = await notificationModel
+      .find({
+        userId: req.doctor._id,
+        userType: "doctor",
+      })
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    res.json({ success: true, notifications });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Mark notification as read
+const markNotificationAsRead = async (req, res) => {
+  try {
+    const { notificationId } = req.body;
+
+    await notificationModel.findByIdAndUpdate(notificationId, {
+      isRead: true,
+    });
+
+    res.json({ success: true, message: "Notification marked as read" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+const getAppointmentDetails = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    const appointment = await appointmentModel.findById(appointmentId);
+    const patient = await patientModel.findById(appointment.userId);
+    
+    res.json({
+      success: true,
+      appointment,
+      patient
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
 export {
   changeAvailability,
   doctorList,
@@ -326,4 +561,14 @@ export {
   doctorDashboard,
   doctorProfile,
   updateDoctorProfile,
+  requestLabTest,
+  getAppointmentDetails,
+  getPatientLabReports,
+  addDoctorNotes,
+  markFollowUp,
+  getDoctorNotifications,
+  markNotificationAsRead,
+  updateTestStatus,
+  getPendingLabTests,
+  getPendingTestsForDoctor,
 };

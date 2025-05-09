@@ -1,22 +1,19 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
-import AddDoctor from '../admin-pages/AddDoctor';
-import AdminAppointments from '../admin-pages/AdminAppointments';
-import AdminDashboard from '../admin-pages/AdminDashboard';
-import AdminDoctorsList from '../admin-pages/AdminDoctorsList';
-import AddPathologist from '../admin-pages/AddPathologist';
-import AdminPathologistList from '../admin-pages/AdminPathologistList';
+import AddDoctor from '../admin/AddDoctor';
+import AdminAppointments from '../admin/AdminAppointments';
+import AdminDashboard from '../admin/AdminDashboard';
+import AdminDoctorsList from '../admin/AdminDoctorsList';
+import AddPathologist from '../admin/AddPathologist';
+import AdminPathologistList from '../admin/AdminPathologistList';
 import { AdminContext } from '../context/AdminContext';
 import HealthSolutionLogo from '../assets/HealthSolutionLogo.svg';
 import { Link } from 'react-router-dom';
-
-
 
 const AdminHome = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { admin_token, setAdminToken } = useContext(AdminContext);
-  const [notificationCount, setNotificationCount] = useState(3); 
 
   const navigate = useNavigate();
 
@@ -88,11 +85,6 @@ const AdminHome = () => {
             <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
             </svg>
-            {notificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                {notificationCount}
-              </span>
-            )}
           </Link>
           <div className="hidden md:flex items-center space-x-2">
             <div className="h-8 w-8 rounded-full bg-[#0288D1] flex items-center justify-center text-white font-medium">

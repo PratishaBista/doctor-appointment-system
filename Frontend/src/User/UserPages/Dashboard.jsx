@@ -1,3 +1,4 @@
+// DashboardLayout.jsx
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
@@ -48,13 +49,13 @@ const DashboardLayout = () => {
             </Link>
 
             <Link
-              to="/dashboard/lab-results"
-              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${isActive("/dashboard/lab-results")}`}
+              to="/dashboard/lab-reports"
+              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${isActive("/dashboard/lab-reports")}`}
             >
               <svg className="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Lab Results
+              Lab Reports
             </Link>
 
             <Link
@@ -88,24 +89,7 @@ const DashboardLayout = () => {
         {/* Top Navigation Bar */}
         <header className="bg-white shadow-sm">
           <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center md:hidden">
-              {/* Mobile menu button would go here */}
-            </div>
-
-            <div className="flex items-center space-x-4 ml-auto"> {/* Added ml-auto to push to right */}
-              {/* Notifications */}
-              <Link
-                to="/dashboard/notifications"
-                className="p-1 rounded-full text-gray-400 hover:text-gray-500 relative"
-              >
-                <span className="sr-only">Notifications</span>
-                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
-                <span className="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
-              </Link>
-
-              {/* Profile dropdown */}
+            <div className="flex items-center space-x-4 ml-auto">
               <div className="flex items-center space-x-2">
                 <img
                   className="w-8 h-8 rounded-full"
@@ -114,13 +98,11 @@ const DashboardLayout = () => {
                 />
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-gray-700">{userData?.name || "User"}</p>
-                  <p className="text-xs text-gray-500">Patient</p>
                 </div>
               </div>
             </div>
           </div>
         </header>
-
 
         {/* Main content area */}
         <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-white">

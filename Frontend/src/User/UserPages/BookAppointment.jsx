@@ -312,7 +312,7 @@ const BookAppointment = () => {
         {/* Doctor Details Section */}
         <div className="mt-8 bg-white rounded-xl shadow-md overflow-hidden">
           <div className="p-6 md:p-8">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">About Dr. {docInfo.name.split(' ')[0]}</h3>
+            <h3 className="text-xl font-bold text-gray-800 mb-4">About {docInfo.name}</h3>
             <div className="prose max-w-none text-gray-600">
               <p>{docInfo.about}</p>
 

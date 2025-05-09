@@ -86,9 +86,58 @@ const DoctorContextProvider = (props) => {
         }
 
     }
+    const getPatientDetails = async (appointmentId) => {
+        try {
+            const { data } = await axios.post(
+                `${backendUrl}/api/doctor/get-appointment-details`,
+                { appointmentId },
+                { headers: { doctor_token } }
+            );
+            if (data.success) {
+                return {
+                    appointment: data.appointment,
+                    patient: data.patient
+                };
+            } else {
+                toast.error(data.message);
+                return null;
+            }
+        } catch (error) {
+            console.error("Error fetching patient details:", error);
+            toast.error(error.message);
+            return null;
+        }
+    };
+    
+    const requestLabTest = async (appointmentId, tests) => {
+        try {
+            await axios.post("/api/doctor/request-lab-test", { appointmentId, tests });
+        } catch (error) {
+            console.error("Error requesting lab tests:", error);
+            throw error;
+        }
+    };
+
+    const addDoctorNotes = async (appointmentId, notes) => {
+        try {
+            await axios.post("/api/doctor/add-notes", { appointmentId, notes });
+        } catch (error) {
+            console.error("Error adding doctor notes:", error);
+            throw error;
+        }
+    };
+
+    const markFollowUp = async (appointmentId) => {
+        try {
+            await axios.post("/api/doctor/mark-followup", { appointmentId });
+        } catch (error) {
+            console.error("Error marking follow-up:", error);
+            throw error;
+        }
+    };
     const value = {
         doctor_token, setDoctorToken, getDoctorData, doctorData, setDoctorData,
-        backendUrl, getAppointments, setAppointments, appointments, completeAppointment, getDashboardData, dashboardData, setDashboardData,
+        backendUrl, getAppointments, setAppointments, appointments, completeAppointment, getDashboardData, dashboardData, setDashboardData, getPatientDetails, requestLabTest, addDoctorNotes, markFollowUp
     };
 
     return (
