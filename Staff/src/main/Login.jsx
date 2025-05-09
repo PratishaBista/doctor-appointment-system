@@ -4,6 +4,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { DoctorContext } from "../context/DoctorContext";
+import { PathologistContext } from "../context/PathologistContext";
 import HealthSolutionLogo from "../assets/HealthSolutionLogo.svg";
 
 const Login = () => {
@@ -12,11 +13,21 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const { setDoctorToken } = useContext(DoctorContext);
+  const { setPathologistToken } = useContext(PathologistContext);
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
 
   const onSubmitHandler = async (event) => {
     event.preventDefault();
+
+    // Basic validation
+    if (!email || !password) {
+      setErrors({
+        email: !email ? "Email is required" : "",
+        password: !password ? "Password is required" : ""
+      });
+      return;
+    }
 
     try {
       if (state === "Admin") {
@@ -33,8 +44,7 @@ const Login = () => {
         } else {
           toast.error(data.message);
         }
-
-      } else {
+      } else if (state === "Doctor") {
         const { data } = await axios.post(`${backendUrl}/api/doctor/login`, {
           email,
           password,
@@ -48,11 +58,24 @@ const Login = () => {
         } else {
           toast.error(data.message);
         }
-      }
+      } else if (state === "Pathologist") {
+        const { data } = await axios.post(`${backendUrl}/api/pathologist/login`, {
+          email,
+          password,
+        });
 
+        if (data.success) {
+          localStorage.setItem("pathologist_token", data.pathologist_token);
+          setPathologistToken(data.pathologist_token);
+          toast.success("Login successful!");
+          navigate("/pathologist/pending-requests"); 
+        } else {
+          toast.error(data.message);
+        }
+      }
     } catch (error) {
       console.error("Login error:", error);
-      toast.error("Login failed. Please try again.");
+      toast.error(error.response?.data?.message || "Login failed. Please try again.");
     }
   };
 
@@ -82,6 +105,7 @@ const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
               className={`w-full px-4 py-2 border ${errors.email ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0288D1]`}
               placeholder="Enter your email"
+              required
             />
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
@@ -95,9 +119,10 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               className={`w-full px-4 py-2 border ${errors.password ? "border-red-500" : "border-gray-300"} rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0288D1]`}
               placeholder="Enter your password"
+              required
             />
             {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
-            {state === "Doctor" && (
+            {(state === "Doctor" || state === "Pathologist") && (
               <p className="text-right mt-2">
                 <span
                   className="text-sm text-[#0288D1] font-medium cursor-pointer hover:underline"
@@ -117,30 +142,73 @@ const Login = () => {
             Login
           </button>
 
-          {/* Toggle between Admin and Doctor */}
-          <p className="text-gray-600 text-sm text-center mt-4">
+          {/* Toggle between Login Types */}
+          <div className="text-gray-600 text-sm text-center mt-4 space-y-2">
             {state === "Admin" ? (
               <>
-                Doctor Login?{" "}
-                <span
-                  onClick={() => setState("Doctor")}
-                  className="text-[#0288D1] font-medium cursor-pointer hover:underline"
-                >
-                  Click here
-                </span>
+                <p>
+                  Doctor Login?{" "}
+                  <span
+                    onClick={() => setState("Doctor")}
+                    className="text-[#0288D1] font-medium cursor-pointer hover:underline"
+                  >
+                    Click here
+                  </span>
+                </p>
+                <p>
+                  Pathologist Login?{" "}
+                  <span
+                    onClick={() => setState("Pathologist")}
+                    className="text-[#0288D1] font-medium cursor-pointer hover:underline"
+                  >
+                    Click here
+                  </span>
+                </p>
+              </>
+            ) : state === "Doctor" ? (
+              <>
+                <p>
+                  Admin Login?{" "}
+                  <span
+                    onClick={() => setState("Admin")}
+                    className="text-[#0288D1] font-medium cursor-pointer hover:underline"
+                  >
+                    Click here
+                  </span>
+                </p>
+                <p>
+                  Pathologist Login?{" "}
+                  <span
+                    onClick={() => setState("Pathologist")}
+                    className="text-[#0288D1] font-medium cursor-pointer hover:underline"
+                  >
+                    Click here
+                  </span>
+                </p>
               </>
             ) : (
               <>
-                Admin Login?{" "}
-                <span
-                  onClick={() => setState("Admin")}
-                  className="text-[#0288D1] font-medium cursor-pointer hover:underline"
-                >
-                  Click here
-                </span>
+                <p>
+                  Admin Login?{" "}
+                  <span
+                    onClick={() => setState("Admin")}
+                    className="text-[#0288D1] font-medium cursor-pointer hover:underline"
+                  >
+                    Click here
+                  </span>
+                </p>
+                <p>
+                  Doctor Login?{" "}
+                  <span
+                    onClick={() => setState("Doctor")}
+                    className="text-[#0288D1] font-medium cursor-pointer hover:underline"
+                  >
+                    Click here
+                  </span>
+                </p>
               </>
             )}
-          </p>
+          </div>
         </form>
       </div>
     </div>

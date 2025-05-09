@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import notificationModel from "../models/notificationModel.js";
 import nodemailer from "nodemailer";
 
 //api to register user
@@ -337,6 +338,194 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
+// Get user lab reports
+const getUserLabReports = async (req, res) => {
+  try {
+    const reports = await labReportModel
+      .find({
+        patientId: req.user._id,
+      })
+      .sort({ createdAt: -1 });
+
+    res.json({ success: true, reports });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Get user notifications
+const getUserNotifications = async (req, res) => {
+  try {
+    const notifications = await notificationModel
+      .find({
+        userId: req.user._id,
+        userType: "patient",
+      })
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    res.json({ success: true, notifications });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Add user notes to appointment
+const addUserNotes = async (req, res) => {
+  try {
+    const { appointmentId, notes } = req.body;
+
+    // Basic validation
+    if (!appointmentId || !notes) {
+      return res.json({
+        success: false,
+        message: "Appointment ID and notes are required",
+      });
+    }
+
+    // Verify the appointment belongs to the user
+    const appointment = await appointmentModel.findOne({
+      _id: appointmentId,
+      userId: req.user._id,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found or not authorized",
+      });
+    }
+
+    // Update the appointment with user notes
+    await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      { userNotes: notes },
+      { new: true }
+    );
+
+    // Notify the doctor
+    try {
+      await notificationModel.create({
+        userId: appointment.doctorId,
+        userType: "doctor",
+        title: "Patient Added Notes",
+        message: "Your patient has added notes to their appointment.",
+        relatedEntity: "appointment",
+        relatedEntityId: appointmentId,
+      });
+    } catch (notificationError) {
+      console.error("Failed to create notification:", notificationError);
+    }
+
+    res.json({
+      success: true,
+      message: "Notes added successfully",
+      data: { appointmentId },
+    });
+  } catch (error) {
+    console.error("Error in addUserNotes:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
+// Mark notification as read
+const markNotificationAsRead = async (req, res) => {
+  try {
+    const { notificationId } = req.body;
+
+    await notificationModel.findByIdAndUpdate(notificationId, {
+      isRead: true,
+    });
+
+    res.json({ success: true, message: "Notification marked as read" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Get lab tests requested by doctor for a user
+const getUserLabTests = async (req, res) => {
+  try {
+    const appointments = await appointmentModel
+      .find({
+        userId: req.user._id,
+        "labTests.0": { $exists: true }, // Only appointments with lab tests
+      })
+      .select("labTests");
+
+    res.json({
+      success: true,
+      labTests: appointments.flatMap((a) => a.labTests),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+// Get doctor's notes for an appointment
+const getDoctorNotes = async (req, res) => {
+  try {
+    const appointment = await appointmentModel
+      .findOne({
+        _id: req.params.appointmentId,
+        userId: req.user._id,
+      })
+      .select("doctorNotes");
+
+    if (!appointment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Appointment not found" });
+    }
+
+    res.json({ success: true, doctorNotes: appointment.doctorNotes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const getAppointmentDetails = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    const userId = req.body.userId; 
+
+    const appointment = await appointmentModel.findById(appointmentId);
+    
+    if (!appointment) {
+      return res.status(404).json({ 
+        success: false, 
+        message: "Appointment not found" 
+      });
+    }
+
+    if (appointment.userId.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to view this appointment",
+      });
+    }
+
+    res.json({ 
+      success: true, 
+      appointment 
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -345,7 +534,14 @@ export {
   bookAppointment,
   sendResetEmail,
   forgotPassword,
+  getDoctorNotes,
+  getUserLabTests,
   resetPassword,
   listAppointment,
   cancelAppointment,
+  getUserLabReports,
+  getUserNotifications,
+  markNotificationAsRead,
+  addUserNotes,
+  getAppointmentDetails,
 };

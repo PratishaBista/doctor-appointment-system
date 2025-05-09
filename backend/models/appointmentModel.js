@@ -11,13 +11,40 @@ const appointmentSchema = new mongoose.Schema(
     amount: { type: Number, required: true }, // appointment fees
     date: { type: Number, required: true }, // date when the appointment was booked
     cancelled: { type: Boolean, default: false }, // if the appointment is cancelled or not
-    payment: { type: Boolean, default: false }, // if the payment is done or not
+    payment: {
+      status: {
+        type: String,
+        enum: ["pending", "completed", "failed"],
+        default: "pending",
+      },
+      amount: Number,
+      paymentId: String,
+      gateway: String,
+      receiptUrl: String,
+    }, // payment details
     isCompleted: { type: Boolean, default: false }, // if the appointment is completed or not
-    // prescription: { type: String, default: "" }, // prescription given by the doctor
-    // feedback: { type: String, default: "" }, // feedback given by the user
-    // rating: { type: Number, default: 0 }, // rating given by the user
-    // doctorFeedback: { type: String, default: "" }, // feedback given by the doctor
+    followUpRequired: { type: Boolean, default: false }, // if the follow up is required or not
+    labTestRequired: { type: Boolean, default: false }, // if the lab test is required or not
+    // In appointmentModel.js
+    labTests: [
+      {
+        testType: { type: String, required: true },
+        testCode: { type: String },
+        doctorNotes: { type: String },
+        status: {
+          type: String,
+          enum: ["requested", "sample_collected", "in_progress", "completed"],
+          default: "requested",
+        },
+        pathologistId: { type: String }, // who processed the test
+        completedAt: { type: Date }, // when test was completed
+      },
+    ],
+    doctorNotes: { type: String, default: "" }, // notes given by the doctor
+    userNotes: { type: String, default: "" }, // notes given by the user
+    prescription: { type: String, default: "" }, // prescription given by the doctor
   },
+  { timestamps: true } // createdAt and updatedAt fields
 );
 
 const appointmentModel =

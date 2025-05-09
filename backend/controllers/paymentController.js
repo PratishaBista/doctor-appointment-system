@@ -1,28 +1,30 @@
-import axios from "axios";
+import { initiatePayment } from "../services/paymentService.js";
 import appointmentModel from "../models/appointmentModel.js";
-import dotenv from "dotenv";
-dotenv.config();
 
-const initiatePeriPayPayment = async (req, res) => {
+const createPayment = async (req, res) => {
   try {
-    console.log("PeriPay Config:", {
-      apiKey: process.env.PERIPAY_API_KEY?.substring(0, 4) + "...",
-      apiUrl: process.env.PERIPAY_API_URL,
-      returnUrl: process.env.PERIPAY_RETURN_URL,
-    });
-
-    const { appointmentId } = req.body;
-    if (!appointmentId) {
+    if (
+      !req.headers.token ||
+      !req.headers["content-type"]?.includes("application/json")
+    ) {
       return res.status(400).json({
         success: false,
-        message: "Appointment ID is required",
+        message: "Required headers: token, Content-Type: application/json",
+      });
+    }
+
+    // Verify body
+    if (!req.body.appointmentId) {
+      return res.status(400).json({
+        success: false,
+        message: "appointmentId is required in request body",
       });
     }
 
     const appointment = await appointmentModel
-      .findById(appointmentId)
-      .populate("userData")
-      .populate("doctorData");
+      .findById(req.body.appointmentId)
+      .populate("userData", "name email phone")
+      .populate("doctorData", "name fees");
 
     if (!appointment) {
       return res.status(404).json({
@@ -31,66 +33,57 @@ const initiatePeriPayPayment = async (req, res) => {
       });
     }
 
-    const encodedApiKey = encodeURIComponent(process.env.PERIPAY_API_KEY);
+    const paymentResponse = await initiatePayment({
+      appointmentId: appointment._id,
+      amount: appointment.amount,
+      doctorName: appointment.doctorData.name,
+      patientName: appointment.userData.name,
+      patientEmail: appointment.userData.email,
+      patientPhone: appointment.userData.phone,
+      token: req.headers.token, // Pass through
+    });
 
-    const payload = {
-      return_url: process.env.PERIPAY_RETURN_URL,
-      amount: Math.round(appointment.amount * 100), 
-      purchase_order_id: `APPT-${appointment._id}`,
-      product_name: `Appointment with Dr. ${appointment.doctorData.name}`,
-      customer_name: appointment.userData.name,
-      customer_email: appointment.userData.email,
-      customer_phone: appointment.userData.phone || "9800000000",
-    };
-
-    console.log("Sending payload to PeriPay:", payload);
-
-    const response = await axios.post(
-      `${process.env.PERIPAY_API_URL}/api/payment/process/initiate`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${encodedApiKey}`,
-          "Content-Type": "application/json",
-        },
-        timeout: 10000,
-      }
-    );
-
-    return res.json({
+    res.json({
       success: true,
-      paymentUrl: response.data.payment_url,
-      paymentData: response.data,
+      paymentUrl: paymentResponse.payment_url,
+      token: req.headers.token, // Mirror back
     });
   } catch (error) {
-    console.error("Full Payment Error:", {
-      message: error.message,
-      stack: error.stack,
-      response: {
-        status: error.response?.status,
-        data: error.response?.data,
-        headers: error.response?.headers,
-      },
-      config: {
-        url: error.config?.url,
-        method: error.config?.method,
-        headers: error.config?.headers,
-        data: error.config?.data,
-      },
-    });
-
-    return res.status(error.response?.status || 500).json({
+    res.status(500).json({
       success: false,
-      message: "Payment processing failed",
-      debug:
-        process.env.NODE_ENV === "development"
-          ? {
-              error: error.message,
-              periPayResponse: error.response?.data,
-            }
-          : undefined,
+      message: "Payment initiation failed",
+      token: req.headers.token, // Maintain token
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
 
-export { initiatePeriPayPayment };
+const paymentCallback = async (req, res) => {
+  try {
+    const { payment_id, payment_status, purchase_order_id } = req.query;
+
+    await appointmentModel.findByIdAndUpdate(purchase_order_id, {
+      payment: {
+        status: payment_status === "completed" ? "completed" : "failed",
+        gateway: req.query.payment_gateway,
+      },
+    });
+
+    // Redirect with all original params plus token
+    const redirectUrl = new URL(
+      `${process.env.FRONTEND_URL}/appointments/${purchase_order_id}`
+    );
+
+    redirectUrl.searchParams.append("payment", payment_status);
+    redirectUrl.searchParams.append("token", req.query.token || "");
+
+    res.redirect(redirectUrl.toString());
+  } catch (error) {
+    console.error("Callback error:", error);
+    res.redirect(
+      `${process.env.FRONTEND_URL}/payment-error?token=${req.query.token || ""}`
+    );
+  }
+};
+
+export { createPayment, paymentCallback };

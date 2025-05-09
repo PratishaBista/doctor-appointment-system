@@ -3,17 +3,17 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-const AppointmentsPage = () => {
-    const { backendUrl, token, daysOfWeek, months, getDoctorsData } = useContext(AppContext);
+const Appointments = () => {
+    const { backendUrl, token, getDoctorsData } = useContext(AppContext);
     const [appointments, setAppointments] = useState([]);
     const [activeTab, setActiveTab] = useState("upcoming");
     const [isLoading, setIsLoading] = useState(true);
-    const [currentAppointment, setCurrentAppointment] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (token) {
-            console.log("Fetching appointments for token:", token); // Debug
             fetchAppointments();
         }
     }, [token]);
@@ -29,7 +29,6 @@ const AppointmentsPage = () => {
             const { data } = await axios.get(`${backendUrl}/api/user/appointments`, {
                 headers: { token },
             });
-            console.log("Received appointments data:", data);
 
             if (data.success) {
                 setAppointments(data.appointments.reverse() || []);
@@ -62,13 +61,8 @@ const AppointmentsPage = () => {
         }
     };
 
-    useEffect(() => {
-        if (token) fetchAppointments();
-    }, [token]);
-
     const parseAppointmentDate = (slotDate, slotTime) => {
         const [day, month, year] = slotDate.split("-");
-        // Convert 12h to 24h format
         const [time, modifier] = slotTime.split(" ");
         let [hours, minutes] = time.split(":").map(Number);
 
@@ -79,27 +73,34 @@ const AppointmentsPage = () => {
             hours = 0;
         }
 
-        // Format to YYYY-MM-DDTHH:MM
         const isoString = `${year}-${month}-${day}T${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
         return new Date(isoString);
     };
 
     const now = new Date();
+    
+    // Modified filters to correctly categorize appointments
     const upcoming = appointments.filter(
-        (a) => !a.cancelled && parseAppointmentDate(a.slotDate, a.slotTime) > now
+        (a) => !a.cancelled && !a.isCompleted && parseAppointmentDate(a.slotDate, a.slotTime) > now
     );
+    
     const past = appointments.filter(
-        (a) => !a.cancelled && parseAppointmentDate(a.slotDate, a.slotTime) <= now && !a.ongoing
+        (a) => !a.cancelled && a.isCompleted
     );
-
+    
     const cancelled = appointments.filter((a) => a.cancelled);
-    const ongoing = appointments.filter((a) => a.ongoing);
 
     const renderAppointmentCard = (appointment, type) => {
-        const slotDate = appointment.slotDate;
-        const dateParts = slotDate.split("-");
-        const month = parseInt(dateParts[1], 10) - 1;
         const appointmentDate = parseAppointmentDate(appointment.slotDate, appointment.slotTime);
+        
+        // Determine card status label
+        let statusLabel = type === 'cancelled' ? 'Cancelled' : 
+                         type === 'upcoming' ? 'Upcoming' : 'Completed';
+        
+        // Determine status badge color
+        let statusClasses = type === 'cancelled' ? 'bg-red-100 text-red-800' :
+                           type === 'upcoming' ? 'bg-blue-100 text-blue-800' : 
+                           'bg-green-100 text-green-800';
 
         return (
             <motion.div
@@ -108,7 +109,6 @@ const AppointmentsPage = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-                onClick={() => type === "ongoing" && setCurrentAppointment(appointment)}
             >
                 <div className="p-5">
                     <div className="flex items-start">
@@ -118,8 +118,15 @@ const AppointmentsPage = () => {
                             className="w-16 h-16 rounded-full object-cover mr-4"
                         />
                         <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-800">{appointment.doctorData.name}</h3>
-                            <p className="text-sm text-gray-600">{appointment.doctorData.speciality}</p>
+                            <div className="flex justify-between items-start">
+                                <div>
+                                    <h3 className="text-lg font-semibold text-gray-800">{appointment.doctorData.name}</h3>
+                                    <p className="text-sm text-gray-600">{appointment.doctorData.speciality}</p>
+                                </div>
+                                <span className={`text-xs px-2 py-1 rounded-full ${statusClasses}`}>
+                                    {statusLabel}
+                                </span>
+                            </div>
 
                             <div className="mt-3 grid grid-cols-2 gap-4">
                                 <div>
@@ -145,15 +152,9 @@ const AppointmentsPage = () => {
                                     </p>
                                 </div>
                                 <div>
-                                    <p className="text-xs text-gray-500">Status</p>
-                                    <p className={`text-sm font-medium ${type === 'cancelled' ? 'text-red-600' :
-                                        type === 'upcoming' ? 'text-blue-600' :
-                                            type === 'ongoing' ? 'text-green-600' :
-                                            'text-gray-600'
-                                        }`}>
-                                        {type === 'cancelled' ? 'Cancelled' :
-                                            type === 'upcoming' ? 'Upcoming' :
-                                            type === 'ongoing' ? 'Ongoing' : 'Completed'}
+                                    <p className="text-xs text-gray-500">Payment</p>
+                                    <p className="text-sm font-medium text-gray-800">
+                                        {appointment.payment?.status === 'completed' ? 'Paid' : 'Pending'}
                                     </p>
                                 </div>
                             </div>
@@ -161,77 +162,63 @@ const AppointmentsPage = () => {
                     </div>
 
                     {type === "upcoming" && (
-                        <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+                        <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center space-x-3">
+                            <button
+                                onClick={() => navigate(`/dashboard/appointments/${appointment._id}`)}
+                                className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+                            >
+                                View Details
+                            </button>
                             <div className="flex space-x-2">
                                 <motion.button
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.98 }}
-                                    className="px-3 py-1.5 text-xs font-medium rounded-md border border-green-600 text-green-600"
+                                    className="px-3 py-2 text-xs font-medium rounded-md border border-green-600 text-green-600 hover:bg-green-50"
                                 >
                                     Pay Online
                                 </motion.button>
                                 <motion.button
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.98 }}
-                                    className="px-3 py-1.5 text-xs font-medium rounded-md border border-blue-600 text-blue-600"
+                                    className="px-3 py-2 text-xs font-medium rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50"
                                 >
                                     Pay at Clinic
                                 </motion.button>
+                                <motion.button
+                                    onClick={() => cancelAppointment(appointment._id)}
+                                    whileHover={{ scale: 1.03 }}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="px-3 py-2 text-xs font-medium rounded-md border border-red-600 text-red-600 hover:bg-red-50"
+                                >
+                                    Cancel
+                                </motion.button>
                             </div>
-                            <motion.button
-                                onClick={() => cancelAppointment(appointment._id)}
-                                whileHover={{ scale: 1.03 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="px-3 py-1.5 text-xs font-medium rounded-md border border-red-600 text-red-600"
+                        </div>
+                    )}
+                    
+                    {type === "past" && (
+                        <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+                            <button
+                                onClick={() => navigate(`/dashboard/appointments/${appointment._id}`)}
+                                className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition"
                             >
-                                Cancel
-                            </motion.button>
+                                View Details
+                            </button>
+                        </div>
+                    )}
+                    
+                    {type === "cancelled" && (
+                        <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
+                            <button
+                                onClick={() => navigate(`/dashboard/appointments/${appointment._id}`)}
+                                className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition"
+                            >
+                                View Details
+                            </button>
                         </div>
                     )}
                 </div>
             </motion.div>
-        );
-    };
-
-    const renderOngoingAppointmentDetails = (appointment) => {
-        return (
-            <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-                <h2 className="text-2xl font-semibold text-gray-800">Current Appointment with {appointment.doctorData.name}</h2>
-                <p className="text-sm text-gray-600">{appointment.doctorData.speciality}</p>
-
-                <div className="space-y-2">
-                    <h3 className="text-lg font-medium text-gray-700">Follow-up Required:</h3>
-                    <p className="text-sm text-gray-500">{appointment.doctorFeedback?.followUp || "Not specified"}</p>
-                </div>
-
-                <div className="space-y-2">
-                    <h3 className="text-lg font-medium text-gray-700">Doctor's Feedback:</h3>
-                    <p className="text-sm text-gray-500">{appointment.doctorFeedback?.feedback || "No feedback yet"}</p>
-                </div>
-
-                <div className="space-y-2">
-                    <h3 className="text-lg font-medium text-gray-700">Prescription:</h3>
-                    <p className="text-sm text-gray-500">{appointment.prescription || "No prescription provided"}</p>
-                </div>
-
-                {appointment.doctorFeedback && !appointment.userFeedback && (
-                    <div className="mt-4">
-                        <h3 className="text-lg font-medium text-gray-700">Write Your Feedback</h3>
-                        <textarea
-                            className="w-full p-3 border border-gray-300 rounded-md"
-                            rows="4"
-                            placeholder="Write your feedback here..."
-                        />
-                        <motion.button
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="mt-2 px-4 py-2 bg-blue-600 text-white rounded-md"
-                        >
-                            Submit Feedback
-                        </motion.button>
-                    </div>
-                )}
-            </div>
         );
     };
 
@@ -248,10 +235,10 @@ const AppointmentsPage = () => {
             {/* Tabs */}
             <div className="mb-6 border-b border-gray-200">
                 <nav className="flex space-x-8">
-                    {[{ id: 'upcoming', label: 'Upcoming', count: upcoming.length },
-                      { id: 'past', label: 'Past', count: past.length },
-                      { id: 'cancelled', label: 'Cancelled', count: cancelled.length },
-                      { id: 'ongoing', label: 'Ongoing', count: ongoing.length }
+                    {[
+                        { id: 'upcoming', label: 'Upcoming', count: upcoming.length },
+                        { id: 'past', label: 'Appointment History', count: past.length }, //if the doctor has marked the appointment as completed
+                        { id: 'cancelled', label: 'Cancelled', count: cancelled.length }
                     ].map((tab) => (
                         <button
                             key={tab.id}
@@ -308,22 +295,10 @@ const AppointmentsPage = () => {
                             </div>
                         )
                     )}
-
-                    {activeTab === 'ongoing' && (
-                        ongoing.length > 0 ? (
-                            ongoing.map(appointment => renderAppointmentCard(appointment, 'ongoing'))
-                        ) : (
-                            <div className="text-center py-12 text-gray-500">
-                                No ongoing appointments
-                            </div>
-                        )
-                    )}
-
-                    {currentAppointment && renderOngoingAppointmentDetails(currentAppointment)}
                 </div>
             )}
         </div>
     );
 };
 
-export default AppointmentsPage;
+export default Appointments;
