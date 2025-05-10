@@ -12,29 +12,31 @@ const PathologistContextProvider = ({ children }) => {
 
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-    const getHeaders = () => ({
-        headers: {
-            'pathologist_token': pathologist_token,
-            'Content-Type': 'application/json'
-        }
-    });
-
     const getPendingRequests = async () => {
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); 
+
             const { data } = await axios.get(
                 `${backendUrl}/api/pathologist/pending-requests`,
-                getHeaders()
+                {
+                    headers: { pathologist_token },
+                    signal: controller.signal
+                }
             );
+
+            clearTimeout(timeoutId);
 
             if (data.success) {
                 setPendingRequests(data.data);
-            } else {
-                toast.error(data.message);
+                return data.data;
             }
-            return data;
+            throw new Error(data.message);
         } catch (error) {
-            console.error("Error fetching pending requests:", error);
-            toast.error(error.response?.data?.message || "Failed to fetch pending requests");
+            if (error.name !== 'AbortError') {
+                console.error("Error:", error);
+                toast.error(error.response?.data?.message || "Failed to fetch requests");
+            }
             throw error;
         }
     };
@@ -70,7 +72,12 @@ const PathologistContextProvider = ({ children }) => {
         try {
             const { data } = await axios.get(
                 `${backendUrl}/api/pathologist/profile`,
-                getHeaders()
+                {
+                    headers: {
+                        pathologist_token
+                    }
+                }
+
             );
 
             if (data.success) {
@@ -97,7 +104,11 @@ const PathologistContextProvider = ({ children }) => {
             const { data } = await axios.post(
                 `${backendUrl}/api/pathologist/update-profile`,
                 dataToSend,
-                getHeaders()
+                {
+                    headers: {
+                        pathologist_token
+                    }
+                }
             );
 
             if (data.success) {

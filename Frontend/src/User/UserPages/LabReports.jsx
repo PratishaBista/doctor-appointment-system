@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { FiFileText, FiDownload } from "react-icons/fi";
 
 const LabReports = () => {
   const { backendUrl, token } = useContext(AppContext);
@@ -56,7 +57,7 @@ const LabReports = () => {
                   <h2 className="text-lg font-semibold">{report.reportName}</h2>
                   <p className="text-gray-600">{report.testType}</p>
                   <p className="text-sm text-gray-500 mt-2">
-                    Uploaded: {new Date(report.uploadDate).toLocaleDateString()}
+                    Uploaded: {new Date(report.createdAt).toLocaleDateString()}
                   </p>
                   {report.notes && (
                     <p className="text-gray-700 mt-2">{report.notes}</p>
@@ -66,15 +67,17 @@ const LabReports = () => {
                   href={report.reportFile}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                  className="flex items-center text-[#0288d1ff]"
                 >
-                  View Report
+                  <FiDownload className="mr-1" /> View
                 </a>
               </div>
             </div>
           ))}
         </div>
       )}
+
+
     </div>
   );
 };

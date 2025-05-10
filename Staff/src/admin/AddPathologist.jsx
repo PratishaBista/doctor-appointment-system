@@ -6,7 +6,6 @@ import { toast } from 'react-toastify';
 import axios from 'axios';
 import { AdminContext } from '../context/AdminContext';
 
-// Validation schema
 const pathologistSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters'),
   email: z.string().email('Invalid email format'),
@@ -82,7 +81,7 @@ const AddPathologist = () => {
                   <input
                     {...register('name')}
                     id="name"
-                    placeholder="Dr. John Smith"
+                    placeholder="Dr. Pratisha Bista"
                     className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#0288D1] focus:ring-[#0288D1] sm:text-sm ${errors.name ? 'border-red-300' : 'border'}`}
                   />
                   {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}

@@ -212,7 +212,10 @@ const FindDoctors = () => {
                       </div>
                       <div className="w-full mt-auto">
                         <div className="flex justify-between items-center mb-3">
-                          <span className="text-gray-700 font-medium">Rs. {doctor.fees}</span>
+                          <div className="flex items-center">
+                            <span className="mr-2 text-[#0288D1] font-semibold">रु</span>
+                            <span>{doctor.fees}</span>
+                          </div>
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${doctor.available ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                             }`}>
                             {doctor.available ? "Available" : "Unavailable"}

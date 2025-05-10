@@ -6,6 +6,7 @@ import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import notificationModel from "../models/notificationModel.js";
+import labReportModel from "../models/labReportModel.js";
 import nodemailer from "nodemailer";
 
 //api to register user
@@ -338,12 +339,11 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
-// Get user lab reports
 const getUserLabReports = async (req, res) => {
   try {
     const reports = await labReportModel
       .find({
-        patientId: req.user._id,
+        patientId: req.body.userId,
       })
       .sort({ createdAt: -1 });
 
@@ -456,7 +456,7 @@ const getUserLabTests = async (req, res) => {
     const appointments = await appointmentModel
       .find({
         userId: req.user._id,
-        "labTests.0": { $exists: true }, // Only appointments with lab tests
+        "labTests.0": { $exists: true },
       })
       .select("labTests");
 
@@ -495,14 +495,14 @@ const getDoctorNotes = async (req, res) => {
 const getAppointmentDetails = async (req, res) => {
   try {
     const { appointmentId } = req.params;
-    const userId = req.body.userId; 
+    const userId = req.body.userId;
 
     const appointment = await appointmentModel.findById(appointmentId);
-    
+
     if (!appointment) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Appointment not found" 
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
       });
     }
 
@@ -513,15 +513,86 @@ const getAppointmentDetails = async (req, res) => {
       });
     }
 
-    res.json({ 
-      success: true, 
-      appointment 
+    res.json({
+      success: true,
+      appointment,
     });
   } catch (error) {
     console.log(error);
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const addPatientComment = async (req, res) => {
+  try {
+    const { appointmentId, comment } = req.body;
+    const userId = req.body.userId;
+
+    if (!appointmentId || !comment) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment ID and comment are required",
+      });
+    }
+
+    const appointment = await appointmentModel.findOne({
+      _id: appointmentId,
+      userId,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found or not authorized",
+      });
+    }
+
+    if (!appointment.doctorComment) {
+      return res.status(400).json({
+        success: false,
+        message: "You can only reply after the doctor has commented",
+      });
+    }
+
+    if (appointment.patientComment) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already replied to this comment",
+      });
+    }
+
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      {
+        patientComment: comment,
+        patientCommentAt: new Date(),
+      },
+      { new: true }
+    );
+
+    // await notificationModel.create({
+    //   userId: appointment.doctorId,
+    //   userType: "doctor",
+    //   title: "Patient Reply",
+    //   message: "Your patient has replied to your comment",
+    //   relatedEntity: "appointment",
+    //   relatedEntityId: appointmentId,
+    // });
+
+    res.json({
+      success: true,
+      message: "Reply added successfully",
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+    console.error("Error adding patient comment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to add reply",
+      error: error.message,
     });
   }
 };
@@ -544,4 +615,5 @@ export {
   markNotificationAsRead,
   addUserNotes,
   getAppointmentDetails,
+  addPatientComment,
 };

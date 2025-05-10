@@ -16,6 +16,8 @@ import {
   markFollowUp,
   getDoctorNotifications,
   markNotificationAsRead,
+  updatePrescription,
+  addDoctorComment,
 } from "../controllers/doctorController.js";
 import authDoctor from "../middlewares/authDoctor.js";
 import appointmentModel from "../models/appointmentModel.js";
@@ -34,10 +36,10 @@ doctorRouter.post("/update-profile", authDoctor, updateDoctorProfile); // API to
 doctorRouter.post("/forgot-password", forgotPassword);
 doctorRouter.post("/reset-password", resetPassword);
 doctorRouter.post("/request-lab-test", authDoctor, requestLabTest);
-doctorRouter.post("/get-patient-reports", authDoctor, getPatientLabReports);
 doctorRouter.post("/add-notes", authDoctor, addDoctorNotes);
 doctorRouter.post("/mark-followup", authDoctor, markFollowUp);
 doctorRouter.get("/notifications", authDoctor, getDoctorNotifications);
+doctorRouter.get("/patient-lab-reports/:patientId", authDoctor, getPatientLabReports);
 doctorRouter.post("/get-appointment-details", authDoctor, async (req, res) => {
   try {
     const { appointmentId } = req.body;
@@ -65,6 +67,8 @@ doctorRouter.post(
   authDoctor,
   markNotificationAsRead
 );
+doctorRouter.post("/update-prescription", authDoctor, updatePrescription);
+doctorRouter.post("/add-comment", authDoctor, addDoctorComment);
 
 export default doctorRouter;
 

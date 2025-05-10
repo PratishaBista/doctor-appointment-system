@@ -108,36 +108,124 @@ const DoctorContextProvider = (props) => {
             return null;
         }
     };
-    
+
     const requestLabTest = async (appointmentId, tests) => {
         try {
-            await axios.post("/api/doctor/request-lab-test", { appointmentId, tests });
+            const { data } = await axios.post(
+                `${backendUrl}/api/doctor/request-lab-test`,
+                { appointmentId, tests },
+                { headers: { doctor_token } }
+            );
+
+            if (data.success) {
+                toast.success(data.message);
+                return data.appointment;
+            } else {
+                toast.error(data.message);
+                throw new Error(data.message);
+            }
         } catch (error) {
             console.error("Error requesting lab tests:", error);
+            toast.error(error.response?.data?.message || "Failed to request lab tests");
             throw error;
         }
     };
 
     const addDoctorNotes = async (appointmentId, notes) => {
         try {
-            await axios.post("/api/doctor/add-notes", { appointmentId, notes });
+            const { data } = await axios.post(
+                `${backendUrl}/api/doctor/add-notes`,
+                { appointmentId, notes },
+                { headers: { doctor_token } }
+            );
+
+            if (data.success) {
+                toast.success(data.message);
+                return data.appointment; 
+            } else {
+                throw new Error(data.message);
+            }
         } catch (error) {
             console.error("Error adding doctor notes:", error);
+            toast.error(error.response?.data?.message || "Failed to save notes");
             throw error;
         }
     };
 
     const markFollowUp = async (appointmentId) => {
         try {
-            await axios.post("/api/doctor/mark-followup", { appointmentId });
+            const { data } = await axios.post(
+                `${backendUrl}/api/doctor/mark-followup`,
+                { appointmentId },
+                { headers: { doctor_token } }
+            );
+
+            if (data.success) {
+                toast.success(data.message);
+                return data.data;
+            } else {
+                throw new Error(data.message);
+            }
+
         } catch (error) {
-            console.error("Error marking follow-up:", error);
+            console.error("API Error Details:", {
+                error: error.message,
+                response: error.response?.data
+            });
+
+            throw new Error(
+                error.response?.data?.message ||
+                error.response?.data?.systemMessage ||
+                "Failed to update follow-up status"
+            );
+        }
+    };
+
+    const getPatientLabReports = async (patientId) => {
+        try {
+            const { data } = await axios.get(
+                `${backendUrl}/api/doctor/patient-lab-reports/${patientId}`,
+                { headers: { doctor_token } }
+            );
+
+            if (data.success) {
+                return data.reports;
+            } else {
+                toast.error(data.message);
+                return [];
+            }
+        } catch (error) {
+            console.error("Error fetching lab reports:", error);
+            toast.error("Failed to load lab reports");
+            return [];
+        }
+    };
+
+    const updatePrescription = async (appointmentId, prescription) => {
+        try {
+            const { data } = await axios.post(
+                `${backendUrl}/api/doctor/update-prescription`,
+                { appointmentId, prescription },
+                { headers: { doctor_token } }
+            );
+
+            if (data.success) {
+                toast.success("Prescription updated successfully");
+                return data.appointment;
+            } else {
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error("Error updating prescription:", error);
+            toast.error(error.response?.data?.message || "Failed to update prescription");
             throw error;
         }
     };
+
+
     const value = {
-        doctor_token, setDoctorToken, getDoctorData, doctorData, setDoctorData,
-        backendUrl, getAppointments, setAppointments, appointments, completeAppointment, getDashboardData, dashboardData, setDashboardData, getPatientDetails, requestLabTest, addDoctorNotes, markFollowUp
+        doctor_token, setDoctorToken, getDoctorData, doctorData, setDoctorData, updatePrescription,
+        backendUrl, getAppointments, setAppointments, appointments, completeAppointment, getDashboardData, dashboardData, setDashboardData, getPatientDetails, requestLabTest, addDoctorNotes, markFollowUp, getPatientLabReports
     };
 
     return (
