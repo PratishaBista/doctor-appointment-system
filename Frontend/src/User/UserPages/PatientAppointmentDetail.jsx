@@ -2,7 +2,19 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 import axios from "axios";
-import { FiArrowLeft, FiFileText, FiClipboard, FiDroplet, FiCalendar, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle } from "react-icons/fi";
+import {
+    FiArrowLeft,
+    FiFileText,
+    FiClipboard,
+    FiDroplet,
+    FiCalendar,
+    FiClock,
+    FiCheckCircle,
+    FiXCircle,
+    FiAlertCircle,
+    FiPrinter,
+    FiFilePlus
+} from "react-icons/fi";
 import { toast } from "react-toastify";
 
 const PatientAppointmentDetail = () => {
@@ -22,6 +34,7 @@ const PatientAppointmentDetail = () => {
 
                 if (data.success) {
                     setAppointment(data.appointment);
+                    console.log("Appointment data:", data.appointment);
                 } else {
                     toast.error(data.message || "Failed to load appointment details");
                 }
@@ -35,6 +48,88 @@ const PatientAppointmentDetail = () => {
 
         fetchAppointmentDetails();
     }, [appointmentId, backendUrl, token]);
+
+    const [patientReply, setPatientReply] = useState("");
+
+    const handleSubmitPatientReply = async () => {
+        try {
+            const { data } = await axios.post(
+                `${backendUrl}/api/user/add-comment`,
+                {
+                    appointmentId,
+                    comment: patientReply
+                },
+                { headers: { token } }
+            );
+
+            if (data.success) {
+                toast.success("Reply sent successfully");
+                setAppointment(data.appointment);
+                setPatientReply("");
+            }
+        } catch (error) {
+            console.error("Error sending reply:", error);
+            toast.error(error.response?.data?.message || "Failed to send reply");
+        }
+    };
+
+    const handlePrintPrescription = () => {
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+        <html>
+          <head>
+            <title>Prescription - ${appointment?.userData?.name}</title>
+            <style>
+              body { font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; }
+              .header { text-align: center; margin-bottom: 30px; }
+              .header h1 { margin-bottom: 5px; }
+              .header hr { width: 100px; margin: 10px auto; border: 1px solid #ddd; }
+              .patient-info, .doctor-info { margin-bottom: 20px; }
+              .prescription-content { border-top: 1px solid #ddd; border-bottom: 1px solid #ddd; padding: 20px 0; margin: 20px 0; }
+              .signature { margin-top: 50px; text-align: right; }
+              .footer { margin-top: 50px; font-size: 12px; color: #666; text-align: center; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <h1>Medical Prescription</h1>
+              <hr />
+              <p>${new Date().toLocaleDateString()}</p>
+            </div>
+            
+            <div class="patient-info">
+              <h3>Patient Information</h3>
+              <p><strong>Name:</strong> ${appointment?.userData?.name}</p>
+              <p><strong>Age:</strong> ${appointment?.userData?.age || 'N/A'}</p>
+            </div>
+            
+            <div class="prescription-content">
+              ${appointment?.prescription || '<p>No prescription provided.</p>'}
+            </div>
+            
+            <div class="doctor-info">
+              <div class="signature">
+                <p><strong>Dr. ${appointment?.doctorData?.name}</strong></p>
+                <p>${appointment?.doctorData?.speciality}</p>
+                <p>License No: XXXXXXXX</p>
+                <br /><br />
+                <p>_________________________</p>
+                <p>Signature</p>
+              </div>
+            </div>
+            
+            <div class="footer">
+              <p>This is a computer generated prescription and does not require a physical signature.</p>
+            </div>
+          </body>
+        </html>
+      `);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+        }, 500);
+    };
 
     if (loading) {
         return (
@@ -154,6 +249,41 @@ const PatientAppointmentDetail = () => {
                 </div>
             </div>
 
+            {/* Prescription Section */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6 border border-gray-100">
+                <div className="p-6">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                            <FiFilePlus className="mr-2 text-gray-600" />
+                            Prescription
+                        </h2>
+                        {appointment.prescription && (
+                            <button
+                                onClick={handlePrintPrescription}
+                                className="flex items-center text-blue-600 hover:text-blue-800 transition"
+                            >
+                                <FiPrinter className="mr-1" /> Print
+                            </button>
+                        )}
+                    </div>
+
+                    {appointment.prescription ? (
+                        <div className="bg-gray-50 p-4 rounded border border-gray-200">
+                            <div
+                                className="prose max-w-none"
+                                dangerouslySetInnerHTML={{ __html: appointment.prescription }}
+                            />
+                        </div>
+                    ) : (
+                        <div className="bg-gray-50 p-4 rounded border border-gray-200">
+                            <p className="text-gray-500 italic">
+                                No prescription has been provided for this appointment.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
             {/* Follow-up Section */}
             <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6 border border-gray-100">
                 <div className="p-6">
@@ -245,8 +375,8 @@ const PatientAppointmentDetail = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${test.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                                        test.status === 'requested' ? 'bg-blue-100 text-blue-800' :
-                                                            'bg-yellow-100 text-yellow-800'
+                                                    test.status === 'requested' ? 'bg-blue-100 text-blue-800' :
+                                                        'bg-yellow-100 text-yellow-800'
                                                     }`}>
                                                     {test.status.replace('_', ' ')}
                                                 </span>
@@ -260,6 +390,63 @@ const PatientAppointmentDetail = () => {
                         <div className="bg-gray-50 p-4 rounded border border-gray-200">
                             <p className="text-gray-500 italic">
                                 No lab tests have been requested for this appointment.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Comments Section */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden mt-6 border border-gray-100">
+                <div className="p-6">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-4">Appointment Comments</h2>
+
+                    {/* Doctor's comment */}
+                    {appointment.doctorComment ? (
+                        <div className="mb-6">
+                            <div className="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
+                                <h3 className="font-medium text-blue-800 mb-1">Doctor's Comment</h3>
+                                <p className="text-gray-800 whitespace-pre-line">{appointment.doctorComment}</p>
+                                <p className="text-xs text-gray-500 mt-2">
+                                    Posted on: {new Date(appointment.doctorCommentAt).toLocaleString()}
+                                </p>
+                            </div>
+
+                            {/* Patient's reply form or existing reply */}
+                            {appointment.patientComment ? (
+                                <div className="bg-green-50 p-4 rounded-lg border border-green-100">
+                                    <h3 className="font-medium text-green-800 mb-1">Your Reply</h3>
+                                    <p className="text-gray-800 whitespace-pre-line">{appointment.patientComment}</p>
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        Replied on: {new Date(appointment.patientCommentAt).toLocaleString()}
+                                    </p>
+                                </div>
+                            ) : (
+                                <>
+                                    <h3 className="font-medium text-gray-800 mb-2">Your Reply</h3>
+                                    <textarea
+                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                                        value={patientReply}
+                                        onChange={(e) => setPatientReply(e.target.value)}
+                                        placeholder="Type your reply to the doctor's comment..."
+                                        rows={3}
+                                    />
+                                    <div className="mt-2 flex justify-end">
+                                        <button
+                                            onClick={handleSubmitPatientReply}
+                                            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+                                            disabled={!patientReply.trim()}
+                                        >
+                                            Send Reply
+                                        </button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <p className="text-gray-500 italic">
+                                The doctor has not added any comments yet for this appointment.
                             </p>
                         </div>
                     )}

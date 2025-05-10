@@ -79,7 +79,6 @@ const Appointments = () => {
 
     const now = new Date();
     
-    // Modified filters to correctly categorize appointments
     const upcoming = appointments.filter(
         (a) => !a.cancelled && !a.isCompleted && parseAppointmentDate(a.slotDate, a.slotTime) > now
     );
@@ -93,11 +92,9 @@ const Appointments = () => {
     const renderAppointmentCard = (appointment, type) => {
         const appointmentDate = parseAppointmentDate(appointment.slotDate, appointment.slotTime);
         
-        // Determine card status label
         let statusLabel = type === 'cancelled' ? 'Cancelled' : 
                          type === 'upcoming' ? 'Upcoming' : 'Completed';
         
-        // Determine status badge color
         let statusClasses = type === 'cancelled' ? 'bg-red-100 text-red-800' :
                            type === 'upcoming' ? 'bg-blue-100 text-blue-800' : 
                            'bg-green-100 text-green-800';
@@ -165,7 +162,7 @@ const Appointments = () => {
                         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center space-x-3">
                             <button
                                 onClick={() => navigate(`/dashboard/appointments/${appointment._id}`)}
-                                className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+                                className="px-3 py-2 text-sm font-medium text-white bg-[#0288d1ff] rounded hover:bg-[#0289d1df] transition"
                             >
                                 View Details
                             </button>
@@ -200,7 +197,7 @@ const Appointments = () => {
                         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
                             <button
                                 onClick={() => navigate(`/dashboard/appointments/${appointment._id}`)}
-                                className="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+                                className="px-3 py-2 text-sm font-medium text-white bg-[#0288d1ff] rounded hover:bg-[#0289d1df] transition"
                             >
                                 View Details
                             </button>

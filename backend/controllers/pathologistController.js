@@ -3,10 +3,14 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 import appointmentModel from "../models/appointmentModel.js";
+import userModel from "../models/userModel.js";
 import labReportModel from "../models/labReportModel.js";
-import notificationModel from "../models/notificationModel.js";
+// import notificationModel from "../models/notificationModel.js";
+import doctorModel from "../models/doctorModel.js";
 import cloudinary from "../config/cloudinary.js";
 import { v4 as uuidv4 } from "uuid";
+// import { format } from "path";
+import fs from "fs";
 
 // Generate random password
 const generateRandomPassword = () => uuidv4().substring(0, 10);
@@ -124,8 +128,7 @@ const loginPathologist = async (req, res) => {
 
     const token = jwt.sign(
       { id: pathologist._id, role: "pathologist" },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" }
+      process.env.JWT_SECRET
     );
 
     res.json({
@@ -151,41 +154,78 @@ const getPendingLabRequests = async (req, res) => {
   try {
     const appointments = await appointmentModel
       .find({
-        "labTests.status": "requested", 
-        cancelled: false,
+        "labTests.status": "requested",
       })
-      .populate("userData", "name email phone age gender")
-      .lean();
+      .sort({ createdAt: -1 });
 
-    const pendingRequests = appointments.flatMap((appointment) => {
-      return appointment.labTests
-        .filter((test) => test.status === "requested")
-        .map((test) => ({
-          ...test,
-          appointmentId: appointment._id,
-          patient: appointment.userData,
-          doctor: appointment.doctorData,
-          appointmentDate: appointment.slotDate,
-        }));
+    const patientIds = [...new Set(appointments.map((a) => a.userId))];
+    const doctorIds = [...new Set(appointments.map((a) => a.doctorId))];
+
+    const [patients, doctors] = await Promise.all([
+      userModel
+        .find({ _id: { $in: patientIds } })
+        .select("name email phone dob gender"),
+      doctorModel.find({ _id: { $in: doctorIds } }).select("name speciality"),
+    ]);
+
+    const patientMap = patients.reduce((map, patient) => {
+      map[patient._id] = patient;
+      return map;
+    }, {});
+
+    const doctorMap = doctors.reduce((map, doctor) => {
+      map[doctor._id] = doctor;
+      return map;
+    }, {});
+
+    const formattedRequests = appointments.map((appointment) => {
+      const patient = patientMap[appointment.userId] || {};
+      const doctor = doctorMap[appointment.doctorId] || {};
+
+      let age = "";
+      if (patient.dob) {
+        const birthDate = new Date(patient.dob);
+        const diff = Date.now() - birthDate.getTime();
+        const ageDate = new Date(diff);
+        age = Math.abs(ageDate.getUTCFullYear() - 1970);
+      }
+
+      return {
+        ...appointment.toObject(),
+        userData: {
+          _id: appointment.userId,
+          name: patient.name || "Patient",
+          email: patient.email,
+          phone: patient.phone,
+          gender: patient.gender,
+          age: age,
+          dob: patient.dob,
+        },
+        doctorData: {
+          _id: appointment.doctorId,
+          name: doctor.name || "Doctor",
+          speciality: doctor.speciality,
+        },
+      };
     });
 
     res.json({
       success: true,
-      data: pendingRequests,
+      data: formattedRequests,
     });
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching pending lab requests:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch pending requests",
+      message: "Failed to fetch pending lab requests",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
     });
   }
 };
 
-// Upload lab report
 const uploadLabReport = async (req, res) => {
   try {
-    const { appointmentId, patientId, doctorId, reportName, notes } = req.body;
+    const { appointmentId, patientId, reportName, notes, testType } = req.body;
     const reportFile = req.file;
 
     if (!reportFile) {
@@ -195,53 +235,181 @@ const uploadLabReport = async (req, res) => {
       });
     }
 
-    const result = await cloudinary.uploader.upload(reportFile.path, {
-      resource_type: "auto",
-      folder: "lab_reports",
-    });
+    const appointment = await appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    let cloudinaryResult;
+    try {
+      cloudinaryResult = await cloudinary.uploader.upload(reportFile.path, {
+        resource_type: "auto",
+        folder: "lab_reports",
+        public_id: `report_${appointmentId}_${Date.now()}`,
+        overwrite: false,
+      });
+
+      if (!cloudinaryResult.secure_url) {
+        throw new Error("Cloudinary upload failed");
+      }
+    } catch (uploadError) {
+      console.error("Cloudinary upload error:", uploadError);
+      throw new Error("Failed to upload file to cloud storage");
+    }
 
     const newReport = new labReportModel({
       appointmentId,
-      patientId,
-      doctorId,
-      pathologistId: req.user.id,
+      patientId: appointment.userId,
+      doctorId: appointment.doctorId, 
+      pathologistId: req.user.id, 
       reportName,
-      reportFile: result.secure_url,
+      reportFile: cloudinaryResult.secure_url,
+      testType: testType || "General Lab Test", 
       notes,
+      
     });
 
     await newReport.save();
 
-    await notificationModel.create([
-      {
-        userId: patientId,
-        userType: "patient",
-        title: "Lab Report Ready",
-        message: `Your lab report "${reportName}" is now available.`,
-        relatedEntity: "labReport",
-        relatedEntityId: newReport._id,
-      },
-      {
-        userId: doctorId,
-        userType: "doctor",
-        title: "Lab Report Ready",
-        message: `Lab report "${reportName}" for your patient is now available.`,
-        relatedEntity: "labReport",
-        relatedEntityId: newReport._id,
-      },
-    ]);
+    if (appointment.labTests && appointment.labTests.length > 0) {
+      appointment.labTests.forEach((test) => {
+        if (test.status === "requested") {
+          test.status = "completed";
+          test.pathologistId = req.user.id;
+          test.completedAt = new Date();
+        }
+      });
+      await appointment.save();
+    }
 
-    res.json({
+    const patient = await userModel.findById(patientId).select("email name");
+
+    if (patient && patient.email) {
+      const emailSent = await sendLabReportEmail(
+        patient.email,
+        patient.name,
+        reportName,
+        cloudinaryResult.secure_url,
+        notes
+      );
+
+      if (!emailSent) {
+        console.warn(`Email failed to send to ${patient.email}`);
+      }
+    } else {
+      console.warn(
+        `Patient ${patientId} has no email address or doesn't exist`
+      );
+    }
+
+    fs.unlinkSync(reportFile.path);
+
+    return res.json({
       success: true,
       message: "Lab report uploaded successfully",
-      reportId: newReport._id,
+      data: {
+        reportId: newReport._id,
+        reportUrl: cloudinaryResult.secure_url,
+      },
     });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({
+    console.error("Error in uploadLabReport:", error);
+
+    if (req.file?.path) {
+      try {
+        fs.unlinkSync(req.file.path);
+      } catch (cleanupError) {
+        console.error("Error deleting temp file:", cleanupError);
+      }
+    }
+
+    return res.status(500).json({
       success: false,
-      message: "Failed to upload report",
+      message: error.message || "Failed to upload report",
+      error: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
+  }
+};
+
+// await notificationModel.create([
+//   {
+//     userId: patientId,
+//     userType: "patient",
+//     title: "Lab Report Ready",
+//     message: `Your lab report "${reportName}" is now available.`,
+//     relatedEntity: "labReport",
+//     relatedEntityId: newReport._id,
+//   },
+//   {
+//     userId: doctorId,
+//     userType: "doctor",
+//     title: "Lab Report Ready",
+//     message: `Lab report "${reportName}" for your patient is now available.`,
+//     relatedEntity: "labReport",
+//     relatedEntityId: newReport._id,
+//   },
+// ]);
+
+const sendLabReportEmail = async (
+  patientEmail,
+  patientName,
+  reportName,
+  reportUrl,
+  notes
+) => {
+  if (!patientEmail) {
+    console.error("No email address provided for patient");
+    return false;
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || process.env.EMAIL,
+    to: patientEmail,
+    subject: `Your Lab Report: ${reportName}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #0288D1;">Lab Report Notification</h2>
+        <p>Dear ${patientName || "Patient"},</p>
+        <p>Your lab report <strong>${reportName}</strong> is now available.</p>
+        
+        ${
+          notes
+            ? `<p><strong>Notes from your pathologist:</strong><br>${notes}</p>`
+            : ""
+        }
+        
+        <p>You can view/download your report by clicking the link below:</p>
+        <p><a href="${reportUrl}" style="color: #0288D1; text-decoration: none;">Download Lab Report</a></p>
+        
+        <p>If you have any questions about your results, please contact your healthcare provider.</p>
+        
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+          <p style="font-size: 0.9em; color: #777;">
+            This is an automated message. Please do not reply directly to this email.
+          </p>
+        </div>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Email sent successfully to ${patientEmail}`);
+    return true;
+  } catch (error) {
+    console.error("Error sending email:", error);
+    return false;
   }
 };
 

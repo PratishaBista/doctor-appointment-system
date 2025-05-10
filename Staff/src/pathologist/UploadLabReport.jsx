@@ -10,14 +10,14 @@ const UploadLabReport = () => {
   const queryParams = new URLSearchParams(location.search);
   const appointmentId = queryParams.get('appointmentId');
   const patientId = queryParams.get('patientId');
-  
+  const { uploadLabReport } = useContext(PathologistContext);
+
   const [formData, setFormData] = useState({
     reportName: '',
     notes: '',
     reportFile: null,
   });
   const [loading, setLoading] = useState(false);
-  const { pathologist_token } = useContext(PathologistContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,25 +50,14 @@ const UploadLabReport = () => {
     data.append('reportName', formData.reportName);
     data.append('notes', formData.notes);
     data.append('reportFile', formData.reportFile);
+    data.append('testType', 'General Lab Test');
 
     try {
-      const response = await fetch('/api/pathologist/upload-report', {
-        method: 'POST',
-        headers: {
-          'pathologist_token': localStorage.getItem('pathologist_token'),
-        },
-        body: data,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to upload report');
-      }
-
-      const result = await response.json();
-      toast.success('Report uploaded successfully');
+      const result = await uploadLabReport(data);
+      // toast.success(result.message || 'Report uploaded successfully');
       navigate('/pathologist/report-history');
     } catch (error) {
-      toast.error(error.message);
+      toast.error(error.response?.data?.message || 'Failed to upload report');
     } finally {
       setLoading(false);
     }

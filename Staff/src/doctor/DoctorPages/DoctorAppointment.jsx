@@ -1,4 +1,3 @@
-// DoctorAppointment.jsx
 import { useContext, useEffect } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
 import { AppContext } from "../../context/AppContext";
@@ -15,7 +14,6 @@ const DoctorAppointment = () => {
     }
   }, [doctor_token]);
 
-  // Filter to show only booked (non-cancelled, non-completed) appointments
   const bookedAppointments = appointments.filter(appt =>
     !appt.cancelled && !appt.isCompleted
   );
@@ -76,7 +74,7 @@ const DoctorAppointment = () => {
 
                   <td className="p-3 text-center" onClick={(e) => e.stopPropagation()}>
                     <button
-                      className="text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                      className="text-sm bg-[#0288d1ff] rounded hover:bg-[#0289d1df] transition text-white px-3 py-1"
                       onClick={() => completeAppointment(appt._id)}
                     >
                       Mark as Completed

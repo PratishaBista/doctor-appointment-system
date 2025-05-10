@@ -83,7 +83,7 @@ const AppContextProvider = (props) => {
         daysOfWeek,
         selectedDate, setSelectedDate,
         selectedMonth, setSelectedMonth,
-        shortMonths, months
+        shortMonths, months,
 
     }
 

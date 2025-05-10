@@ -24,8 +24,6 @@ const appointmentSchema = new mongoose.Schema(
     }, // payment details
     isCompleted: { type: Boolean, default: false }, // if the appointment is completed or not
     followUpRequired: { type: Boolean, default: false }, // if the follow up is required or not
-    labTestRequired: { type: Boolean, default: false }, // if the lab test is required or not
-    // In appointmentModel.js
     labTests: [
       {
         testType: { type: String, required: true },
@@ -41,10 +39,23 @@ const appointmentSchema = new mongoose.Schema(
       },
     ],
     doctorNotes: { type: String, default: "" }, // notes given by the doctor
-    userNotes: { type: String, default: "" }, // notes given by the user
     prescription: { type: String, default: "" }, // prescription given by the doctor
+    doctorComment: {
+      type: String,
+      default: "",
+    },
+    patientComment: {
+      type: String,
+      default: "",
+    },
+    doctorCommentAt: {
+      type: Date,
+    },
+    patientCommentAt: {
+      type: Date,
+    },
   },
-  { timestamps: true } // createdAt and updatedAt fields
+  { timestamps: true }
 );
 
 const appointmentModel =

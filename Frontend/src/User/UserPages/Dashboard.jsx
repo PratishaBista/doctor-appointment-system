@@ -26,7 +26,6 @@ const DashboardLayout = () => {
       {/* Sidebar */}
       <div className="hidden md:flex md:flex-shrink-0">
         <div className="flex flex-col w-64 border-r border-gray-200 bg-white">
-          {/* Logo */}
           <div className="flex items-center justify-center h-20 px-4 border-b border-gray-200">
             <img
               src={HealthSolutionLogo}
@@ -84,17 +83,47 @@ const DashboardLayout = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="flex flex-col flex-1 overflow-hidden">
         {/* Top Navigation Bar */}
         <header className="bg-white shadow-sm">
           <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center space-x-4 ml-auto">
+            <div className="flex items-center">
+            </div>
+
+            <div className="flex items-center space-x-6">
+              <button
+                className="p-1 text-gray-400 hover:text-gray-500 relative focus:outline-none"
+                aria-label="Notifications"
+              >
+                <div className="relative">
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                    />
+                  </svg>
+                  {/* Notification badge */}
+                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+                </div>
+              </button>
+
+              {/* Profile */}
               <div className="flex items-center space-x-2">
                 <img
-                  className="w-8 h-8 rounded-full"
+                  className="w-8 h-8 rounded-full object-cover"
                   src={userData?.image || "/default-profile.png"}
                   alt="Profile"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/default-profile.png";
+                  }}
                 />
                 <div className="hidden md:block">
                   <p className="text-sm font-medium text-gray-700">{userData?.name || "User"}</p>
@@ -104,12 +133,12 @@ const DashboardLayout = () => {
           </div>
         </header>
 
-        {/* Main content area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-white">
-          <Outlet />
-        </main>
-      </div>
+      {/* Main content area */}
+      <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-white">
+        <Outlet />
+      </main>
     </div>
+    </div >
   );
 };
 

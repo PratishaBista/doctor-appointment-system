@@ -2,28 +2,25 @@ import mongoose from "mongoose";
 
 const labReportSchema = new mongoose.Schema(
   {
-    appointmentId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "appointment",
-      required: true,
-    },
+    appointmentId: { type: String, required: true },
     patientId: { type: String, required: true },
     doctorId: { type: String, required: true },
     pathologistId: { type: String, required: true },
     reportName: { type: String, required: true },
     reportFile: { type: String, required: true },
-    uploadDate: { type: Date, default: Date.now },
-    labTestId: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-    },
     testType: { type: String, required: true },
     notes: { type: String, default: "" },
-    isViewedByDoctor: { type: Boolean, default: false },
-    isViewedByPatient: { type: Boolean, default: false },
+    status: {
+      type: String,
+      enum: ["pending", "completed", "reviewed"],
+      default: "pending",
+    },
   },
   { timestamps: true }
 );
+
+labReportSchema.index({ patientId: 1, doctorId: 1 });
+labReportSchema.index({ createdAt: -1 });
 
 const labReportModel =
   mongoose.models.labReport || mongoose.model("labReport", labReportSchema);

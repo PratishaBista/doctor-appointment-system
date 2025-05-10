@@ -2,13 +2,13 @@ import express from "express";
 import cors from "cors";
 import "dotenv/config";
 import connectDB from "./config/mongodb.js";
-import connectCloudinary from "./config/cloudinary.js";
 import adminRouter from "./routes/adminRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import userRouter from "./routes/userRoute.js";
 import pathologistRouter from "./routes/pathologistRoute.js";
 import notificationRouter from "./routes/notificationRoute.js";
 import paymentRouter from './routes/paymentRoute.js';
+import mongoose from "mongoose";
 
 // Initialize Express
 const app = express();
@@ -25,10 +25,9 @@ const allowedOrigins = [
 
 // Database Connections
 connectDB();
-connectCloudinary();
 
 // Middlewares
-app.use(express.json({ limit: "10mb" })); // Increased for file uploads
+app.use(express.json({ limit: "10mb" })); 
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(
   cors({

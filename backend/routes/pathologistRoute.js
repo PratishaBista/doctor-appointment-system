@@ -1,10 +1,10 @@
 import express from "express";
 import {
   loginPathologist,
-  getPendingLabRequests,
   uploadLabReport,
   getPathologistProfile,
   updatePathologistProfile,
+  getPendingLabRequests,
 } from "../controllers/pathologistController.js";
 import upload from "../middlewares/multer.js";
 import authPathologist from "../middlewares/authPathologist.js";
@@ -15,7 +15,7 @@ const pathologistRouter = express.Router();
 pathologistRouter.post("/login", loginPathologist);
 
 // Lab Reports
-pathologistRouter.get("/pending-requests", authPathologist, getPendingLabRequests);
+pathologistRouter.get('/pending-requests', authPathologist, getPendingLabRequests);
 pathologistRouter.post("/upload-report", authPathologist, upload.single("reportFile"), uploadLabReport);
 
 // Profile
