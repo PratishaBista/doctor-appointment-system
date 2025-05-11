@@ -1,23 +1,27 @@
 // App.jsx
 import { Route, Routes } from "react-router-dom";
-import './App.css';
-import AppContextProvider from './context/AppContext';
-import Login from "./User/UserPages/Login";
-import UserHome from './User/UserHome';
-import DashboardLayout from "./User/UserPages/Dashboard";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ProfilePage from './User/UserPages/Profile';
+import './App.css';
+import AppContextProvider from './context/AppContext';
+import PaymentFailure from "./User/esewapayment/PaymentFailure";
+import PaymentForm from "./User/esewapayment/PaymentForm";
+import PaymentSuccess from "./User/esewapayment/PaymentSucess";
+import UserHome from './User/UserHome';
 import AppointmentsPage from './User/UserPages/Appointments';
-import PatientAppointmentDetail from './User/UserPages/PatientAppointmentDetail';
+import DashboardLayout from "./User/UserPages/Dashboard";
 import LabReports from './User/UserPages/LabReports';
+import PatientAppointmentDetail from './User/UserPages/PatientAppointmentDetail';
+import ProfilePage from './User/UserPages/Profile';
 
 function App() {
   return (
     <AppContextProvider>
       <Routes>
         <Route path="/*" element={<UserHome />} />
-        <Route path="/auth" element={<Login />} />
+        <Route path="/paymentForm" element={<PaymentForm />} />
+        <Route path="/PaymentFailure" element={<PaymentFailure />} />
+        <Route path="/paymentSuccess" element={<PaymentSuccess />} />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<AppointmentsPage />} />
           {/* <Route path="notifications" element={<NotificationsPage />} /> */}

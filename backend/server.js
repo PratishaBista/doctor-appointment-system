@@ -1,14 +1,14 @@
-import express from "express";
 import cors from "cors";
 import "dotenv/config";
+import express from "express";
+import mongoose from "mongoose";
 import connectDB from "./config/mongodb.js";
 import adminRouter from "./routes/adminRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
-import userRouter from "./routes/userRoute.js";
-import pathologistRouter from "./routes/pathologistRoute.js";
 import notificationRouter from "./routes/notificationRoute.js";
+import pathologistRouter from "./routes/pathologistRoute.js";
 import paymentRouter from './routes/paymentRoute.js';
-import mongoose from "mongoose";
+import userRouter from "./routes/userRoute.js";
 
 // Initialize Express
 const app = express();

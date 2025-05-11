@@ -1,9 +1,9 @@
-import { motion } from "framer-motion";
-import React, { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
 
 const Appointments = () => {
     const { backendUrl, token, getDoctorsData } = useContext(AppContext);
@@ -96,9 +96,10 @@ const Appointments = () => {
                          type === 'upcoming' ? 'Upcoming' : 'Completed';
         
         let statusClasses = type === 'cancelled' ? 'bg-red-100 text-red-800' :
-                           type === 'upcoming' ? 'bg-blue-100 text-blue-800' : 
-                           'bg-green-100 text-green-800';
+                type === 'upcoming' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
 
+    const foundAppointment = appointments.flat().find(app => app._id === appointments._id);
+    console.log('found',foundAppointment)
         return (
             <motion.div
                 key={appointment._id}
@@ -166,8 +167,15 @@ const Appointments = () => {
                             >
                                 View Details
                             </button>
-                            <div className="flex space-x-2">
+                            {console.log(appointments)}
+                            {appointments.find(app => app._id === appointments._id)?.payment?.status === 'pending' ?
+                            <div>
+
+                                paid
+                            </div> :
+                              <div className="flex space-x-2">
                                 <motion.button
+                                    onClick={()=>navigate('/paymentForm')}
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.98 }}
                                     className="px-3 py-2 text-xs font-medium rounded-md border border-green-600 text-green-600 hover:bg-green-50"
@@ -175,6 +183,7 @@ const Appointments = () => {
                                     Pay Online
                                 </motion.button>
                                 <motion.button
+                                    onClick={()=>setPayAtClinic(!payAtClinic)}
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.98 }}
                                     className="px-3 py-2 text-xs font-medium rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50"
@@ -189,7 +198,7 @@ const Appointments = () => {
                                 >
                                     Cancel
                                 </motion.button>
-                            </div>
+                            </div>}
                         </div>
                     )}
                     
