@@ -167,8 +167,9 @@ const AppointmentsPage = () => {
                     {type === "upcoming" && (
                         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
                             <div className="flex space-x-2"
-                            onClick={()=>navigate('/paymentForm')}>
+                            >
                                 <motion.button
+                                    onClick={()=>navigate('/paymentForm')}
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.98 }}
                                     className="px-3 py-1.5 text-xs font-medium rounded-md border border-green-600 text-green-600"

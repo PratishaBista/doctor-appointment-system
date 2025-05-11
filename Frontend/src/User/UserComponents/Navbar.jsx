@@ -224,7 +224,7 @@ const Navbar = () => {
           {token ? (
             <div className="flex items-center group relative" ref={dropdownRef}>
               <div
-                onClick={() => setDropDown(!dropDown)}
+                onClick={() => navigate("/dashboard")}
                 className="flex items-center cursor-pointer"
               >
                 <img
@@ -236,37 +236,7 @@ const Navbar = () => {
                   Dashboard
                 </span>
               </div>
-              {dropDown && (
-                <div className="absolute right-0 top-12 bg-white shadow-xl border rounded-lg p-4 w-48 z-50">
-                  <div
-                    onClick={() => {
-                      navigate("/dashboard");
-                      setDropDown(false);
-                    }}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    Dashboard
-                  </div>
-                  <div
-                    onClick={() => {
-                      navigate("/profile");
-                      setDropDown(false);
-                    }}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    Profile
-                  </div>
-                  <div
-                    onClick={() => {
-                      logout();
-                      setDropDown(false);
-                    }}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    Logout
-                  </div>
-                </div>
-              )}
+           
             </div>
           ) : (
             <div className="flex items-center space-x-4">
@@ -277,10 +247,7 @@ const Navbar = () => {
                 User Login
               </button>
               <button
-                onClick={() =>
-                  (window.location.href = `${
-                    import.meta.env.VITE_STAFF_URL
-                  }/login`)
+                onClick={() =>navigate("/admin")
                 }
                 className="px-6 py-2 text-lg font-semibold rounded-xl shadow-xl transition-all hover:brightness-115 bg-[#4CAF50] text-white border-2 border-white/20"
               >

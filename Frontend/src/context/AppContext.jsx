@@ -95,7 +95,7 @@ const AppContextProvider = (props) => {
         selectedSpecialty, setSelectedSpecialty, account, setAccount,
         slotTime, setSlotTime,
         slotIndex, setSlotIndex,
-        daysOfWeek,
+        daysOfWeek,userData, setUserData,
         selectedDate, setSelectedDate,
         selectedMonth, setSelectedMonth,
         shortMonths, months,

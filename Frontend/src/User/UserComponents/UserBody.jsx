@@ -69,7 +69,7 @@ const UserBody = () => {
           </div>
           {/* Opening Hours Card */}
           <motion.div
-            className="absolute top-45 right-40 bg-white p-6 rounded-xl shadow-lg border-l-4 border-[#0288D1] w-96 max-w-xl"
+            className="absolute top-30 right-40 bg-white p-6 rounded-xl shadow-lg border-l-4 border-[#0288D1] w-96 max-w-xl"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.3 }}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
+import PaymentForm from './eSewaPayment/PaymentForm';
 import Footer from './UserComponents/Footer';
 import HomeBody from './UserComponents/HomeBody';
 import Navbar from './UserComponents/Navbar';
@@ -11,7 +12,6 @@ import FindDoctors from './UserPages/FindDoctors';
 import ForgotPassword from './UserPages/ForgotPassword';
 import ResetPassword from './UserPages/ResetPassword';
 import SelectedSpeciality from './UserPages/SelectedSpeciality';
-import PaymentForm from './eSewaPayment/PaymentForm';
 
 function UserHome() {
   const location = useLocation();
@@ -35,6 +35,7 @@ function UserHome() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/paymentForm" element={<PaymentForm/>} />
+
       </Routes>
 
       {!hideHeaderFooter && <Footer />}

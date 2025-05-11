@@ -1,14 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Route, Routes, useNavigate, Navigate } from 'react-router-dom';
+import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import AddDoctor from '../admin-pages/AddDoctor';
+import AddPathologist from '../admin-pages/AddPathologist';
 import AdminAppointments from '../admin-pages/AdminAppointments';
 import AdminDashboard from '../admin-pages/AdminDashboard';
 import AdminDoctorsList from '../admin-pages/AdminDoctorsList';
-import AddPathologist from '../admin-pages/AddPathologist';
 import AdminPathologistList from '../admin-pages/AdminPathologistList';
-import { AdminContext } from '../context/AdminContext';
 import HealthSolutionLogo from '../assets/HealthSolutionLogo.svg';
-import { Link } from 'react-router-dom';
+import { AdminContext } from '../context/AdminContext';
 
 
 

@@ -1,10 +1,10 @@
-import React, { useContext, useState } from "react";
-import { AdminContext } from "../context/AdminContext";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { DoctorContext } from "../context/DoctorContext";
+import { toast } from "react-toastify";
 import HealthSolutionLogo from "../assets/HealthSolutionLogo.svg";
+import { AdminContext } from "../context/AdminContext";
+import { DoctorContext } from "../context/DoctorContext";
 
 const Login = () => {
   const [state, setState] = useState("Admin");
