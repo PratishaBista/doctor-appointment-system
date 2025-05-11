@@ -5,6 +5,9 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
+import notificationModel from "../models/notificationModel.js";
+import labReportModel from "../models/labReportModel.js";
+import nodemailer from "nodemailer";
 
 //api to register user
 const registerUser = async (req, res) => {
@@ -70,6 +73,94 @@ const loginUser = async (req, res) => {
   }
 };
 
+// Function to send password reset email
+const sendResetEmail = (email, resetToken) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`; // URL to your frontend reset password page
+
+  // Email content
+  const mailOptions = {
+    from: process.env.EMAIL,
+    to: email,
+    subject: "Password Reset Request",
+    text: `Click on the following link to reset your password: ${resetLink}`,
+  };
+
+  return transporter.sendMail(mailOptions);
+};
+
+// API to handle password reset request
+// This API will send a password reset link to the user's email
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  console.log("Requested email:", email);
+
+  try {
+    const user = await userModel.findOne({ email });
+    console.log("User found:", user);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    try {
+      await sendResetEmail(email, resetToken);
+      res.json({
+        success: true,
+        message: "Password reset link sent to your email",
+      });
+    } catch (emailError) {
+      console.error("Error sending email: ", emailError);
+      res.json({
+        success: false,
+        message: "Failed to send reset email",
+      });
+    }
+  } catch (error) {
+    console.error("Error in forgotPassword API: ", error);
+    res.json({ success: false, message: "Something went wrong" });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { token, newPassword } = req.body;
+
+  try {
+    // Verify the token and decode the user ID
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await userModel.findById(decoded.id);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update the password in the database
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: "Password has been updated successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "Invalid or expired reset token" });
+  }
+};
+
 // api to get user profile details
 const getProfile = async (req, res) => {
   try {
@@ -132,14 +223,14 @@ const bookAppointment = async (req, res) => {
     if (!doctorData) {
       return res.status(404).json({
         success: false,
-        message: "Doctor not found with given ID"
+        message: "Doctor not found with given ID",
       });
     }
-    
+
     if (!doctorData.available) {
       return res.status(400).json({
         success: false,
-        message: "Doctor is not available for appointments"
+        message: "Doctor is not available for appointments",
       });
     }
     if (!doctorData.available) {
@@ -192,16 +283,23 @@ const bookAppointment = async (req, res) => {
   }
 };
 
-// API to get user appointments for frontend
+// GET /appointments?userID=xyz
 const listAppointment = async (req, res) => {
   try {
-    const { userID } = req.body;
-    const appointments = await appointmentModel.find({ userID });
+    const { userId } = req.body;
 
-    res.json({ success: true, appointments });
+    if (!userId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required" });
+    }
+
+    const appointments = await appointmentModel.find({ userId });
+
+    res.status(200).json({ success: true, appointments });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    console.error("Error fetching appointments:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -241,13 +339,263 @@ const cancelAppointment = async (req, res) => {
   }
 };
 
-// const esewaPaymentInstance = new esewaPayment({
-//   key_id: '',
-//   key_secret: '',
-// });
+const getUserLabReports = async (req, res) => {
+  try {
+    const reports = await labReportModel
+      .find({
+        patientId: req.body.userId,
+      })
+      .sort({ createdAt: -1 });
 
-// // API to make payment
-// const esewaPayment = async (req, res) => {};
+    res.json({ success: true, reports });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Get user notifications
+const getUserNotifications = async (req, res) => {
+  try {
+    const notifications = await notificationModel
+      .find({
+        userId: req.user._id,
+        userType: "patient",
+      })
+      .sort({ createdAt: -1 })
+      .limit(50);
+
+    res.json({ success: true, notifications });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Add user notes to appointment
+const addUserNotes = async (req, res) => {
+  try {
+    const { appointmentId, notes } = req.body;
+
+    // Basic validation
+    if (!appointmentId || !notes) {
+      return res.json({
+        success: false,
+        message: "Appointment ID and notes are required",
+      });
+    }
+
+    // Verify the appointment belongs to the user
+    const appointment = await appointmentModel.findOne({
+      _id: appointmentId,
+      userId: req.user._id,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found or not authorized",
+      });
+    }
+
+    // Update the appointment with user notes
+    await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      { userNotes: notes },
+      { new: true }
+    );
+
+    // Notify the doctor
+    try {
+      await notificationModel.create({
+        userId: appointment.doctorId,
+        userType: "doctor",
+        title: "Patient Added Notes",
+        message: "Your patient has added notes to their appointment.",
+        relatedEntity: "appointment",
+        relatedEntityId: appointmentId,
+      });
+    } catch (notificationError) {
+      console.error("Failed to create notification:", notificationError);
+    }
+
+    res.json({
+      success: true,
+      message: "Notes added successfully",
+      data: { appointmentId },
+    });
+  } catch (error) {
+    console.error("Error in addUserNotes:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
+// Mark notification as read
+const markNotificationAsRead = async (req, res) => {
+  try {
+    const { notificationId } = req.body;
+
+    await notificationModel.findByIdAndUpdate(notificationId, {
+      isRead: true,
+    });
+
+    res.json({ success: true, message: "Notification marked as read" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+// Get lab tests requested by doctor for a user
+const getUserLabTests = async (req, res) => {
+  try {
+    const appointments = await appointmentModel
+      .find({
+        userId: req.user._id,
+        "labTests.0": { $exists: true },
+      })
+      .select("labTests");
+
+    res.json({
+      success: true,
+      labTests: appointments.flatMap((a) => a.labTests),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+// Get doctor's notes for an appointment
+const getDoctorNotes = async (req, res) => {
+  try {
+    const appointment = await appointmentModel
+      .findOne({
+        _id: req.params.appointmentId,
+        userId: req.user._id,
+      })
+      .select("doctorNotes");
+
+    if (!appointment) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Appointment not found" });
+    }
+
+    res.json({ success: true, doctorNotes: appointment.doctorNotes });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+const getAppointmentDetails = async (req, res) => {
+  try {
+    const { appointmentId } = req.params;
+    const userId = req.body.userId;
+
+    const appointment = await appointmentModel.findById(appointmentId);
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    if (appointment.userId.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to view this appointment",
+      });
+    }
+
+    res.json({
+      success: true,
+      appointment,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const addPatientComment = async (req, res) => {
+  try {
+    const { appointmentId, comment } = req.body;
+    const userId = req.body.userId;
+
+    if (!appointmentId || !comment) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment ID and comment are required",
+      });
+    }
+
+    const appointment = await appointmentModel.findOne({
+      _id: appointmentId,
+      userId,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found or not authorized",
+      });
+    }
+
+    if (!appointment.doctorComment) {
+      return res.status(400).json({
+        success: false,
+        message: "You can only reply after the doctor has commented",
+      });
+    }
+
+    if (appointment.patientComment) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already replied to this comment",
+      });
+    }
+
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      {
+        patientComment: comment,
+        patientCommentAt: new Date(),
+      },
+      { new: true }
+    );
+
+    // await notificationModel.create({
+    //   userId: appointment.doctorId,
+    //   userType: "doctor",
+    //   title: "Patient Reply",
+    //   message: "Your patient has replied to your comment",
+    //   relatedEntity: "appointment",
+    //   relatedEntityId: appointmentId,
+    // });
+
+    res.json({
+      success: true,
+      message: "Reply added successfully",
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+    console.error("Error adding patient comment:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to add reply",
+      error: error.message,
+    });
+  }
+};
 
 export {
   registerUser,
@@ -255,6 +603,17 @@ export {
   getProfile,
   updateProfile,
   bookAppointment,
+  sendResetEmail,
+  forgotPassword,
+  getDoctorNotes,
+  getUserLabTests,
+  resetPassword,
   listAppointment,
   cancelAppointment,
+  getUserLabReports,
+  getUserNotifications,
+  markNotificationAsRead,
+  addUserNotes,
+  getAppointmentDetails,
+  addPatientComment,
 };

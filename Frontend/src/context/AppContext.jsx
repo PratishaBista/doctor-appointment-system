@@ -74,7 +74,6 @@ const AppContextProvider = (props) => {
     const value = {
         token, setToken,
         backendUrl,
-        userData, setUserData,
         loadUserProfileData,
         doctors, getDoctorsData,
         selectedSpecialty, setSelectedSpecialty, account, setAccount,
@@ -84,7 +83,7 @@ const AppContextProvider = (props) => {
         daysOfWeek,
         selectedDate, setSelectedDate,
         selectedMonth, setSelectedMonth,
-        shortMonths, months
+        shortMonths, months,
 
     }
 

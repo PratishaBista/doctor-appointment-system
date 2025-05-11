@@ -1,0 +1,12 @@
+curl -X POST "https://pay.periwin.com/api/payment/process/initiate/" \
+  -H "Authorization: Bearer 8gBm/:&EnhH.1/q" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "return_url": "http://localhost:5173/payment/return",
+    "amount": 10000,  # 100 NPR (in paisa)
+    "purchase_order_id": "TEST-123",
+    "product_name": "Test Product",
+    "customer_name": "Test User",
+    "customer_email": "test@example.com",
+    "customer_phone": "9800000000"
+  }'
