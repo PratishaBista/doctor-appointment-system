@@ -11,14 +11,56 @@ const appointmentSchema = new mongoose.Schema(
     amount: { type: Number, required: true }, // appointment fees
     date: { type: Number, required: true }, // date when the appointment was booked
     cancelled: { type: Boolean, default: false }, // if the appointment is cancelled or not
-    payment: { type: Boolean, default: false }, // if the payment is done or not
+    payment: {
+      status: {
+        type: String,
+        enum: ["pending", "completed", "failed", "pay_at_clinic"],
+        default: "pending",
+      },
+      method: {
+        type: String,
+        enum: ["esewa", "cash", null],
+        default: null,
+      },
+      amount: Number,
+      paymentId: String,
+      gateway: String,
+      receiptUrl: String,
+    },
     isCompleted: { type: Boolean, default: false }, // if the appointment is completed or not
-    // prescription: { type: String, default: "" }, // prescription given by the doctor
-    // feedback: { type: String, default: "" }, // feedback given by the user
-    // rating: { type: Number, default: 0 }, // rating given by the user
-    // doctorFeedback: { type: String, default: "" }, // feedback given by the doctor
-    // doctorRating: { type: Number, default: 0 }, // rating given by the doctor
+    followUpRequired: { type: Boolean, default: false }, // if the follow up is required or not
+    labTests: [
+      {
+        testType: { type: String, required: true },
+        testCode: { type: String },
+        doctorNotes: { type: String },
+        status: {
+          type: String,
+          enum: ["requested", "sample_collected", "in_progress", "completed"],
+          default: "requested",
+        },
+        pathologistId: { type: String }, // who processed the test
+        completedAt: { type: Date }, // when test was completed
+      },
+    ],
+    doctorNotes: { type: String, default: "" }, // notes given by the doctor
+    prescription: { type: String, default: "" }, // prescription given by the doctor
+    doctorComment: {
+      type: String,
+      default: "",
+    },
+    patientComment: {
+      type: String,
+      default: "",
+    },
+    doctorCommentAt: {
+      type: Date,
+    },
+    patientCommentAt: {
+      type: Date,
+    },
   },
+  { timestamps: true }
 );
 
 const appointmentModel =

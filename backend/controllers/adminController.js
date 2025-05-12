@@ -1,4 +1,3 @@
-// API for adding doctor
 import validator from "validator";
 import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
@@ -6,6 +5,7 @@ import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
+import { addPathologist, getAllPathologists } from "./pathologistController.js";
 
 const addDoctor = async (req, res) => {
   try {
@@ -198,4 +198,6 @@ export {
   appointmentsAdmin,
   adminDashboard,
   appointmentCancel,
+  addPathologist,
+  getAllPathologists,
 };

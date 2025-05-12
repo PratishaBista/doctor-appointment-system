@@ -1,65 +1,67 @@
-import axios from "axios";
-import { useContext, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import { AppContext } from "../../context/AppContext";
+import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { CheckCircle } from 'react-feather';
 
 const PaymentSuccess = () => {
-    const [searchParams] = useSearchParams();
-    const appointmentId = searchParams.get("appointmentId");
-    const data = searchParams.get("data");
-    const { backendUrl, token } = useContext(AppContext);
     const navigate = useNavigate();
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const appointmentId = searchParams.get('appointmentId');
 
     useEffect(() => {
-        const verify = async () => {
-            if (data && appointmentId) {
-                try {
-                    await axios.post(`${backendUrl}/api/user/verify-payment`, 
-                        { data }, 
-                        { headers: { token } }
-                    );
-                    toast.success("Payment verified successfully");
-                } catch (error) {
-                    toast.error("Payment verification failed");
-                }
-            }
-        };
-
-        verify();
-    }, [data, appointmentId, backendUrl, token, navigate]);
+        if (!appointmentId) {
+            navigate('/dashboard/appointments');
+        }
+    }, [appointmentId, navigate]);
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
-            <div className="bg-white rounded-lg shadow-sm p-6 text-center">
-                <svg
-                    className="w-16 h-16 text-green-500 mx-auto mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                    />
-                </svg>
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                    eSewa Payment Successful!
-                </h2>
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full text-center"
+            >
+                <div className="flex justify-center mb-6">
+                    <div className="bg-green-100 p-4 rounded-full">
+                        <CheckCircle className="h-12 w-12 text-green-600" />
+                    </div>
+                </div>
+
+                <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                    Payment Successful!
+                </h1>
+
                 <p className="text-gray-600 mb-6">
-                    Your appointment has been confirmed. You can view the details in your
-                    appointments section.
+                    Your payment has been processed successfully.
                 </p>
+
+                <div className="mb-8">
+                    <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-left rounded">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
+                                </svg>
+                            </div>
+                            {/* <div className="ml-3">
+                <p className="text-sm text-blue-700">
+                  A receipt has been sent to your email. Please bring this ID to your appointment.
+                </p>
+              </div> */}
+                        </div>
+                    </div>
+                </div>
+
                 <button
-                    onClick={() => navigate("/dashboard/appointments")}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                    onClick={() => navigate('/dashboard/appointments')}
+                    className="w-full bg-[#2a4365] hover:bg-[#1e365d] text-white py-3 px-4 rounded-lg font-medium"
                 >
-                    View Appointments
+                    Back to Appointments
                 </button>
-            </div>
+
+            </motion.div>
         </div>
     );
 };

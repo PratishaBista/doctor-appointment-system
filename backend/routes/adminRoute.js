@@ -5,7 +5,9 @@ import {
   loginAdmin,
   appointmentsAdmin,
   adminDashboard,
-  appointmentCancel
+  appointmentCancel,
+  addPathologist,
+  getAllPathologists,
 } from "../controllers/adminController.js";
 import upload from "../middlewares/multer.js";
 import authAdmin from "../middlewares/authAdmin.js";
@@ -29,5 +31,7 @@ adminRouter.get(
 ); /* get dashboard data for admin */
 
 adminRouter.post('/cancel-appointment', authAdmin, appointmentCancel)
+adminRouter.post("/add-pathologist", authAdmin, addPathologist);
+adminRouter.get("/pathologists", authAdmin, getAllPathologists);
 
 export default adminRouter;
