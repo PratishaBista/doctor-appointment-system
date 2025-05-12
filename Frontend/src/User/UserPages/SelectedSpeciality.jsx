@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
 const SelectedSpeciality = () => {
   const { selectedSpecialty,AllDoctors } = useContext(AppContext);
+    const navigate=useNavigate()
 
   // Prevent rendering if no specialty is selected
   if (!selectedSpecialty) {
@@ -15,11 +16,14 @@ const SelectedSpeciality = () => {
       </div>
     );
   }
-  const filteredDoctors = AllDoctors.filter(
-    (doctor) => doctor.Speciality === selectedSpecialty.name
-  );
-  console.log(filteredDoctors)
-  const navigate=useNavigate()
+const filteredDoctors = AllDoctors?.filter((doctor) =>
+  selectedSpecialty?.name
+    ? doctor.Speciality?.toLowerCase() === selectedSpecialty.name.toLowerCase()
+    : true
+) || [];
+
+  
+
 
   return (
     <div className="min-h-screen flex flex-col items-center bg-gray-100 p-6">
