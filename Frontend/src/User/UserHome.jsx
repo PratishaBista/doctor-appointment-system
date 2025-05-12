@@ -1,16 +1,13 @@
-import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Footer from './UserComponents/Footer';
 import HomeBody from './UserComponents/HomeBody';
 import Navbar from './UserComponents/Navbar';
-import BookAppointment from './UserPages/BookAppointment';
-import SelectedSpeciality from './UserPages/SelectedSpeciality';
 import UserAbout from './UserPages/AboutUs';
+import BookAppointment from './UserPages/BookAppointment';
 import UserContact from './UserPages/ContactUs';
-import FindDoctors from './UserPages/FindDoctors';
 import Department from './UserPages/Department';
-import ForgotPassword from './UserPages/ForgotPassword';
-import ResetPassword from './UserPages/ResetPassword';
+import FindDoctors from './UserPages/FindDoctors';
+import SelectedSpeciality from './UserPages/SelectedSpeciality';
 
 function UserHome() {
   const location = useLocation();
@@ -32,8 +29,6 @@ function UserHome() {
         <Route path="/userContact" element={<UserContact />} />
         <Route path="/selectedSpeciality" element={<SelectedSpeciality />} />
         <Route path="/book-appointment/:docId" element={<BookAppointment />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}

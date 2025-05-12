@@ -1,9 +1,9 @@
-import { motion } from "framer-motion";
-import React, { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { motion } from "framer-motion";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AppContext } from "../../context/AppContext";
 
 const Appointments = () => {
     const { backendUrl, token, getDoctorsData } = useContext(AppContext);
@@ -11,6 +11,39 @@ const Appointments = () => {
     const [activeTab, setActiveTab] = useState("upcoming");
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
+
+    const handlePayment = async (appointmentId) => {
+        try {
+            const { data } = await axios.post(
+                `${backendUrl}/api/user/make-payment`,
+                { appointmentId },
+                { headers: { token } }
+            );
+
+            if (data.success && data.paymentData) {
+                // Create a form and submit it to eSewa
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = data.paymentUrl; // Using the URL from backend
+
+                Object.entries(data.paymentData).forEach(([key, value]) => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = value;
+                    form.appendChild(input);
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                toast.error(data.message || "Failed to initiate payment");
+            }
+        } catch (error) {
+            toast.error("Error initiating payment");
+            console.error(error);
+        }
+    };
 
     useEffect(() => {
         if (token) {
@@ -78,26 +111,26 @@ const Appointments = () => {
     };
 
     const now = new Date();
-    
+
     const upcoming = appointments.filter(
         (a) => !a.cancelled && !a.isCompleted && parseAppointmentDate(a.slotDate, a.slotTime) > now
     );
-    
+
     const past = appointments.filter(
         (a) => !a.cancelled && a.isCompleted
     );
-    
+
     const cancelled = appointments.filter((a) => a.cancelled);
 
     const renderAppointmentCard = (appointment, type) => {
         const appointmentDate = parseAppointmentDate(appointment.slotDate, appointment.slotTime);
-        
-        let statusLabel = type === 'cancelled' ? 'Cancelled' : 
-                         type === 'upcoming' ? 'Upcoming' : 'Completed';
-        
+
+        let statusLabel = type === 'cancelled' ? 'Cancelled' :
+            type === 'upcoming' ? 'Upcoming' : 'Completed';
+
         let statusClasses = type === 'cancelled' ? 'bg-red-100 text-red-800' :
-                           type === 'upcoming' ? 'bg-blue-100 text-blue-800' : 
-                           'bg-green-100 text-green-800';
+            type === 'upcoming' ? 'bg-blue-100 text-blue-800' :
+                'bg-green-100 text-green-800';
 
         return (
             <motion.div
@@ -170,13 +203,27 @@ const Appointments = () => {
                                 <motion.button
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.98 }}
+                                    onClick={() => handlePayment(appointment._id)}
                                     className="px-3 py-2 text-xs font-medium rounded-md border border-green-600 text-green-600 hover:bg-green-50"
                                 >
-                                    Pay Online
+                                    Pay with eSewa
                                 </motion.button>
                                 <motion.button
                                     whileHover={{ scale: 1.03 }}
                                     whileTap={{ scale: 0.98 }}
+                                    onClick={() => {
+                                        toast.info(
+                                            <div>
+                                                <p className="font-medium">You've chosen to pay at the clinic.</p>
+                                                <p className="text-sm mt-1">Please bring the exact amount (Rs {appointment.doctorData.fees}) when you visit.</p>
+                                                <p className="text-sm mt-1">Your appointment is confirmed!</p>
+                                            </div>,
+                                            {
+                                                autoClose: 5000,
+                                                closeButton: true,
+                                            }
+                                        );
+                                    }}
                                     className="px-3 py-2 text-xs font-medium rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50"
                                 >
                                     Pay at Clinic
@@ -192,7 +239,7 @@ const Appointments = () => {
                             </div>
                         </div>
                     )}
-                    
+
                     {type === "past" && (
                         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
                             <button
@@ -203,7 +250,7 @@ const Appointments = () => {
                             </button>
                         </div>
                     )}
-                    
+
                     {type === "cancelled" && (
                         <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end">
                             <button
