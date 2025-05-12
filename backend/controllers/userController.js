@@ -8,6 +8,8 @@ import appointmentModel from "../models/appointmentModel.js";
 import notificationModel from "../models/notificationModel.js";
 import labReportModel from "../models/labReportModel.js";
 import nodemailer from "nodemailer";
+import axios from "axios";
+import crypto from "crypto";
 
 //api to register user
 const registerUser = async (req, res) => {
@@ -263,6 +265,10 @@ const bookAppointment = async (req, res) => {
       doctorData,
       amount: doctorData.fees,
       date: Date.now(),
+      payment: {
+        status: "pending",
+        amount: doctorData.fees,
+      },
     };
 
     const newAppointment = new appointmentModel(appointmentData);
@@ -597,6 +603,208 @@ const addPatientComment = async (req, res) => {
   }
 };
 
+// api to make online payment using eSewa (test environment)
+// api to make online payment using eSewa (test environment)
+const makePayment = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    const userId = req.body.userId;
+
+    // Validate input
+    if (!appointmentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Appointment ID is required",
+      });
+    }
+
+    // Get appointment details
+    const appointment = await appointmentModel.findOne({
+      _id: appointmentId,
+      userId,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found or not authorized",
+      });
+    }
+
+    // Check if already paid
+    if (appointment.payment.status === "completed") {
+      return res.status(400).json({
+        success: false,
+        message: "Payment already completed for this appointment",
+      });
+    }
+
+    // Create payload for eSewa
+    const payload = {
+      amount: appointment.amount.toString(),
+      tax_amount: "0",
+      total_amount: appointment.amount.toString(),
+      transaction_uuid: appointment._id.toString(),
+      product_code: "EPAYTEST", // Test product code
+      product_service_charge: "0",
+      product_delivery_charge: "0",
+      success_url: `${process.env.FRONTEND_URL}/payment-success?appointmentId=${appointmentId}`,
+      failure_url: `${process.env.FRONTEND_URL}/payment-failed?appointmentId=${appointmentId}`,
+      signed_field_names: "total_amount,transaction_uuid,product_code",
+    };
+
+    const secret = "8gBm/:&EnhH.1/q"; // Test secret key
+
+    // 1. Create the signature string exactly as specified
+    const signatureData = `total_amount=${payload.total_amount},transaction_uuid=${payload.transaction_uuid},product_code=${payload.product_code}`;
+
+    // 2. Create HMAC SHA256 hash
+    const hmac = crypto.createHmac("sha256", secret);
+    hmac.update(signatureData);
+
+    // 3. Get the digest in base64 format
+    const signature = hmac.digest("base64");
+
+    // 4. Add the signature to payload
+    payload.signature = signature;
+
+    // Update appointment with payment ID
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      payment: {
+        status: "pending",
+        amount: appointment.amount,
+        paymentId: payload.transaction_uuid,
+        gateway: "esewa",
+      },
+    });
+
+    // Return payment data to frontend
+    res.json({
+      success: true,
+      paymentUrl: "https://rc-epay.esewa.com.np/api/epay/main/v2/form",
+      paymentData: payload,
+    });
+  } catch (error) {
+    console.error("eSewa Payment Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Payment initiation failed",
+      error: error.message,
+    });
+  }
+};
+
+const verifyPayment = async (req, res) => {
+  try {
+    const { data } = req.query;
+
+    if (!data) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment data is required",
+      });
+    }
+
+    // Decode the base64 encoded response data
+    const decodedData = JSON.parse(
+      Buffer.from(data, "base64").toString("utf-8")
+    );
+    const { transaction_uuid, status, total_amount } = decodedData;
+
+    if (status !== "COMPLETE") {
+      return res.json({
+        success: false,
+        message: "Payment not completed",
+      });
+    }
+
+    // Update appointment with payment details
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      transaction_uuid,
+      {
+        payment: {
+          status: "completed",
+          method: "esewa",
+          amount: total_amount,
+          paymentId: transaction_uuid,
+          gateway: "esewa",
+          completedAt: new Date(),
+        },
+      },
+      { new: true }
+    );
+
+    if (!updatedAppointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Payment verified and updated successfully",
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+    console.error("Payment verification error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Payment verification failed",
+      error: process.env.NODE_ENV === "development" ? error.message : undefined,
+    });
+  }
+};
+
+const chooseCashPayment = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+    const userId = req.body.userId;
+
+    // Verify the appointment belongs to the user
+    const appointment = await appointmentModel.findOne({
+      _id: appointmentId,
+      userId,
+    });
+
+    if (!appointment) {
+      return res.status(404).json({
+        success: false,
+        message: "Appointment not found or not authorized",
+      });
+    }
+
+    // Check if already paid
+    if (
+      appointment.payment.status === "completed" ||
+      appointment.payment.status === "cash_at_clinic"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Payment method already chosen for this appointment",
+      });
+    }
+
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      payment: {
+        status: "cash_at_clinic",
+        method: "cash",
+        amount: appointment.amount,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: "You've chosen to pay at clinic. Appointment confirmed!",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 export {
   registerUser,
   loginUser,
@@ -616,4 +824,7 @@ export {
   addUserNotes,
   getAppointmentDetails,
   addPatientComment,
+  makePayment,
+  verifyPayment,
+  chooseCashPayment,
 };
