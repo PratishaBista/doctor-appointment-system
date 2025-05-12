@@ -10,10 +10,19 @@ const Appointments = () => {
     const [appointments, setAppointments] = useState([]);
     const [activeTab, setActiveTab] = useState("upcoming");
     const [isLoading, setIsLoading] = useState(true);
+    const [processingPayment, setProcessingPayment] = useState(null);
     const navigate = useNavigate();
 
     const handlePayment = async (appointmentId) => {
         try {
+            setProcessingPayment(appointmentId);
+
+            const appointment = appointments.find(a => a._id === appointmentId);
+            if (appointment?.payment?.status === 'completed' || appointment?.payment?.status === 'pay_at_clinic') {
+                toast.info("Payment already completed");
+                return;
+            }
+
             const { data } = await axios.post(
                 `${backendUrl}/api/user/make-payment`,
                 { appointmentId },
@@ -21,10 +30,9 @@ const Appointments = () => {
             );
 
             if (data.success && data.paymentData) {
-                // Create a form and submit it to eSewa
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = data.paymentUrl; // Using the URL from backend
+                form.action = data.paymentUrl;
 
                 Object.entries(data.paymentData).forEach(([key, value]) => {
                     const input = document.createElement('input');
@@ -40,14 +48,58 @@ const Appointments = () => {
                 toast.error(data.message || "Failed to initiate payment");
             }
         } catch (error) {
-            toast.error("Error initiating payment");
-            console.error(error);
+            console.error("Payment error:", error);
+            toast.error(
+                error.response?.data?.message ||
+                "Error initiating payment. Please try again."
+            );
+        } finally {
+            setProcessingPayment(null);
+        }
+    };
+
+    const handlePayAtClinic = async (appointment) => {
+        if (!window.confirm(
+            `By selecting "Pay at Clinic", you commit to visiting the clinic and paying Rs ${appointment.doctorData.fees} in cash. This action cannot be undone. Continue?`
+        )) {
+            return;
+        }
+
+        try {
+            const { data } = await axios.post(
+                `${backendUrl}/api/user/cash`,
+                { appointmentId: appointment._id },
+                { headers: { token } }
+            );
+
+            if (data.success) {
+                toast.success("Appointment confirmed with clinic payment");
+                fetchAppointments();
+            } else {
+                toast.error(data.message || "Failed to update payment method");
+            }
+        } catch (error) {
+            console.error("Cash payment error:", error);
+            toast.error(
+                error.response?.data?.message ||
+                "Failed to update payment method"
+            );
         }
     };
 
     useEffect(() => {
         if (token) {
             fetchAppointments();
+        }
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('paymentStatus');
+
+        if (paymentStatus === 'success') {
+            toast.success("Payment completed successfully!");
+            // navigate('/dashboard/appointments', { replace: true });
+        } else if (paymentStatus === 'failed') {
+            toast.error("Payment failed. Please try again.");
+            // navigate('/dashboard/appointments', { replace: true });
         }
     }, [token]);
 
@@ -76,6 +128,16 @@ const Appointments = () => {
     };
 
     const cancelAppointment = async (appointmentId) => {
+        const appointment = appointments.find(a => a._id === appointmentId);
+        // if (appointment?.payment?.method) {
+        //     toast.error("Cannot cancel appointment after payment method is selected");
+        //     return;
+        // }
+
+        if (!window.confirm("Are you sure you want to cancel this appointment?")) {
+            return;
+        }
+
         try {
             const { data } = await axios.post(
                 `${backendUrl}/api/user/cancel-appointment`,
@@ -91,6 +153,7 @@ const Appointments = () => {
             }
         } catch (error) {
             toast.error("Error cancelling appointment");
+            console.error(error);
         }
     };
 
@@ -124,6 +187,7 @@ const Appointments = () => {
 
     const renderAppointmentCard = (appointment, type) => {
         const appointmentDate = parseAppointmentDate(appointment.slotDate, appointment.slotTime);
+        const isProcessing = processingPayment === appointment._id;
 
         let statusLabel = type === 'cancelled' ? 'Cancelled' :
             type === 'upcoming' ? 'Upcoming' : 'Completed';
@@ -131,6 +195,20 @@ const Appointments = () => {
         let statusClasses = type === 'cancelled' ? 'bg-red-100 text-red-800' :
             type === 'upcoming' ? 'bg-blue-100 text-blue-800' :
                 'bg-green-100 text-green-800';
+
+        const paymentMethod = appointment.payment?.method;
+        const paymentStatus = appointment.payment?.status;
+
+        const paymentStatusText =
+            paymentStatus === 'completed' && paymentMethod === 'cash' ? 'Paying at Clinic' :
+                paymentStatus === 'completed' && paymentMethod === 'esewa' ? 'Paid Online' :
+                    paymentMethod === 'cash' ? 'Pay at Clinic' :
+                        paymentStatus === 'completed' ? 'Completed' :
+                            'Pending';
+
+        const isPaymentCompleted = appointment?.payment?.status === 'completed';
+        const hasPaymentMethod = appointment?.payment?.method; 
+        const isPaymentPending = !isPaymentCompleted && !hasPaymentMethod;
 
         return (
             <motion.div
@@ -184,7 +262,7 @@ const Appointments = () => {
                                 <div>
                                     <p className="text-xs text-gray-500">Payment</p>
                                     <p className="text-sm font-medium text-gray-800">
-                                        {appointment.payment?.status === 'completed' ? 'Paid' : 'Pending'}
+                                        {paymentStatusText}
                                     </p>
                                 </div>
                             </div>
@@ -201,38 +279,41 @@ const Appointments = () => {
                             </button>
                             <div className="flex space-x-2">
                                 <motion.button
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => handlePayment(appointment._id)}
-                                    className="px-3 py-2 text-xs font-medium rounded-md border border-green-600 text-green-600 hover:bg-green-50"
+                                    whileHover={isPaymentPending ? { scale: 1.03 } : {}}
+                                    whileTap={isPaymentPending ? { scale: 0.98 } : {}}
+                                    onClick={() => isPaymentPending && handlePayment(appointment._id)}
+                                    className={`px-3 py-2 text-xs font-medium rounded-md border ${!isPaymentPending
+                                        ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                                        : 'border-green-600 text-green-600 hover:bg-green-50'
+                                        } ${isProcessing ? 'opacity-70' : ''}`}
+                                    disabled={!isPaymentPending || isProcessing}
                                 >
-                                    Pay with eSewa
+                                    {isProcessing ? 'Processing...' :
+                                        paymentMethod === 'esewa' ? 'Paid with eSewa' : 'Pay with eSewa'}
                                 </motion.button>
+
                                 <motion.button
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    onClick={() => {
-                                        toast.info(
-                                            <div>
-                                                <p className="font-medium">You've chosen to pay at the clinic.</p>
-                                                <p className="text-sm mt-1">Please bring the exact amount (Rs {appointment.doctorData.fees}) when you visit.</p>
-                                                <p className="text-sm mt-1">Your appointment is confirmed!</p>
-                                            </div>,
-                                            {
-                                                autoClose: 5000,
-                                                closeButton: true,
-                                            }
-                                        );
-                                    }}
-                                    className="px-3 py-2 text-xs font-medium rounded-md border border-blue-600 text-blue-600 hover:bg-blue-50"
+                                    whileHover={isPaymentPending ? { scale: 1.03 } : {}}
+                                    whileTap={isPaymentPending ? { scale: 0.98 } : {}}
+                                    onClick={() => isPaymentPending && handlePayAtClinic(appointment)}
+                                    className={`px-3 py-2 text-xs font-medium rounded-md border ${!isPaymentPending
+                                        ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                                        : 'border-blue-600 text-blue-600 hover:bg-blue-50'
+                                        }`}
+                                    disabled={!isPaymentPending}
                                 >
-                                    Pay at Clinic
+                                    {paymentMethod === 'cash' ? 'Paying at Clinic' : 'Pay at Clinic'}
                                 </motion.button>
+
                                 <motion.button
-                                    onClick={() => cancelAppointment(appointment._id)}
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 0.98 }}
-                                    className="px-3 py-2 text-xs font-medium rounded-md border border-red-600 text-red-600 hover:bg-red-50"
+                                    whileHover={isPaymentPending ? { scale: 1.03 } : {}}
+                                    whileTap={isPaymentPending ? { scale: 0.98 } : {}}
+                                    onClick={() => isPaymentPending && cancelAppointment(appointment._id)}
+                                    className={`px-3 py-2 text-xs font-medium rounded-md border ${!isPaymentPending
+                                        ? 'border-gray-300 text-gray-400 cursor-not-allowed'
+                                        : 'border-red-600 text-red-600 hover:bg-red-50'
+                                        }`}
+                                    disabled={!isPaymentPending}
                                 >
                                     Cancel
                                 </motion.button>
@@ -281,7 +362,7 @@ const Appointments = () => {
                 <nav className="flex space-x-8">
                     {[
                         { id: 'upcoming', label: 'Upcoming', count: upcoming.length },
-                        { id: 'past', label: 'Appointment History', count: past.length }, //if the doctor has marked the appointment as completed
+                        { id: 'past', label: 'Appointment History', count: past.length },
                         { id: 'cancelled', label: 'Cancelled', count: cancelled.length }
                     ].map((tab) => (
                         <button

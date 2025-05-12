@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 
 const BookAppointment = () => {
-  const { docId } = useParams();  // Fetching doctor ID from URL
+  const { docId } = useParams();  
   const {
     doctors,
     backendUrl,
@@ -38,7 +38,6 @@ const BookAppointment = () => {
     }
   }, [docId, doctors, navigate]);
 
-  // Book appointment function
   const bookAppointment = async () => {
     if (!token) {
       toast.warn("Please login to book an appointment.");
@@ -50,19 +49,16 @@ const BookAppointment = () => {
       return;
     }
 
-    // Check if doctor is available
     if (docInfo.available === false) {
       toast.warn("This doctor is currently unavailable for appointments.");
       return;
     }
 
-    // Check if slot is selected
     if (!slotTime) {
       toast.warn("Please select a time slot.");
       return;
     }
 
-    // Check if there are available slots for the selected date
     if (!docSlots.length || !docSlots[slotIndex] || docSlots[slotIndex].length === 0) {
       toast.warn("No available slots for the selected date.");
       return;
@@ -204,7 +200,7 @@ const BookAppointment = () => {
                     {docInfo.degree}
                   </span>
                   <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm">
-                    {docInfo.experience} years experience
+                    {docInfo.experience} experience
                   </span>
                   <span className="px-3 py-1 bg-teal-50 text-teal-700 rounded-full text-sm">
                     ₹{docInfo.fees} consultation fee

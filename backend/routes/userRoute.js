@@ -18,9 +18,10 @@ import {
   getDoctorNotes,
   getAppointmentDetails,
   addPatientComment,
-  makePayment,
-  verifyPayment,
-  chooseCashPayment,
+  initiateEsewaPayment,
+  handleEsewaSuccess,
+  handleEsewaFailure,
+  setCashPayment,
 } from "../controllers/userController.js";
 import authUser from "../middlewares/authUser.js";
 import upload from "../middlewares/multer.js";
@@ -51,8 +52,9 @@ userRouter.get("/lab-tests", authUser, getUserLabTests);
 userRouter.get("/doctor-notes/:appointmentId", authUser, getDoctorNotes);
 userRouter.get("/appointments/:appointmentId", authUser, getAppointmentDetails);
 userRouter.post("/add-comment", authUser, addPatientComment);
-userRouter.post("/make-payment", authUser, makePayment);
-userRouter.post("/verify-payment", authUser, verifyPayment);
-userRouter.post("/choose-cash-payment", authUser, chooseCashPayment);
+userRouter.post('/make-payment', authUser, initiateEsewaPayment);
+userRouter.post('/cash', authUser, setCashPayment);
+userRouter.get('/payment-success', handleEsewaSuccess);
+userRouter.get('/payment-failure', handleEsewaFailure);
 
 export default userRouter;
