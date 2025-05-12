@@ -17,11 +17,17 @@ const appointmentSchema = new mongoose.Schema(
         enum: ["pending", "completed", "failed"],
         default: "pending",
       },
+      method: {
+       
+        type: String,
+        enum: ["esewa", "cash", null],
+        default: null,
+      },
       amount: Number,
       paymentId: String,
       gateway: String,
       receiptUrl: String,
-    }, // payment details
+    },
     isCompleted: { type: Boolean, default: false }, // if the appointment is completed or not
     followUpRequired: { type: Boolean, default: false }, // if the follow up is required or not
     labTests: [

@@ -6,9 +6,7 @@ import connectDB from "./config/mongodb.js";
 import adminRouter from "./routes/adminRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import notificationRouter from "./routes/notificationRoute.js";
-import pathologistRouter from "./routes/pathologistRoute.js";
-import paymentRouter from './routes/paymentRoute.js';
-import userRouter from "./routes/userRoute.js";
+import mongoose from "mongoose";
 
 // Initialize Express
 const app = express();
@@ -20,14 +18,14 @@ const allowedOrigins = [
   "http://localhost:5174",
   process.env.FRONTEND_URL,
   process.env.STAFF_URL,
-  process.env.ADMIN_URL
-].filter(Boolean); 
+  process.env.ADMIN_URL,
+].filter(Boolean);
 
 // Database Connections
 connectDB();
 
 // Middlewares
-app.use(express.json({ limit: "10mb" })); 
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(
   cors({
@@ -42,14 +40,16 @@ app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter);
 app.use("/api/pathologist", pathologistRouter);
 app.use("/api/notifications", notificationRouter);
-app.use('/api/payment', paymentRouter);
 
 // Health Check
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
-    database: mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
-    cloudinary: process.env.CLOUDINARY_CLOUD_NAME ? "Configured" : "Not Configured",
+    database:
+      mongoose.connection.readyState === 1 ? "Connected" : "Disconnected",
+    cloudinary: process.env.CLOUDINARY_CLOUD_NAME
+      ? "Configured"
+      : "Not Configured",
     timestamp: new Date().toISOString(),
   });
 });
@@ -57,7 +57,7 @@ app.get("/health", (req, res) => {
 // Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error("Global Error Handler:", err);
-  
+
   // Handle file upload errors specifically
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(413).json({
@@ -92,6 +92,5 @@ app.listen(port, () => {
   - /api/user
   - /api/pathologist
   - /api/notifications
-  - /api/payment
   `);
 });
