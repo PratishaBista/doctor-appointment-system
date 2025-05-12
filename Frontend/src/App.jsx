@@ -1,4 +1,3 @@
-// App.jsx
 import { Route, Routes } from "react-router-dom";
 import './App.css';
 import AppContextProvider from './context/AppContext';
@@ -20,11 +19,9 @@ function App() {
         <Route path="/auth" element={<Login />} />
         <Route path="/dashboard" element={<DashboardLayout />}>
           <Route index element={<AppointmentsPage />} />
-          {/* <Route path="notifications" element={<NotificationsPage />} /> */}
           <Route path="appointments" element={<AppointmentsPage />} />
           <Route path="appointments/:appointmentId" element={<PatientAppointmentDetail />} />
           <Route path="profile" element={<ProfilePage />} />
-          {/* <Route path="settings" element={<SettingsPage />} /> */}
           <Route path="lab-reports" element={<LabReports />} />
         </Route>
       </Routes>

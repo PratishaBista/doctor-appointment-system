@@ -9,10 +9,8 @@ import pathologistRouter from "./routes/pathologistRoute.js";
 import notificationRouter from "./routes/notificationRoute.js";
 import mongoose from "mongoose";
 
-// Initialize Express
 const app = express();
 
-// Configuration
 const port = process.env.PORT || 5000;
 const allowedOrigins = [
   "http://localhost:5173",
@@ -22,7 +20,6 @@ const allowedOrigins = [
   process.env.ADMIN_URL,
 ].filter(Boolean);
 
-// Database Connections
 connectDB();
 
 // Middlewares
@@ -42,7 +39,6 @@ app.use("/api/user", userRouter);
 app.use("/api/pathologist", pathologistRouter);
 app.use("/api/notifications", notificationRouter);
 
-// Health Check
 app.get("/health", (req, res) => {
   res.status(200).json({
     status: "OK",
@@ -55,11 +51,9 @@ app.get("/health", (req, res) => {
   });
 });
 
-// Error Handling Middleware
 app.use((err, req, res, next) => {
   console.error("Global Error Handler:", err);
 
-  // Handle file upload errors specifically
   if (err.code === "LIMIT_FILE_SIZE") {
     return res.status(413).json({
       success: false,

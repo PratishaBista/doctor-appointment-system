@@ -1,4 +1,3 @@
-import React from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import Footer from './UserComponents/Footer';
 import HomeBody from './UserComponents/HomeBody';
@@ -11,11 +10,13 @@ import FindDoctors from './UserPages/FindDoctors';
 import Department from './UserPages/Department';
 import ForgotPassword from './UserPages/ForgotPassword';
 import ResetPassword from './UserPages/ResetPassword';
+import PaymentSuccess from './UserPages/PaymentSuccess';
+import PaymentFailed from './UserPages/PaymentFailed';
 
 function UserHome() {
   const location = useLocation();
 
-  const hideHeaderFooterRoutes = ['/forgot-password', '/reset-password'];
+  const hideHeaderFooterRoutes = ['/forgot-password', '/reset-password', '/payment-success', '/payment-failure'];
 
   const hideHeaderFooter = hideHeaderFooterRoutes.includes(location.pathname);
 
@@ -34,6 +35,8 @@ function UserHome() {
         <Route path="/book-appointment/:docId" element={<BookAppointment />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/payment-success" element={<PaymentSuccess />} />
+        <Route path="/payment-failure" element={<PaymentFailed />} />
       </Routes>
 
       {!hideHeaderFooter && <Footer />}

@@ -14,11 +14,10 @@ const appointmentSchema = new mongoose.Schema(
     payment: {
       status: {
         type: String,
-        enum: ["pending", "completed", "failed"],
+        enum: ["pending", "completed", "failed", "pay_at_clinic"],
         default: "pending",
       },
       method: {
-       
         type: String,
         enum: ["esewa", "cash", null],
         default: null,
