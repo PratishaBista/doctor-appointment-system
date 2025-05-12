@@ -225,7 +225,7 @@ const getPendingLabRequests = async (req, res) => {
 
 const uploadLabReport = async (req, res) => {
   try {
-    const { appointmentId, patientId, reportName, notes, testType } = req.body;
+    const { appointmentId, reportName, notes, testType } = req.body;
     const reportFile = req.file;
 
     if (!reportFile) {
@@ -240,6 +240,14 @@ const uploadLabReport = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Appointment not found",
+      });
+    }
+
+    const patientId = appointment.userId;
+    if (!patientId || patientId.toString() === "null") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid patient ID in appointment",
       });
     }
 
@@ -262,14 +270,13 @@ const uploadLabReport = async (req, res) => {
 
     const newReport = new labReportModel({
       appointmentId,
-      patientId: appointment.userId,
-      doctorId: appointment.doctorId, 
-      pathologistId: req.user.id, 
+      patientId,
+      doctorId: appointment.doctorId,
+      pathologistId: req.user.id,
       reportName,
       reportFile: cloudinaryResult.secure_url,
-      testType: testType || "General Lab Test", 
+      testType: testType || "General Lab Test",
       notes,
-      
     });
 
     await newReport.save();
