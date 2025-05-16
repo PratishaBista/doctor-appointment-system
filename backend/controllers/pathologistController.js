@@ -5,12 +5,12 @@ import nodemailer from "nodemailer";
 import appointmentModel from "../models/appointmentModel.js";
 import userModel from "../models/userModel.js";
 import labReportModel from "../models/labReportModel.js";
-// import notificationModel from "../models/notificationModel.js";
+import notificationModel from "../models/notificationModel.js";
 import doctorModel from "../models/doctorModel.js";
 import cloudinary from "../config/cloudinary.js";
 import { v4 as uuidv4 } from "uuid";
-// import { format } from "path";
 import fs from "fs";
+import path from "path";
 
 // Generate random password
 const generateRandomPassword = () => uuidv4().substring(0, 10);
@@ -225,6 +225,7 @@ const getPendingLabRequests = async (req, res) => {
 
 const uploadLabReport = async (req, res) => {
   try {
+    console.log("Uploading file:", req.file);
     const { appointmentId, reportName, notes, testType } = req.body;
     const reportFile = req.file;
 
@@ -232,6 +233,20 @@ const uploadLabReport = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Report file is required",
+      });
+    }
+    console.log("Original filename:", reportFile.originalname);
+    const allowedTypes = [".pdf", ".jpg", ".jpeg", ".png"];
+    const fileExt = path.extname(reportFile.originalname).toLowerCase();
+    console.log("File extension:", fileExt);
+    const isPDF = fileExt === ".pdf";
+    console.log("Detected file extension:", fileExt);
+    console.log("Is PDF?", isPDF);
+
+    if (!allowedTypes.includes(fileExt)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid file type. Only PDF, JPG, JPEG, and PNG are allowed.",
       });
     }
 
@@ -254,7 +269,7 @@ const uploadLabReport = async (req, res) => {
     let cloudinaryResult;
     try {
       cloudinaryResult = await cloudinary.uploader.upload(reportFile.path, {
-        resource_type: "auto",
+        resource_type: isPDF ? "raw" : "image",
         folder: "lab_reports",
         public_id: `report_${appointmentId}_${Date.now()}`,
         overwrite: false,
@@ -263,8 +278,23 @@ const uploadLabReport = async (req, res) => {
       if (!cloudinaryResult.secure_url) {
         throw new Error("Cloudinary upload failed");
       }
+
+      if (isPDF) {
+        cloudinaryResult.secure_url = cloudinary.url(cloudinaryResult.public_id,
+          {
+            resource_type: "raw",
+            flags: "attachment",
+            secure: true,
+            type: "upload",
+            sign_url: true,
+          }
+        );
+      }
     } catch (uploadError) {
       console.error("Cloudinary upload error:", uploadError);
+      if (uploadError.message.includes("File size too large")) {
+        throw new Error("File size exceeds 10MB limit");
+      }
       throw new Error("Failed to upload file to cloud storage");
     }
 
@@ -277,9 +307,31 @@ const uploadLabReport = async (req, res) => {
       reportFile: cloudinaryResult.secure_url,
       testType: testType || "General Lab Test",
       notes,
+      fileType: isPDF ? "pdf" : "image",
     });
 
     await newReport.save();
+
+    // notify patient
+    await notificationModel.create({
+      userId: patientId,
+      userType: "patient",
+      title: "Lab Report Ready",
+      message: `Your lab report "${reportName}" is now available.`,
+      relatedEntity: "labReport",
+      relatedEntityId: newReport._id,
+      actionUrl: `/lab-report/${newReport._id}`,
+    });
+
+    await notificationModel.create({
+      userId: doctorId,
+      userType: "doctor",
+      title: "Lab Report Ready",
+      message: `Lab report "${reportName}" for your patient is now available.`,
+      relatedEntity: "labReport",
+      relatedEntityId: newReport._id,
+      actionUrl: `/patients/${patientId}/lab-reports/${newReport._id}`,
+    });
 
     if (appointment.labTests && appointment.labTests.length > 0) {
       appointment.labTests.forEach((test) => {
@@ -300,7 +352,8 @@ const uploadLabReport = async (req, res) => {
         patient.name,
         reportName,
         cloudinaryResult.secure_url,
-        notes
+        notes,
+        isPDF
       );
 
       if (!emailSent) {
@@ -320,6 +373,7 @@ const uploadLabReport = async (req, res) => {
       data: {
         reportId: newReport._id,
         reportUrl: cloudinaryResult.secure_url,
+        fileType: isPDF ? "pdf" : "image",
       },
     });
   } catch (error) {
@@ -341,31 +395,13 @@ const uploadLabReport = async (req, res) => {
   }
 };
 
-// await notificationModel.create([
-//   {
-//     userId: patientId,
-//     userType: "patient",
-//     title: "Lab Report Ready",
-//     message: `Your lab report "${reportName}" is now available.`,
-//     relatedEntity: "labReport",
-//     relatedEntityId: newReport._id,
-//   },
-//   {
-//     userId: doctorId,
-//     userType: "doctor",
-//     title: "Lab Report Ready",
-//     message: `Lab report "${reportName}" for your patient is now available.`,
-//     relatedEntity: "labReport",
-//     relatedEntityId: newReport._id,
-//   },
-// ]);
-
 const sendLabReportEmail = async (
   patientEmail,
   patientName,
   reportName,
   reportUrl,
-  notes
+  notes,
+  isPDF
 ) => {
   if (!patientEmail) {
     console.error("No email address provided for patient");
@@ -396,10 +432,26 @@ const sendLabReportEmail = async (
             : ""
         }
         
-        <p>You can view/download your report by clicking the link below:</p>
-        <p><a href="${reportUrl}" style="color: #0288D1; text-decoration: none;">Download Lab Report</a></p>
+        <p>You can access your report by clicking the link below:</p>
+            <p>
+          <a href="${reportUrl}" 
+             style="background-color: #0288D1; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block;">
+            ${isPDF ? "Download PDF Report" : "View Lab Report"}
+          </a>
+        </p>
         
-        <p>If you have any questions about your results, please contact your healthcare provider.</p>
+        ${
+          isPDF
+            ? `
+        <div style="background-color: #f8f9fa; padding: 10px; border-radius: 4px; margin-top: 15px;">
+          <p style="margin: 0; font-size: 0.9em;">
+            <strong>Note:</strong> This is a PDF file. Some email clients may not display it directly. 
+            If you have trouble viewing, try right-clicking the link and selecting "Save link as..."
+          </p>
+        </div>
+        `
+            : ""
+        }
         
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
           <p style="font-size: 0.9em; color: #777;">

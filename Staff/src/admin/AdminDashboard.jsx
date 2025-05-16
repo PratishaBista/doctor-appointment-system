@@ -224,7 +224,7 @@ const AdminDashboard = () => {
                     </p>
                     {item.payment?.status === 'completed' && (
                       <p className="text-xs text-gray-400 mt-1">
-                        Paid: ${item.amount} via {item.payment?.gateway}
+                        Paid: Rs {item.amount} via {item.payment?.gateway}
                       </p>
                     )}
                   </div>

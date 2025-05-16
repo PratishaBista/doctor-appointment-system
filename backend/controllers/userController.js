@@ -274,6 +274,25 @@ const bookAppointment = async (req, res) => {
     const newAppointment = new appointmentModel(appointmentData);
     await newAppointment.save();
 
+    // send notification to doctor
+    await notificationModel.create({
+      userId: newAppointment.doctorId,
+      userType: "doctor",
+      title: "New Appointment Booked",
+      message: `You have a new appointment booked on ${slotDate} at ${slotTime}`,
+      relatedEntity: "appointment",
+      relatedEntityId: newAppointment._id,
+      metadata: {
+        appointmentId: newAppointment._id,
+        userId,
+        doctorId,
+        slotDate,
+        slotTime,
+        userData,
+        doctorData,
+      },
+    });
+
     // save new slots booked in doctor's data
     await doctorModel.findByIdAndUpdate(doctorId, {
       slots_booked,
@@ -326,6 +345,7 @@ const cancelAppointment = async (req, res) => {
     await appointmentModel.findByIdAndUpdate(appointmentId, {
       cancelled: true,
     });
+
     // making the doctor slots available
     const { doctorId, slotDate, slotTime } = appointmentData;
     const doctorData = await doctorModel.findById(doctorId);
@@ -651,7 +671,7 @@ const initiateEsewaPayment = async (req, res) => {
       product_code: "EPAYTEST",
       product_service_charge: "0",
       product_delivery_charge: "0",
-     success_url: `${process.env.FRONTEND_URL}/payment-success?appointmentId=${appointmentId}`,
+      success_url: `${process.env.FRONTEND_URL}/payment-success?appointmentId=${appointmentId}`,
       failure_url: `${process.env.FRONTEND_URL}/payment-failed?appointmentId=${appointmentId}`,
       signed_field_names: "total_amount,transaction_uuid,product_code",
     };

@@ -52,7 +52,7 @@ const Prescription = ({ appointment, updatePrescription }) => {
               <button
                 onClick={handleSave}
                 disabled={isLoading}
-                className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="flex items-center bg-[#0288D1] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               >
                 <FiSave className="mr-2" />
                 {isLoading ? "Saving..." : "Save"}
@@ -153,7 +153,7 @@ const Prescription = ({ appointment, updatePrescription }) => {
             <div className="mt-12">
               <div className="text-right">
                 <div className="mb-4 border-t-2 border-gray-400 w-32 ml-auto pt-2">
-                  <p className="font-semibold">Dr. {appointment?.doctorData?.name}</p>
+                  <p className="font-semibold">{appointment?.doctorData?.name}</p>
                   <p className="text-sm">License No: XXXXXXXX</p>
                 </div>
               </div>

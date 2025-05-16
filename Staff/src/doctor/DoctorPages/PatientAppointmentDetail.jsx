@@ -520,7 +520,7 @@ const PatientAppointmentDetail = () => {
                                             <div className="mt-2 flex justify-end">
                                                 <button
                                                     onClick={handleSubmitDoctorComment}
-                                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                                                    className="bg-[#0288D1] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                                                     disabled={!doctorComment.trim()}
                                                 >
                                                     Post Comment
