@@ -378,6 +378,75 @@ const requestLabTest = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
+
+// delete a lab test request
+const deleteRequestedLabTest = async (req, res) => {
+  try {
+    const { appointmentId, testId } = req.body;
+
+    // Validate input
+    if (!appointmentId || !testId) {
+      return res.json({
+        success: false,
+        message: "Appointment ID and Test ID are required",
+      });
+    }
+
+    // Find the appointment and requested test
+    const appointment = await appointmentModel.findById(appointmentId);
+    if (!appointment) {
+      return res.json({
+        success: false,
+        message: "Appointment not found",
+      });
+    }
+
+    // Find the test to delete (must be in 'requested' status)
+    const testToDelete = appointment.labTests.find(
+      (test) => test._id.toString() === testId && test.status === "requested"
+    );
+
+    if (!testToDelete) {
+      return res.json({
+        success: false,
+        message: "Test not found or already processed (cannot delete completed tests)",
+      });
+    }
+
+    // Remove the test from the array
+    const updatedAppointment = await appointmentModel.findByIdAndUpdate(
+      appointmentId,
+      {
+        $pull: { labTests: { _id: testId, status: "requested" } },
+        // Only set labTestRequired to false if no more tests exist
+        ...(appointment.labTests.length <= 1 && { labTestRequired: false }),
+      },
+      { new: true }
+    );
+
+    // Notify patient about cancellation
+    await notificationModel.create({
+      userId: updatedAppointment.userId,
+      userType: "patient",
+      title: "Lab Test Cancelled",
+      message: `A lab test request (${testToDelete.testType}) has been cancelled`,
+      relatedEntity: "appointment",
+      relatedEntityId: appointmentId,
+      actionUrl: `/appointments/${appointmentId}`,
+    });
+
+    res.json({
+      success: true,
+      message: "Lab test request deleted successfully",
+      appointment: updatedAppointment,
+    });
+  } catch (error) {
+    console.error(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+
 const getPendingTestsForDoctor = async (req, res) => {
   try {
     const { doctorId } = req.body;
@@ -740,4 +809,5 @@ export {
   getPendingTestsForDoctor,
   updatePrescription,
   addDoctorComment,
+  deleteRequestedLabTest,
 };

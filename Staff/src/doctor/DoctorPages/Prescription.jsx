@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
-import { FiEdit2, FiSave, FiPrinter, FiBold, FiItalic, FiList } from "react-icons/fi";
+import React, { useState, useEffect } from "react";
+import { FiEdit2, FiSave, FiPrinter } from "react-icons/fi";
 import { toast } from "react-toastify";
 
 const Prescription = ({ appointment, updatePrescription }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const editorRef = useRef(null);
   const [content, setContent] = useState("");
 
   useEffect(() => {
@@ -17,10 +16,8 @@ const Prescription = ({ appointment, updatePrescription }) => {
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      const prescription = editorRef.current.innerHTML;
-      await updatePrescription(appointment._id, prescription);
+      await updatePrescription(appointment._id, content);
       setIsEditing(false);
-      // toast.success("Prescription saved successfully");
     } catch (error) {
       console.error("Error saving prescription:", error);
       toast.error("Failed to save prescription");
@@ -35,11 +32,6 @@ const Prescription = ({ appointment, updatePrescription }) => {
     document.body.innerHTML = printContent.innerHTML;
     window.print();
     document.body.innerHTML = originalContent;
-  };
-
-  const formatText = (command, value = null) => {
-    document.execCommand(command, false, value);
-    editorRef.current.focus();
   };
 
   return (
@@ -60,7 +52,7 @@ const Prescription = ({ appointment, updatePrescription }) => {
             ) : (
               <button
                 onClick={() => setIsEditing(true)}
-                className="flex items-center bg-[#0288d1ff] rounded-lg  hover:bg-[#0289d1df] transition text-white px-4 py-2"
+                className="flex items-center bg-[#0288d1ff] rounded-lg hover:bg-[#0289d1df] transition text-white px-4 py-2"
               >
                 <FiEdit2 className="mr-2" />
                 Edit
@@ -77,46 +69,16 @@ const Prescription = ({ appointment, updatePrescription }) => {
         </div>
 
         {isEditing ? (
-          <div className="border border-gray-300 rounded-lg overflow-hidden">
-            <div className="bg-gray-100 p-2 border-b border-gray-300 flex space-x-2">
-              <button
-                onClick={() => formatText('bold')}
-                className="p-2 hover:bg-gray-200 rounded"
-                title="Bold"
-              >
-                <FiBold />
-              </button>
-              <button
-                onClick={() => formatText('italic')}
-                className="p-2 hover:bg-gray-200 rounded"
-                title="Italic"
-              >
-                <FiItalic />
-              </button>
-              <button
-                onClick={() => formatText('insertUnorderedList')}
-                className="p-2 hover:bg-gray-200 rounded"
-                title="Bullet List"
-              >
-                <FiList />
-              </button>
-            </div>
-            <div
-              ref={editorRef}
-              className="w-full p-4 min-h-[300px] focus:outline-none"
-              contentEditable
-              dangerouslySetInnerHTML={{ __html: content }}
-              onInput={(e) => setContent(e.target.innerHTML)}
-              placeholder="Enter prescription details..."
-            />
-          </div>
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            className="w-full p-4 border border-gray-300 rounded-lg min-h-[300px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter prescription details..."
+          />
         ) : (
           <div className="bg-gray-50 p-6 rounded-lg">
             {content ? (
-              <div 
-                className="prose max-w-none" 
-                dangerouslySetInnerHTML={{ __html: content }} 
-              />
+              <div className="whitespace-pre-wrap">{content}</div>
             ) : (
               <div className="text-center text-gray-500 py-12">
                 No prescription available
@@ -146,8 +108,8 @@ const Prescription = ({ appointment, updatePrescription }) => {
               </div>
             </div>
             
-            <div className="border-t border-b border-gray-300 py-4 my-4">
-              <div dangerouslySetInnerHTML={{ __html: content }} />
+            <div className="border-t border-b border-gray-300 py-4 my-4 whitespace-pre-wrap">
+              {content}
             </div>
             
             <div className="mt-12">

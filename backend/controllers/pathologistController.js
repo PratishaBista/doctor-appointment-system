@@ -324,7 +324,7 @@ const uploadLabReport = async (req, res) => {
     });
 
     await notificationModel.create({
-      userId: doctorId,
+      userId: appointment.doctorId,
       userType: "doctor",
       title: "Lab Report Ready",
       message: `Lab report "${reportName}" for your patient is now available.`,
@@ -422,7 +422,6 @@ const sendLabReportEmail = async (
     subject: `Your Lab Report: ${reportName}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #0288D1;">Lab Report Notification</h2>
         <p>Dear ${patientName || "Patient"},</p>
         <p>Your lab report <strong>${reportName}</strong> is now available.</p>
         

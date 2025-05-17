@@ -18,6 +18,7 @@ import {
   markNotificationAsRead,
   updatePrescription,
   addDoctorComment,
+  deleteRequestedLabTest
 } from "../controllers/doctorController.js";
 import authDoctor from "../middlewares/authDoctor.js";
 import appointmentModel from "../models/appointmentModel.js";
@@ -36,6 +37,7 @@ doctorRouter.post("/update-profile", authDoctor, updateDoctorProfile); // API to
 doctorRouter.post("/forgot-password", forgotPassword);
 doctorRouter.post("/reset-password", resetPassword);
 doctorRouter.post("/request-lab-test", authDoctor, requestLabTest);
+doctorRouter.post("/delete-lab-test", authDoctor, deleteRequestedLabTest);
 doctorRouter.post("/add-notes", authDoctor, addDoctorNotes);
 doctorRouter.post("/mark-followup", authDoctor, markFollowUp);
 doctorRouter.get("/notifications", authDoctor, getDoctorNotifications);
