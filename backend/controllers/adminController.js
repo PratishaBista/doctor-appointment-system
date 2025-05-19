@@ -5,6 +5,7 @@ import doctorModel from "../models/doctorModel.js";
 import appointmentModel from "../models/appointmentModel.js";
 import jwt from "jsonwebtoken";
 import userModel from "../models/userModel.js";
+// import notificationModel from "../models/notificationModel.js";
 import { addPathologist, getAllPathologists } from "./pathologistController.js";
 
 const addDoctor = async (req, res) => {

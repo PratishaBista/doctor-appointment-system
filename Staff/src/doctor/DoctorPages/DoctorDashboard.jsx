@@ -1,17 +1,18 @@
 import { motion } from "framer-motion";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
 import { AppContext } from "../../context/AppContext";
 import { FiCalendar, FiUser, FiDollarSign, FiActivity } from "react-icons/fi";
-import { BarChart, PieChart } from "../../components/charts";
+
 
 const DoctorDashboard = () => {
-  const { doctor_token, getDashboardData, dashboardData } = useContext(DoctorContext);
+  const { doctor_token, getDashboardData, dashboardData, getDoctorData, doctorData  } = useContext(DoctorContext);
   const { formatDate } = useContext(AppContext);
 
   useEffect(() => {
     if (doctor_token) {
       getDashboardData();
+      getDoctorData();
     }
   }, [doctor_token]);
 
@@ -84,25 +85,11 @@ const DoctorDashboard = () => {
           </div>
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-500">Patients</p>
-            <h3 className="text-2xl font-bold text-gray-800">{dashboardData?.patients || 0}</h3>
-          </div>
-        </motion.div>
-
-        {/* Earnings Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          whileHover={{ y: -5 }}
-          className="bg-white rounded-xl shadow-sm p-6 flex items-center"
-        >
-          <div className="p-3 rounded-lg bg-[#FFC107]/10 text-[#FFC107]">
-            <FiDollarSign className="w-6 h-6" />
-          </div>
-          <div className="ml-4">
-            <p className="text-sm font-medium text-gray-500">Earnings</p>
             <h3 className="text-2xl font-bold text-gray-800">
-              Rs. {dashboardData?.earnings || 0}
+              {dashboardData?.patients ||
+                (dashboardData?.latestAppointments
+                  ? new Set(dashboardData.latestAppointments.map(appt => appt.userId)).size
+                  : 0)}
             </h3>
           </div>
         </motion.div>
@@ -121,41 +108,10 @@ const DoctorDashboard = () => {
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-500">Status</p>
             <h3 className="text-2xl font-bold text-gray-800">
-              {dashboardData?.available ? "Available" : "Not Available"}
+              {doctorData?.available ? "Available" : "Not Available"}
             </h3>
           </div>
         </motion.div>
-      </div>
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Appointments Chart */}
-        {appointmentsData && (
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow-sm p-6"
-          >
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Appointments Trend</h3>
-            <div className="h-64">
-              <BarChart data={appointmentsData} />
-            </div>
-          </motion.div>
-        )}
-
-        {/* Patients Chart */}
-        {patientsData && (
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="bg-white rounded-xl shadow-sm p-6"
-          >
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">Patients by Gender</h3>
-            <div className="h-64">
-              <PieChart data={patientsData} />
-            </div>
-          </motion.div>
-        )}
       </div>
 
       {/* Upcoming Appointments */}
@@ -176,7 +132,7 @@ const DoctorDashboard = () => {
           ) : (
             upcomingAppointments.map((appt, index) => (
               <motion.div
-                key={index}
+                key={appt._id || index}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -186,16 +142,24 @@ const DoctorDashboard = () => {
                   className="h-10 w-10 rounded-full object-cover"
                   src={appt.userData?.image || "https://via.placeholder.com/40"}
                   alt="Patient"
+                  onError={(e) => {
+                    e.target.src = "https://via.placeholder.com/40";
+                  }}
                 />
                 <div className="ml-4 flex-1">
                   <div className="flex items-center justify-between">
-                    <h4 className="font-medium text-gray-800">{appt.userData?.name}</h4>
+                    <h4 className="font-medium text-gray-800">
+                      {appt.userData?.name || "Unknown Patient"}
+                    </h4>
+                    <span className="text-sm font-medium text-[#146A5D]">
+                      Rs. {appt.amount || appt.doctorData?.fees || 0}
+                    </span>
                   </div>
                   <p className="text-sm text-gray-500">
-                    {formatDate(appt.slotDate)} at {appt.slotTime}
+                    {formatDate(appt.slotDate || appt.date)} at {appt.slotTime}
                   </p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Rs. {appt.doctorData?.fees || 0} • {appt.payment ? "Online" : "Cash"}
+                    {appt.payment ? (appt.payment.method || "Cash") : "Cash"} • {appt.userData?.gender || "Gender not specified"}
                   </p>
                 </div>
               </motion.div>

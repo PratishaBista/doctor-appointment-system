@@ -1,7 +1,7 @@
 import React from 'react'
 import Services from './Services'
-import UserAccountCreate from './UserAccountCreate'
 import UserBody from './UserBody'
+import UserAccountCreate from './UserAccountCreate'
 
 const HomeBody = () => {
   return (

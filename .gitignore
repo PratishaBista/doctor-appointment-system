@@ -1,4 +1,6 @@
 docs/
 .env
+.vscode
 node_modules/
 package-lock.json
+temp_uploads/

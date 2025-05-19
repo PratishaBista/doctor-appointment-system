@@ -105,12 +105,14 @@ const PatientAppointmentDetail = () => {
 
     const handleSaveTests = async () => {
         try {
-            if (labTests.length === 0) {
+
+            const newTests = labTests.filter(test => test.status === "requested");
+            if (newTests.length === 0) {
                 toast.error("Please add at least one test");
                 return;
             }
 
-            const updatedAppointment = await requestLabTest(appointmentId, labTests);
+            const updatedAppointment = await requestLabTest(appointmentId, newTests);
             if (updatedAppointment) {
                 setAppointment(updatedAppointment);
                 setLabTests(updatedAppointment.labTests || []);
@@ -121,11 +123,46 @@ const PatientAppointmentDetail = () => {
         }
     };
 
-    const handleRemoveTest = (index) => {
-        const updatedTests = [...labTests];
-        updatedTests.splice(index, 1);
-        setLabTests(updatedTests);
+    const handleDeleteTest = async (testId) => {
+        try {
+            if (!appointmentId || !testId) {
+                toast.error("Both appointment ID and test ID are required");
+                return;
+            }
+
+            const updatedAppointment = await deleteRequestedLabTest(appointmentId, testId);
+
+            if (updatedAppointment) {
+                setLabTests(updatedAppointment.labTests || []);
+                toast.success("Test request deleted successfully");
+            }
+        } catch (error) {
+            console.error("Error deleting test:", error);
+            toast.error(error.response?.data?.message || "Failed to delete test");
+        }
     };
+    const deleteRequestedLabTest = async (appointmentId, testId) => {
+        try {
+            const { data } = await axios.post(
+                `${backendUrl}/api/doctor/delete-lab-test`,
+                {
+                    appointmentId,  
+                    testId         
+                },
+                {
+                    headers: {
+                        doctor_token: doctor_token // Ensure this is properly set
+                    }
+                }
+            );
+
+            return data;
+        } catch (error) {
+            console.error("API Error:", error);
+            throw error;
+        }
+    };
+
 
     const handleSaveNotes = async () => {
         try {
@@ -238,7 +275,7 @@ const PatientAppointmentDetail = () => {
                             <div>
                                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</h3>
                                 <p className="text-gray-800">
-                                    {appointment.cancelled ? "Cancelled" : appointment.isCompleted ? "Completed" : "Upcoming"}
+                                    {appointment.cancelled ? "Cancelled" : appointment.isCompleted ? "Completed" : "Ongoing"}
                                 </p>
                                 {appointment.followUpRequired && (
                                     <p className="text-yellow-600">Follow-up required</p>
@@ -329,7 +366,7 @@ const PatientAppointmentDetail = () => {
                             <div className="p-6">
                                 <div className="flex justify-between items-center mb-6">
                                     <h2 className="text-xl font-semibold">Lab Tests</h2>
-                                    {labTests.length > 0 && (
+                                    {labTests.some(test => test.status === "requested") && (
                                         <button
                                             onClick={handleSaveTests}
                                             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center"
@@ -373,12 +410,19 @@ const PatientAppointmentDetail = () => {
                                                                 ) : "-"}
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                                <button
-                                                                    onClick={() => handleRemoveTest(index)}
-                                                                    className="text-red-600 hover:text-red-900 mr-4"
-                                                                >
-                                                                    <FiTrash2 />
-                                                                </button>
+                                                                {test.status === 'requested' && (
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            if (window.confirm('Are you sure you want to delete this test request?')) {
+                                                                                handleDeleteTest(test._id);
+                                                                            }
+                                                                        }}
+                                                                        className="text-red-600 hover:text-red-900 mr-4"
+                                                                        title="Delete test request"
+                                                                    >
+                                                                        <FiTrash2 />
+                                                                    </button>
+                                                                )}
                                                             </td>
                                                         </tr>
                                                     ))}
@@ -520,7 +564,7 @@ const PatientAppointmentDetail = () => {
                                             <div className="mt-2 flex justify-end">
                                                 <button
                                                     onClick={handleSubmitDoctorComment}
-                                                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                                                    className="bg-[#0288D1] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
                                                     disabled={!doctorComment.trim()}
                                                 >
                                                     Post Comment

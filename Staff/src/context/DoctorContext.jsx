@@ -131,6 +131,28 @@ const DoctorContextProvider = (props) => {
         }
     };
 
+    const deleteRequestedLabTest = async (appointmentId, testId) => {
+        try {
+            const { data } = await axios.post(
+                `${backendUrl}/api/doctor/delete-lab-test`,
+                { appointmentId, testId },
+                { headers: { doctor_token } }
+            );
+
+            if (data.success) {
+                toast.success(data.message);
+                return data.appointment;
+            } else {
+                toast.error(data.message);
+                throw new Error(data.message);
+            }
+        } catch (error) {
+            console.error("Error deleting lab test:", error);
+            toast.error(error.response?.data?.message || "Failed to delete lab test");
+            throw error;
+        }
+    };
+
     const addDoctorNotes = async (appointmentId, notes) => {
         try {
             const { data } = await axios.post(
@@ -224,7 +246,7 @@ const DoctorContextProvider = (props) => {
 
 
     const value = {
-        doctor_token, setDoctorToken, getDoctorData, doctorData, setDoctorData, updatePrescription,
+        doctor_token, setDoctorToken, getDoctorData, doctorData, setDoctorData, updatePrescription, deleteRequestedLabTest,
         backendUrl, getAppointments, setAppointments, appointments, completeAppointment, getDashboardData, dashboardData, setDashboardData, getPatientDetails, requestLabTest, addDoctorNotes, markFollowUp, getPatientLabReports
     };
 
