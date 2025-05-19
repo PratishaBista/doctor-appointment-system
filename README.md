@@ -1,12 +1,12 @@
- <p align="center">
+<p align="center">
+  <img src="./Frontend/src/assets/HealthSolutionLogo.png" alt="Project Logo" width="150" />
+</p>
 
-      <img src="./Frontend/src/assets/HealthSolutionLogo.png" alt="Project Logo" width="150" />
+<h1 align="center">Doctor Appointment System</h1>
 
-    </p><h1 align="center">Doctor Appointment System</h1>
-    
-> A collaborative development project as part of university coursework  
-> Module: Collaborative Development (5CS024)  
-> BSc (Hons) Computer Science – Year 2, 2025  
+> A collaborative development project as part of university coursework  
+> Module: Collaborative Development (5CS024)  
+> BSc (Hons) Computer Science – Year 2, 2025  
 
 ## **About the Project**
 
@@ -43,64 +43,58 @@ Each role has been developed with its own UI section and access logic, though th
 * As a result, the project will not run immediately upon cloning without additional configuration.
 
 If you are a teammate or instructor evaluating this project and would like to run it locally:
-  
+
 ### Getting Started (For Developers/PMs/BAs)
 
 1. **Clone the Repository**
 
-   * HTTPS:
-     ```bash
-     git clone https://github.com/your-username/doctor-appointment-system.git
-     ```
+   * HTTPS:  
+     ```bash
+     git clone https://github.com/your-username/doctor-appointment-system.git
+     ```
 
-   * SSH:
-     ```bash
-     git clone git@github.com:your-username/doctor-appointment-system.git
-     ```
+   * SSH:  
+     ```bash
+     git clone git@github.com:your-username/doctor-appointment-system.git
+     ```
 
-2. **Request Environment Variables**  
+2. **Request Environment Variables**  
+   The project depends on various environment variables (e.g., database URI, JWT secrets, third-party service keys).  
+   These are **not committed to the repo** for security reasons.  
+   Please contact one of the developers to receive the `.env` files required for both backend and frontend.
 
-    The project depends on various environment variables (e.g., database URI, JWT secrets, third-party service keys).  
-    These are **not committed to the repo** for security reasons.
-    Please contact one of the developers to receive the `.env` files required for both backend and frontend.
+3. **Run the Application Locally**
 
-2. **Run the Application Locally**
-   
-    **Backend Setup (Node + Express + MongoDB)**
-    - Navigate to the backend directory:
-        ```bash
-        cd backend
-        ```
+   **Backend Setup (Node + Express + MongoDB)**  
+   - Navigate to the backend directory:
+     ```bash
+     cd backend
+     ```
+   - Install dependencies:
+     ```bash
+     npm install
+     ```
+   - Start the server:
+     ```bash
+     npm run server
+     ```
+     _(Alternatively, use `npm start` if `server` script isn’t available)_
 
-    - Install dependencies:
-        ```bash
-        npm install
-        ```
+   **Frontend Setup (React + Vite)**  
+   - Navigate to the frontend directory:
+     ```bash
+     cd frontend
+     ```
+   - Install dependencies:
+     ```bash
+     npm install
+     ```
+   - Start the frontend development server:
+     ```bash
+     npm run dev
+     ```
 
-    - Start the server:
-        ```bash
-        npm run server
-        ```
-
-        _(Alternatively, use `npm start` if `server` script isn’t available)_
-
-    **Frontend Setup (React + Vite)**
-    - Navigate to the frontend directory:
-        ```bash
-        cd frontend
-        ```
-
-    - Install dependencies:
-        ```bash
-        npm install
-        ```
-
-    - Start the frontend development server:
-        ```bash
-        npm run dev
-        ```
-
-   Open the link (localhost URL) to view the app in your browser.
+   Open the link (localhost URL) to view the app in your browser.
 
 ## Final Reflection
 
