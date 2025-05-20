@@ -11,6 +11,7 @@ import FindDoctors from './UserPages/FindDoctors';
 import Department from './UserPages/Department';
 import ForgotPassword from './UserPages/ForgotPassword';
 import ResetPassword from './UserPages/ResetPassword';
+import FAQ from 'Frontend/src/User/FooterPages/FAQ.jsx';
 
 function UserHome() {
   const location = useLocation();
@@ -34,6 +35,9 @@ function UserHome() {
         <Route path="/book-appointment/:docId" element={<BookAppointment />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/faq" element={<FAQ />} />
+
       </Routes>
 
       {!hideHeaderFooter && <Footer />}
