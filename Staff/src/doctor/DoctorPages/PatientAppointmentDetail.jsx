@@ -227,7 +227,7 @@ const PatientAppointmentDetail = () => {
             <div className="flex justify-between items-center mb-6">
                 <button
                     onClick={() => navigate("/doctor/appointments")}
-                    className="flex items-center text-blue-600 hover:text-blue-800"
+                    className="flex items-center text-[#0288d1ff] hover:text-[#0289d1df]"
                 >
                     <FiArrowLeft className="mr-2" /> Back to Appointments
                 </button>
@@ -296,39 +296,39 @@ const PatientAppointmentDetail = () => {
                         <nav className="p-2">
                             <button
                                 onClick={() => setActiveTab("consultation")}
-                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "consultation" ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "consultation" ? "bg-blue-50 text-[#0288D1]" : "text-gray-700 hover:bg-gray-50"}`}
                             >
                                 Consultation Notes
                             </button>
                             <button
                                 onClick={() => setActiveTab("labTests")}
-                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "labTests" ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "labTests" ? "bg-blue-50 text-[#0288D1]" : "text-gray-700 hover:bg-gray-50"}`}
                             >
                                 Lab Tests
                             </button>
                             <button
                                 onClick={() => setActiveTab("actions")}
-                                className={`w-full text-left px-4 py-3 rounded-lg ${activeTab === "actions" ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                className={`w-full text-left px-4 py-3 rounded-lg ${activeTab === "actions" ? "bg-blue-50 text-[#0288D1]" : "text-gray-700 hover:bg-gray-50"}`}
                             >
                                 Appointment Actions
                             </button>
                             <button
                                 onClick={() => setActiveTab("labReportsView")}
-                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "labReportsView" ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "labReportsView" ? "bg-blue-50 text-[#0288D1]" : "text-gray-700 hover:bg-gray-50"}`}
                             >
                                 {/* <FiFileText className="inline mr-2" /> */}
                                 Lab Reports
                             </button>
                             <button
                                 onClick={() => setActiveTab("prescription")}
-                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "prescription" ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "prescription" ? "bg-blue-50 text-[#0288D1]" : "text-gray-700 hover:bg-gray-50"}`}
                             >
                                 {/* <FiFileMedical className="inline mr-2" /> */}
                                 Prescription
                             </button>
                             <button
                                 onClick={() => setActiveTab("comments")}
-                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "comments" ? "bg-blue-50 text-blue-700" : "text-gray-700 hover:bg-gray-50"}`}
+                                className={`w-full text-left px-4 py-3 rounded-lg mb-1 ${activeTab === "comments" ? "bg-blue-50 text-[#0288D1]" : "text-gray-700 hover:bg-gray-50"}`}
                             >
                                 Comments
                             </button>
@@ -403,7 +403,7 @@ const PatientAppointmentDetail = () => {
                                                                 {test.doctorNotes ? (
                                                                     <button
                                                                         onClick={() => toast.info(test.doctorNotes, { autoClose: false })}
-                                                                        className="text-blue-600 hover:text-blue-800 flex items-center"
+                                                                        className="text-[#0288D1] hover:text-blue-800 flex items-center"
                                                                     >
                                                                         <FiInfo className="mr-1" /> View
                                                                     </button>

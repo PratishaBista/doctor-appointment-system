@@ -194,16 +194,18 @@ const appointmentComplete = async (req, res) => {
         isCompleted: true,
       });
 
+      const doctor = await doctorModel.findById(doctorId).select("name");
+
       await notificationModel.create({
         userId: appointmentData.userId,
         userType: "patient",
         title: "Appointment Completed",
-        message: `Your appointment with ${req.doctor.name} has been marked as completed`,
+        message: `Your appointment with ${doctor.name} has been marked as completed`,
         relatedEntity: "appointment",
         relatedEntityId: appointmentId,
         actionUrl: `/appointments/${appointmentId}`,
       });
-      
+
       return res.json({
         success: true,
         message: "Appointment marked as completed",
@@ -409,7 +411,8 @@ const deleteRequestedLabTest = async (req, res) => {
     if (!testToDelete) {
       return res.json({
         success: false,
-        message: "Test not found or already processed (cannot delete completed tests)",
+        message:
+          "Test not found or already processed (cannot delete completed tests)",
       });
     }
 
@@ -445,7 +448,6 @@ const deleteRequestedLabTest = async (req, res) => {
     res.json({ success: false, message: error.message });
   }
 };
-
 
 const getPendingTestsForDoctor = async (req, res) => {
   try {

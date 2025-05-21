@@ -115,10 +115,10 @@ const DoctorProfile = () => {
           </div>
 
           {/* Phone (readonly) */}
-          <div>
+          {/* <div>
             <h2 className="text-gray-600 font-medium">Phone</h2>
             <p className="text-gray-700">{doctorData.phone}</p>
-          </div>
+          </div> */}
 
           {/* Experience (readonly) */}
           <div>
@@ -129,7 +129,8 @@ const DoctorProfile = () => {
           {/* Fees (editable) */}
           <div>
             <h2 className="text-gray-600 font-medium">Consultation Fee</h2>
-            {isEditing ? (
+            <p className="text-gray-700">Rs. {doctorData.fees}</p>
+            {/* {isEditing ? (
               <input
                 type="number"
                 name="fees"
@@ -137,9 +138,7 @@ const DoctorProfile = () => {
                 onChange={handleInputChange}
                 className="border border-gray-300 p-2 rounded-md w-full"
               />
-            ) : (
-              <p className="text-gray-700">Rs. {doctorData.fees}</p>
-            )}
+            ) : ( */}
           </div>
         </div>
 
@@ -152,7 +151,7 @@ const DoctorProfile = () => {
                 type="checkbox"
                 checked={editableData.available}
                 onChange={handleAvailabilityChange}
-                className="h-5 w-5 text-blue-600 rounded"
+                className="h-5 w-5 text-[#0288d1ff] bg-[#0288d1ff] hover:bg-[#0289d1df] rounded"
               />
               <span>{editableData.available ? "Available" : "Not Available"}</span>
             </label>
@@ -206,7 +205,7 @@ const DoctorProfile = () => {
             <>
               <button
                 onClick={updateProfile}
-                className="bg-blue-600 text-white flex items-center gap-2 py-2 px-6 rounded-md hover:bg-blue-700 transition"
+                className= "bg-[#0288d1ff] rounded-md hover:bg-[#0289d1df] text-white flex items-center gap-2 py-2 px-6 transition"
               >
                 <Save size={18} /> Save
               </button>

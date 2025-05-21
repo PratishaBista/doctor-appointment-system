@@ -84,6 +84,12 @@ const NotificationDropdown = () => {
     }
   }, [isOpen, token]);
 
+  useEffect(() => {
+    if (token && userData?._id) {
+      fetchNotifications();
+    }
+  }, [token, userData]);
+
   return (
     <div className="relative">
       <button
@@ -119,7 +125,7 @@ const NotificationDropdown = () => {
             <h3 className="text-sm font-medium text-gray-700">Notifications</h3>
             <button
               onClick={markAllAsRead}
-              className="text-xs text-blue-600 hover:text-blue-800"
+              className="text-xs text-[#0289d1df] hover:text-[#0289d1df]"
               disabled={unreadCount === 0}
             >
               Mark all as read

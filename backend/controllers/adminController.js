@@ -102,6 +102,36 @@ const addDoctor = async (req, res) => {
   }
 };
 
+// API to delete a doctor
+const deleteDoctor = async (req, res) => {
+  try {
+    const { doctorId } = req.body;
+
+    const doctor = await doctorModel.findById(doctorId);
+    if (!doctor) {
+      return res.json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+    await appointmentModel.deleteMany({ doctorId });
+
+    await doctorModel.findByIdAndDelete(doctorId);
+
+    res.json({
+      success: true,
+      message: "Doctor and associated appointments deleted successfully",
+    });
+  } catch (error) {
+    console.log("Error in deleteDoctor: ", error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+
 //API for admin login
 const loginAdmin = async (req, res) => {
   try {
@@ -194,6 +224,7 @@ const appointmentCancel = async (req, res) => {
 
 export {
   addDoctor,
+  deleteDoctor,
   loginAdmin,
   allDoctors,
   appointmentsAdmin,

@@ -160,7 +160,7 @@ const UserAbout = () => {
             </p>
           </div>
           <div className="text-center mt-8">
-            <button className="px-8 py-3 bg-[#0288D1] text-white hover:brightness-115 font-medium rounded-md transition-colors text-lg">
+            <button onClick={() => navigateTo("/Department")} className="px-8 py-3 bg-[#0288D1] text-white hover:brightness-115 font-medium rounded-md transition-colors text-lg">
               Our Medical Departments →
             </button>
           </div>
@@ -215,7 +215,7 @@ const UserAbout = () => {
             Book your appointment with our specialists today through our seamless online system.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6 pt-4">
-            <button className="px-8 py-3.5 bg-white text-[#0288D1] font-semibold rounded-md hover:bg-gray-100 transition-colors text-lg" onClick={() => navigateTo("/book-appointment")}>
+            <button className="px-8 py-3.5 bg-white text-[#0288D1] font-semibold rounded-md hover:bg-gray-100 transition-colors text-lg" onClick={() => navigateTo("/FindDoctors")}>
               Book Appointment
             </button>
             <button onClick={() => navigateTo("/userContact")} className="px-8 py-3.5 border-2 border-white text-white font-semibold rounded-md hover:bg-white hover:text-[#0288D1] transition-colors text-lg">

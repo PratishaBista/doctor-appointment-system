@@ -90,7 +90,7 @@ const Department = () => {
               key={index}
               onClick={() => {
                 setSelectedSpecialty(specialty);
-                navigate("/selectedSpeciality");
+                navigate("/FindDoctors");
                 window.scrollTo(0, 0);
               }}
               className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"

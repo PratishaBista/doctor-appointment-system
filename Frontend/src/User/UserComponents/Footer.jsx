@@ -42,13 +42,13 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-4 pb-2">Quick Links</h3>
             <ul className="space-y-2">
-              <li><a href="/doctors" className="transition-colors flex items-center">
+              <li><a href="/FindDoctors" className="transition-colors flex items-center">
                 <span className="mr-2"></span> Find a Doctor
               </a></li>
-              <li><a href="/specialties" className="transition-colors flex items-center">
+              <li><a href="/Department" className="transition-colors flex items-center">
                 <span className="mr-2"></span> Specialties
               </a></li>
-              <li><a href="/appointments" className="transition-colors flex items-center">
+              <li><a href="/dashboard/appointments" className="transition-colors flex items-center">
                 <span className="mr-2"></span> My Appointments
               </a></li>
             </ul>

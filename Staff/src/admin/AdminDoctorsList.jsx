@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useContext } from "react";
 import { AdminContext } from "../context/AdminContext";
-import { FiUser, FiBriefcase, FiAward, FiDollarSign, FiCheckCircle, FiXCircle, FiEdit, FiTrash2, FiSearch, FiFilter, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiBriefcase, FiCheckCircle, FiXCircle, FiTrash2, FiSearch, FiFilter, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { motion } from "framer-motion";
 
 const AdminDoctorsList = () => {
-  const { doctors, admin_token, getAllDoctors, changeAvailability } = useContext(AdminContext);
+  const { doctors, admin_token, getAllDoctors, changeAvailability, deleteDoctor } = useContext(AdminContext);
   const [loading, setLoading] = useState(true);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [doctorToDelete, setDoctorToDelete] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     speciality: "",
@@ -22,6 +24,24 @@ const AdminDoctorsList = () => {
     }
   }, [admin_token]);
 
+  const handleDeleteClick = (doctorId) => {
+    setDoctorToDelete(doctorId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    if (doctorToDelete) {
+      await deleteDoctor(doctorToDelete);
+      setShowDeleteConfirm(false);
+      setDoctorToDelete(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setDoctorToDelete(null);
+  };
+
   const filteredDoctors = doctors
     .filter(doctor =>
       doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -35,11 +55,19 @@ const AdminDoctorsList = () => {
         filters.availability === "unavailable" ? !doctor.available : true
     )
     .filter(doctor =>
-      filters.experience ? doctor.experience >= parseInt(filters.experience) : true
+      filters.experience ? parseInt(doctor.experience) >= parseInt(filters.experience) : true
     )
     .sort((a, b) => {
+      const getExperience = (doc) => {
+        const match = doc.experience.match(/\d+/);
+        return match ? parseInt(match[0]) : 0;
+      };
       if (filters.sortBy === "name") return a.name.localeCompare(b.name);
-      if (filters.sortBy === "experience") return b.experience - a.experience;
+      if (filters.sortBy === "experience") {
+        const expA = getExperience(a);
+        const expB = getExperience(b);
+        return expB - expA;
+      }
       if (filters.sortBy === "fees") return b.fees - a.fees;
       return 0;
     });
@@ -67,6 +95,30 @@ const AdminDoctorsList = () => {
 
   return (
     <div className="p-6 bg-[#F5F6FA] min-h-screen">
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-[#F5F6FA] rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">Confirm Deletion</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete this doctor? This action cannot be undone.
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={cancelDelete}
+                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#0288D1] mb-2">Doctors Management</h1>
         <p className="text-gray-600">Manage and monitor all registered doctors</p>
@@ -191,7 +243,7 @@ const AdminDoctorsList = () => {
           <div className="hidden md:block md:col-span-2">Experience</div>
           <div className="hidden md:block md:col-span-2">Fees</div>
           <div className="col-span-3 md:col-span-2">Status</div>
-          <div className="col-span-3 md:col-span-2 text-right">Actions</div>
+          <div className="col-span-3 md:col-span-2 text-right">Mark Available/Delete</div>
         </div>
 
         {filteredDoctors.length > 0 ? (
@@ -231,14 +283,13 @@ const AdminDoctorsList = () => {
               <div className="hidden md:block md:col-span-2">
                 <div className="flex items-center">
                   <FiBriefcase className="mr-2 text-[#0288D1]" />
-                  <span>{doctor.experience} years</span>
+                  <span>{doctor.experience}</span>
                 </div>
               </div>
 
               {/* Fees */}
               <div className="hidden md:block md:col-span-2">
-                <div className="flex items-center">
-                  <FiDollarSign className="mr-2 text-[#0288D1]" />
+                <div className="flex items-center mr-2 text-[#0288D1]">
                   <span>रु {doctor.fees}</span>
                 </div>
               </div>
@@ -253,7 +304,6 @@ const AdminDoctorsList = () => {
                 </span>
               </div>
 
-              {/* Actions */}
               <div className="col-span-3 md:col-span-2 flex justify-end gap-2">
                 <button
                   onClick={() => handleAvailabilityChange(doctor._id, doctor.available)}
@@ -265,10 +315,7 @@ const AdminDoctorsList = () => {
                 >
                   {doctor.available ? <FiCheckCircle /> : <FiXCircle />}
                 </button>
-                <button className="p-2 text-[#0288D1] hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
-                  <FiEdit />
-                </button>
-                <button className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
+                <button onClick={() => handleDeleteClick(doctor._id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Delete">
                   <FiTrash2 />
                 </button>
               </div>

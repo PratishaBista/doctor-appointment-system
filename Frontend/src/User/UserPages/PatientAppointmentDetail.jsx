@@ -134,7 +134,7 @@ const PatientAppointmentDetail = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#0288d1ff]"></div>
             </div>
         );
     }
@@ -150,7 +150,7 @@ const PatientAppointmentDetail = () => {
                     </p>
                     <button
                         onClick={() => navigate(-1)}
-                        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+                        className="mt-4 px-4 py-2 bg-[#0288d1ff] hover:bg-[#0289d1df] text-white rounded-md not-first:transition"
                     >
                         Back to Appointments
                     </button>
@@ -166,26 +166,26 @@ const PatientAppointmentDetail = () => {
         if (appointment.isCompleted) {
             return <FiCheckCircle className="h-5 w-5 text-green-500" />;
         }
-        return <FiClock className="h-5 w-5 text-blue-500" />;
+        return <FiClock className="h-5 w-5 text-[#0288d1ff]" />;
     };
 
     const getStatusText = () => {
         if (appointment.cancelled) return 'Cancelled';
         if (appointment.isCompleted) return 'Completed';
-        return 'Upcoming';
+        return 'Ongoing';
     };
 
     const getStatusColor = () => {
         if (appointment.cancelled) return 'text-red-600';
         if (appointment.isCompleted) return 'text-green-600';
-        return 'text-blue-600';
+        return 'text-[#0288d1ff]';
     };
 
     return (
         <div className="p-6 max-w-4xl mx-auto">
             <button
                 onClick={() => navigate(-1)}
-                className="flex items-center text-blue-600 hover:text-blue-800 mb-6 transition"
+                className="flex items-center text-[#0288d1ff] hover:text-[#0289d1df] mb-6 transition"
             >
                 <FiArrowLeft className="mr-2" /> Back to Appointments
             </button>
@@ -229,7 +229,7 @@ const PatientAppointmentDetail = () => {
                                     <div>
                                         <h3 className="text-sm font-medium text-gray-500">Status</h3>
                                         <p className={`font-medium ${getStatusColor()}`}>
-                                            {getStatusText()}
+                                             {getStatusText()}
                                         </p>
                                     </div>
                                 </div>
@@ -260,7 +260,7 @@ const PatientAppointmentDetail = () => {
                         {appointment.prescription && (
                             <button
                                 onClick={handlePrintPrescription}
-                                className="flex items-center text-blue-600 hover:text-blue-800 transition"
+                                className="flex items-center text-[#0288d1ff] hover:text-[#0289d1df] transition"
                             >
                                 <FiPrinter className="mr-1" /> Print
                             </button>

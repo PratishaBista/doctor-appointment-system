@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import React, { useContext, useEffect, useState } from "react";
 import { DoctorContext } from "../../context/DoctorContext";
 import { AppContext } from "../../context/AppContext";
-import { FiCalendar, FiUser, FiDollarSign, FiActivity } from "react-icons/fi";
+import { FiCalendar, FiUser, FiActivity } from "react-icons/fi";
 
 
 const DoctorDashboard = () => {
@@ -15,37 +15,6 @@ const DoctorDashboard = () => {
       getDoctorData();
     }
   }, [doctor_token]);
-
-  const processChartData = () => {
-    if (!dashboardData) return { appointmentsData: null, patientsData: null };
-
-    // Process appointments data for bar chart
-    const appointmentsData = {
-      labels: dashboardData.appointmentsTrend?.map(item => item.month) || [],
-      datasets: [
-        {
-          label: 'Appointments',
-          data: dashboardData.appointmentsTrend?.map(item => item.count) || [],
-          backgroundColor: '#146A5D',
-        },
-      ],
-    };
-
-    // Process patients by gender for pie chart
-    const patientsData = {
-      labels: dashboardData.patientsByGender?.map(item => item.gender) || [],
-      datasets: [
-        {
-          data: dashboardData.patientsByGender?.map(item => item.count) || [],
-          backgroundColor: ['#146A5D', '#4CAF50', '#FFC107'],
-        },
-      ],
-    };
-
-    return { appointmentsData, patientsData };
-  };
-
-  const { appointmentsData, patientsData } = processChartData();
 
   // Filter to show only upcoming appointments
   const upcomingAppointments = dashboardData?.latestAppointments?.filter(

@@ -3,7 +3,6 @@ import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../context/AdminContext";
 import { AppContext } from "../context/AppContext";
 import { FiUsers, FiCalendar, FiUserPlus, FiClock } from "react-icons/fi";
-import { BarChart, PieChart } from "../components/charts";
 
 const AdminDashboard = () => {
   const {
@@ -20,44 +19,6 @@ const AdminDashboard = () => {
       getDashboardData();
     }
   }, [admin_token]);
-
-  // Process actual data for charts
-  const processChartData = () => {
-    if (!dashData) return { appointmentsData: null, doctorsSpecializationData: null };
-
-    // Process appointments data for bar chart
-    const appointmentsData = {
-      labels: dashData.appointmentsTrend?.map(item => item.month) || [],
-      datasets: [
-        {
-          label: 'Appointments',
-          data: dashData.appointmentsTrend?.map(item => item.count) || [],
-          backgroundColor: '#0288D1',
-        },
-      ],
-    };
-
-    // Process doctors by specialization for pie chart
-    const doctorsSpecializationData = {
-      labels: dashData.doctorsBySpecialization?.map(item => item.speciality) || [],
-      datasets: [
-        {
-          data: dashData.doctorsBySpecialization?.map(item => item.count) || [],
-          backgroundColor: [
-            '#0288D1',
-            '#4CAF50',
-            '#FFC107',
-            '#FF5722',
-            '#9C27B0',
-          ],
-        },
-      ],
-    };
-
-    return { appointmentsData, doctorsSpecializationData };
-  };
-
-  const { appointmentsData, doctorsSpecializationData } = processChartData();
 
   return (
     dashData && (
@@ -131,46 +92,6 @@ const AdminDashboard = () => {
               <h3 className="text-2xl font-bold text-gray-800">{dashData.pendingAppointments || 0}</h3>
             </div>
           </motion.div>
-        </div>
-
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          {/* Appointments Chart - Only show if data exists */}
-          {appointmentsData && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-xl shadow-sm p-6"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-800">Appointments Overview</h3>
-                <select className="text-sm border rounded-lg px-3 py-1 bg-gray-50">
-                  <option>Last 6 Months</option>
-                  <option>Last Year</option>
-                  <option>Last 3 Years</option>
-                </select>
-              </div>
-              <div className="h-64">
-                <BarChart data={appointmentsData} />
-              </div>
-            </motion.div>
-          )}
-
-          {/* Doctors Specialization Chart - Only show if data exists */}
-          {doctorsSpecializationData && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-xl shadow-sm p-6"
-            >
-              <h3 className="text-lg font-semibold text-gray-800 mb-4">Doctors by Specialization</h3>
-              <div className="h-64">
-                <PieChart data={doctorsSpecializationData} />
-              </div>
-            </motion.div>
-          )}
         </div>
 
         {/* Recent Appointments Section */}
