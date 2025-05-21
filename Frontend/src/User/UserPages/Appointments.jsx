@@ -190,7 +190,7 @@ const Appointments = () => {
         const isProcessing = processingPayment === appointment._id;
 
         let statusLabel = type === 'cancelled' ? 'Cancelled' :
-            type === 'upcoming' ? 'Upcoming' : 'Completed';
+            type === 'upcoming' ? 'Ongoing' : 'Completed';
 
         let statusClasses = type === 'cancelled' ? 'bg-red-100 text-red-800' :
             type === 'upcoming' ? 'bg-blue-100 text-blue-800' :
@@ -361,7 +361,7 @@ const Appointments = () => {
             <div className="mb-6 border-b border-gray-200">
                 <nav className="flex space-x-8">
                     {[
-                        { id: 'upcoming', label: 'Upcoming', count: upcoming.length },
+                        { id: 'upcoming', label: 'Ongoing', count: upcoming.length },
                         { id: 'past', label: 'Appointment History', count: past.length },
                         { id: 'cancelled', label: 'Cancelled', count: cancelled.length }
                     ].map((tab) => (
@@ -369,7 +369,7 @@ const Appointments = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`py-3 px-1 font-medium text-sm border-b-2 transition-colors ${activeTab === tab.id
-                                ? 'border-blue-500 text-blue-600'
+                                ? 'border-[#0288d1ff] text-[#0289d1df]'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >

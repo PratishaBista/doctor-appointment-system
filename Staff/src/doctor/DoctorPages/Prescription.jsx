@@ -44,7 +44,7 @@ const Prescription = ({ appointment, updatePrescription }) => {
               <button
                 onClick={handleSave}
                 disabled={isLoading}
-                className="flex items-center bg-[#0288D1] text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                className="flex items-center bg-[#0288D1] text-white px-4 py-2 rounded-lg hover:bg-[#0289d1df] transition"
               >
                 <FiSave className="mr-2" />
                 {isLoading ? "Saving..." : "Save"}

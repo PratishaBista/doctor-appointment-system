@@ -71,7 +71,6 @@ const NotificationDropdown = () => {
       );
 
       if (data.success) {
-        // Update all notifications to read
         setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
         setUnreadCount(0);
       }
@@ -82,6 +81,7 @@ const NotificationDropdown = () => {
 
   useEffect(() => {
     if (isOpen && doctor_token) {
+      console.log(isOpen)
       fetchNotifications();
     }
   }, [isOpen, doctor_token]);
@@ -123,7 +123,7 @@ const NotificationDropdown = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-[9001] border-2 border-red-500"> {/* Added border for visibility */}
+        <div className="absolute right-0 top-full mt-2 w-80 bg-white rounded-md shadow-lg overflow-hidden z-[9001] border-4 border-red-500">
           <div className="border-b border-gray-200 px-4 py-2 flex justify-between items-center bg-gray-50">
             <h3 className="text-sm font-medium text-gray-700">Notifications</h3>
             <button

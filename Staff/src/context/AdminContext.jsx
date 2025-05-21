@@ -37,21 +37,41 @@ const AdminContextProvider = ({ children }) => {
     }
   }
 
+  const deleteDoctor = async (doctorId) => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/admin/delete-doctor`,
+        { doctorId },
+        {
+          headers: {
+            admin_token: localStorage.getItem("admin_token"),
+          },
+        }
+      );
+      if (response.data.success) {
+        toast.success("Doctor deleted successfully!");
+        getAllDoctors();
+      }
+    } catch (error) {
+      console.error("Error deleting doctor:", error);
+    }
+  };
+
   const getAllPathologists = async () => {
     try {
-        const { data } = await axios.get(backendUrl + "/api/admin/pathologists", { headers: { admin_token } });
+      const { data } = await axios.get(backendUrl + "/api/admin/pathologists", { headers: { admin_token } });
 
-        if (data.success) {
-            setPathologists(data.data);  
-            console.log("Pathologists data:", data.data);  
-        } else {
-            toast.error(data.message);
-        }
+      if (data.success) {
+        setPathologists(data.data);
+        console.log("Pathologists data:", data.data);
+      } else {
+        toast.error(data.message);
+      }
 
     } catch (error) {
-        toast.error(error.message);
+      toast.error(error.message);
     }
-}
+  }
 
 
   const changeAvailability = async (docId) => {
@@ -141,6 +161,7 @@ const AdminContextProvider = ({ children }) => {
     pathologists,
     setPathologists,
     backendUrl,
+    deleteDoctor,
     doctors, getAllDoctors, changeAvailability,
     appointments, setAppointments, getAllAppointments, cancelAppointment, getDashboardData,
   };

@@ -100,7 +100,7 @@ const AdminHome = () => {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div
-          className={`h-full w-64 bg-white p-4 flex flex-col shadow-sm transition-all duration-300 ${isSidebarOpen ? 'fixed inset-y-0 z-40 md:relative' : 'hidden md:block'
+          className={`h-full w-64 bg-[#F5F6FA] p-4 flex flex-col  transition-all duration-300 ${isSidebarOpen ? 'fixed inset-y-0 z-40 md:relative' : 'hidden md:block'
             }`}
         >
           {/* Sidebar menu items */}

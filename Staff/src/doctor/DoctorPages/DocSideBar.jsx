@@ -43,7 +43,7 @@ const DocSideBar = ({ isSidebarOpen, toggleSidebar }) => {
 
   return (
     <div
-      className={`fixed md:relative h-full w-64 bg-white p-4 flex flex-col shadow-sm transition-all duration-300 z-30 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      className={`fixed md:relative h-full w-64 bg-[#F5F6FA] p-4 flex flex-col transition-all duration-300 z-30 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
     >
       {/* Mobile menu button */}

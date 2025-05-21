@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import axios from 'axios';
 import { toast } from 'react-toastify';
@@ -62,6 +62,19 @@ const ProfilePage = () => {
       toast.error("Failed to update profile");
     }
   };
+  useEffect(() => {
+    if (userData) {
+      setFormData({
+        name: userData?.name || '',
+        email: userData?.email || '',
+        phone: userData?.phone || '',
+        gender: userData?.gender || 'Male',
+        dob: userData?.dob || '',
+        address: userData?.address || { line1: '', line2: '' }
+      });
+    }
+  }, [userData]); // This will run whenever userData changes
+
 
   if (!userData) {
     return (
@@ -124,7 +137,7 @@ const ProfilePage = () => {
             {/* Personal Information */}
             <div className="space-y-4">
               <h2 className="text-lg font-medium text-gray-900 border-b pb-2">Personal Information</h2>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">Phone</label>
                 {isEdit ? (
@@ -179,7 +192,7 @@ const ProfilePage = () => {
             {/* Address */}
             <div className="space-y-4">
               <h2 className="text-lg font-medium text-gray-900 border-b pb-2">Address</h2>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">Address Line 1</label>
                 {isEdit ? (
