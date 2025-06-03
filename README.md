@@ -6,7 +6,11 @@
 
 > A collaborative development project as part of university coursework  
 > Module: Collaborative Development (5CS024)  
-> BSc (Hons) Computer Science – Year 2, 2025  
+> BSc (Hons) Computer Science – Year 2, 2025
+ 
+<p align="left">
+  Click <a href="https://youtu.be/LWEaj4Ujluc" target="_blank"><strong>here</strong></a> to watch our project demo.
+</p>
 
 ## **About the Project**
 
